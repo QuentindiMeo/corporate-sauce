@@ -5,11 +5,13 @@ import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import PostGrid from '../components/PostGrid.astro';
+import PostModal from '../components/PostModal.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 
 // Hexagone : adaptateur infra → cas d'usage → domaine → grille.
 const lignes = await listerPostsParTheme(astroPostRepository);
-const total = lignes.reduce((n, ligne) => n + ligne.posts.length, 0);
+const posts = lignes.flatMap((ligne) => ligne.posts);
+const total = posts.length;
 ---
 
 <!doctype html>
@@ -30,6 +32,7 @@ const total = lignes.reduce((n, ligne) => n + ligne.posts.length, 0);
 
 			<PostGrid lignes={lignes} />
 		</main>
+		<PostModal posts={posts} />
 		<Footer />
 	</body>
 </html>

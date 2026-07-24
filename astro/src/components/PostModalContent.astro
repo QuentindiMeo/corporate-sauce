@@ -1,0 +1,107 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import type { Post } from '@domain/post';
+import { styleFromMode } from '@/ui/theme/modes';
+import PastilleQDM from './PastilleQDM.astro';
+import TagRubrique from './TagRubrique.astro';
+
+interface Props {
+	post: Post;
+}
+
+const { post } = Astro.props;
+const image = post.image as unknown as ImageMetadata;
+const titreId = `modal-titre-${post.id}`;
+---
+
+<article
+	class="modal-post"
+	data-mode={post.mode}
+	style={styleFromMode(post.mode)}
+	aria-labelledby={titreId}
+>
+	<div class="modal-post__visuel">
+		<Image src={image} alt={post.imageAlt} widths={[540, 720, 1080]} sizes="(max-width: 900px) 90vw, 480px" />
+	</div>
+
+	<div class="modal-post__texte">
+		<div class="modal-post__meta">
+			<TagRubrique rubrique={post.rubrique} />
+		</div>
+		<h2 id={titreId} class="modal-post__titre">{post.titre}</h2>
+		<p class="modal-post__accroche">{post.accroche}</p>
+		<p class="modal-post__corps">{post.corps}</p>
+
+		{post.takeaway && <p class="modal-post__takeaway">{post.takeaway}</p>}
+		{post.cta && <p class="modal-post__cta">→ {post.cta}</p>}
+
+		<div class="modal-post__pied">
+			<PastilleQDM />
+			<a
+				class="modal-post__lien"
+				href={post.lienLinkedIn}
+				target="_blank"
+				rel="noopener noreferrer"
+			>
+				Voir sur LinkedIn ↗
+			</a>
+		</div>
+	</div>
+</article>
+
+<style>
+	.modal-post {
+		display: grid;
+		gap: 1.5rem;
+		background: var(--bg);
+		color: var(--fg);
+	}
+	@media (min-width: 900px) {
+		.modal-post {
+			grid-template-columns: minmax(0, 480px) 1fr;
+		}
+	}
+	.modal-post__visuel :global(img) {
+		width: 100%;
+		height: auto;
+		border-radius: 8px;
+	}
+	.modal-post__titre {
+		font-size: clamp(1.5rem, 3vw, 2.25rem);
+		margin: 0.75rem 0;
+	}
+	.modal-post__accroche {
+		color: var(--muted);
+		font-size: 1.1rem;
+	}
+	.modal-post__corps {
+		margin-top: 1rem;
+	}
+	.modal-post__takeaway {
+		margin-top: 1.25rem;
+		padding: 0.75rem 1rem;
+		border: 1px solid var(--border);
+		border-radius: 8px;
+		background: var(--panel, transparent);
+		font-weight: 700;
+	}
+	.modal-post__cta {
+		margin-top: 1rem;
+		font-family: var(--font-mono, monospace);
+		color: var(--acc-text, var(--warm-text, inherit));
+	}
+	.modal-post__pied {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		margin-top: 1.5rem;
+		padding-top: 1rem;
+		border-top: 1px solid var(--border);
+	}
+	.modal-post__lien {
+		font-family: var(--font-mono, monospace);
+		font-weight: 700;
+		color: var(--acc-text, var(--cool-text, inherit));
+	}
+</style>
