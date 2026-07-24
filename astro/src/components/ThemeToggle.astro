@@ -1,0 +1,59 @@
+---
+// Îlot : bascule le thème du chrome (sombre/clair) et persiste le choix.
+// La résolution initiale (anti-flash) est faite par le script inline de BaseHead.
+---
+
+<button type="button" class="theme-toggle" aria-pressed="false" aria-label="Basculer le thème">
+	<span class="theme-toggle__icon" aria-hidden="true"></span>
+	<span class="theme-toggle__label">Thème</span>
+</button>
+
+<script>
+	import { autreTheme, CLE_STOCKAGE_THEME, type Theme } from '@/ui/theme/theme-preference';
+
+	const bouton = document.currentScript?.previousElementSibling as HTMLButtonElement | null;
+	const racine = document.documentElement;
+
+	function themeCourant(): Theme {
+		return racine.dataset.theme === 'light' ? 'light' : 'dark';
+	}
+
+	function synchroniser(theme: Theme): void {
+		racine.dataset.theme = theme;
+		bouton?.setAttribute('aria-pressed', String(theme === 'light'));
+	}
+
+	synchroniser(themeCourant());
+
+	bouton?.addEventListener('click', () => {
+		const suivant = autreTheme(themeCourant());
+		synchroniser(suivant);
+		try {
+			localStorage.setItem(CLE_STOCKAGE_THEME, suivant);
+		} catch {
+			/* stockage indisponible : la bascule reste effective pour la session */
+		}
+	});
+</script>
+
+<style>
+	.theme-toggle {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5em;
+		font-family: var(--font-mono, monospace);
+		font-size: 0.85rem;
+		padding: 0.35em 0.7em;
+		border: 1px solid var(--border);
+		border-radius: 7px;
+		background: transparent;
+		color: inherit;
+		cursor: pointer;
+	}
+	.theme-toggle__icon {
+		width: 0.9em;
+		height: 0.9em;
+		border-radius: 50%;
+		background: var(--acc);
+	}
+</style>

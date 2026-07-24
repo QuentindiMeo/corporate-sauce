@@ -1,0 +1,42 @@
+---
+import { SITE_TITLE } from '../consts';
+import ThemeToggle from './ThemeToggle.astro';
+---
+
+<header>
+	<nav>
+		<a class="marque" href="/">
+			<span class="chevron">›</span>{SITE_TITLE}<span class="curseur" aria-hidden="true"></span>
+		</a>
+		<ThemeToggle />
+	</nav>
+</header>
+
+<style>
+	header {
+		padding: 1rem 1.5rem;
+		border-bottom: 1px solid var(--border, #331c14);
+	}
+	nav {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+	.marque {
+		font-family: var(--font-mono, monospace);
+		font-weight: 800;
+		text-decoration: none;
+		color: inherit;
+	}
+	.chevron {
+		opacity: 0.6;
+	}
+	.curseur {
+		display: inline-block;
+		width: 0.5em;
+		height: 1em;
+		margin-left: 0.15em;
+		background: currentColor;
+		vertical-align: text-bottom;
+	}
+</style>

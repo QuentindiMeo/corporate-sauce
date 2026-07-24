@@ -1,0 +1,27 @@
+---
+interface Props {
+	/** `aplat` = fond plein (mot-clé n°1) ; `marqueur` = soulignement marqueur (secondaire). */
+	variant?: 'aplat' | 'marqueur';
+}
+
+const { variant = 'aplat' } = Astro.props;
+---
+
+<span class={`surlignage surlignage--${variant}`}><slot /></span>
+
+<style>
+	/* Charte §5 : mot-clé n°1 → aplat plein ; secondaire → marqueur sous la ligne de base. */
+	.surlignage--aplat {
+		background: var(--acc, var(--warm, currentColor));
+		color: var(--acc-ink, var(--ink, #120a07));
+		padding: 0 3px;
+	}
+	.surlignage--marqueur {
+		/* Le dégradé démarre ~80 % : marqueur volontairement sous la ligne de base. */
+		background: linear-gradient(
+			transparent 80%,
+			var(--acc, var(--warm, currentColor)) 80%
+		);
+		padding: 0 3px 2px;
+	}
+</style>

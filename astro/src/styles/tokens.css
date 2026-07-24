@@ -1,0 +1,106 @@
+/*
+ * Design tokens QDM — chrome du site + reset accessible.
+ * Les palettes des 3 modes (posts) sont appliquées en variables inline par
+ * `styleFromMode` (src/ui/theme/modes.ts), source de vérité unique. Ici : le
+ * chrome neutre du site (hors vignettes), avec bascule sombre/clair (data-theme).
+ */
+
+/* Chrome — thème SOMBRE (défaut), dérivé du mode Rust. */
+:root,
+:root[data-theme='dark'] {
+	--bg: #120a07;
+	--fg: #f5e9e2;
+	--muted: #b09a8b;
+	--border: #331c14;
+	--acc: #ff5a36;
+	--acc-text: #ff734f;
+	--acc-ink: #120a07;
+	color-scheme: dark;
+}
+
+/* Chrome — thème CLAIR, dérivé du mode Ambre. */
+:root[data-theme='light'] {
+	--bg: #f6ecd4;
+	--fg: #221b0e;
+	--muted: #63563b;
+	--border: #d9c79a;
+	--acc: #f5a300;
+	--acc-text: #8a5a00;
+	--acc-ink: #2a1c00;
+	color-scheme: light;
+}
+
+/* Signal sémantique ✓/✕ (charte §2), commun à tous les modes. */
+:root {
+	--ok: #2e6a46;
+	--ok-text: #276039;
+	--bad: #b23415;
+}
+
+/* Reset accessible minimal. */
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+* {
+	margin: 0;
+}
+html {
+	-webkit-text-size-adjust: 100%;
+}
+body {
+	min-height: 100vh;
+	background: var(--bg);
+	color: var(--fg);
+	font-family: var(--font-body, var(--font-title, system-ui, sans-serif));
+	line-height: 1.5;
+	-webkit-font-smoothing: antialiased;
+}
+h1,
+h2,
+h3 {
+	font-family: var(--font-title, system-ui, sans-serif);
+	line-height: 1.05;
+	letter-spacing: -0.02em;
+}
+img,
+picture,
+svg {
+	display: block;
+	max-width: 100%;
+}
+a {
+	color: inherit;
+}
+
+/* Cible de focus visible et nette (a11y). */
+:focus-visible {
+	outline: 3px solid var(--acc-text, var(--acc));
+	outline-offset: 2px;
+}
+
+/* Lien d'évitement. */
+.skip-link {
+	position: absolute;
+	left: -9999px;
+	top: 0;
+	padding: 0.5rem 1rem;
+	background: var(--acc);
+	color: var(--acc-ink);
+	z-index: 100;
+}
+.skip-link:focus {
+	left: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
+	}
+}

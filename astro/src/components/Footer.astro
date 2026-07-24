@@ -1,0 +1,32 @@
+---
+const annee = new Date().getFullYear();
+---
+
+<footer>
+	<span class="pastille">QDM</span>
+	<span class="slogan">Question · Design · Materialize</span>
+	<span class="annee">© {annee}</span>
+</footer>
+
+<style>
+	footer {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 1rem;
+		padding: 2rem 1.5rem;
+		border-top: 1px solid var(--border, #331c14);
+		font-family: var(--font-mono, monospace);
+		font-size: 0.9rem;
+	}
+	.pastille {
+		font-weight: 800;
+		padding: 0.15em 0.5em;
+		border-radius: 8px;
+		background: var(--acc, #ff5a36);
+		color: var(--acc-ink, #120a07);
+	}
+	.slogan {
+		color: var(--muted, #b09a8b);
+	}
+</style>
