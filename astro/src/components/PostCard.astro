@@ -1,0 +1,86 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import type { Post } from '@domain/post';
+import { styleFromMode } from '@/ui/theme/modes';
+import TagRubrique from './TagRubrique.astro';
+
+interface Props {
+	post: Post;
+	/** `true` pour le 1er écran (désactive le lazy-load, améliore le LCP). */
+	prioritaire?: boolean;
+}
+
+const { post, prioritaire = false } = Astro.props;
+
+// L'entité expose `image` en `PostImage` ; à l'exécution c'est l'`ImageMetadata`
+// d'Astro (voir infrastructure). On restaure le type pour le composant <Image>.
+const image = post.image as unknown as ImageMetadata;
+---
+
+<article class="post-card" data-mode={post.mode} style={styleFromMode(post.mode)}>
+	<a
+		class="post-card__link"
+		href={post.lienLinkedIn}
+		target="_blank"
+		rel="noopener noreferrer"
+		data-post-id={post.id}
+		aria-label={`Ouvrir le post « ${post.titre} » (rubrique ${post.rubrique})`}
+	>
+		<Image
+			class="post-card__image"
+			src={image}
+			alt={post.imageAlt}
+			widths={[360, 540, 720]}
+			sizes="(max-width: 640px) 80vw, 260px"
+			loading={prioritaire ? 'eager' : 'lazy'}
+		/>
+		<span class="post-card__tag"><TagRubrique rubrique={post.rubrique} /></span>
+	</a>
+</article>
+
+<style>
+	.post-card {
+		position: relative;
+		border-radius: 10px;
+		overflow: hidden;
+		background: var(--bg);
+		border: 1px solid var(--border);
+		/* Animation progressive (charte) : profondeur au survol. */
+		transition:
+			transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1),
+			box-shadow 0.35s ease;
+	}
+	.post-card:hover,
+	.post-card:focus-within {
+		transform: scale(1.06) rotate(-1.5deg);
+		box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+		z-index: 2;
+	}
+	.post-card__link {
+		display: block;
+		text-decoration: none;
+	}
+	.post-card__image {
+		display: block;
+		width: 100%;
+		height: auto;
+		aspect-ratio: 1080 / 1350;
+		object-fit: cover;
+	}
+	.post-card__tag {
+		position: absolute;
+		top: 0.6rem;
+		left: 0.6rem;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.post-card {
+			transition: none;
+		}
+		.post-card:hover,
+		.post-card:focus-within {
+			transform: none;
+		}
+	}
+</style>

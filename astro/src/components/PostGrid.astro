@@ -1,0 +1,21 @@
+---
+import type { LigneThematique } from '@domain/post-collection';
+import PostRow from './PostRow.astro';
+
+interface Props {
+	lignes: LigneThematique[];
+}
+
+const { lignes } = Astro.props;
+---
+
+<div class="post-grid">
+	{lignes.map((ligne, i) => <PostRow ligne={ligne} prioritaire={i === 0} />)}
+</div>
+
+<style>
+	.post-grid {
+		display: flex;
+		flex-direction: column;
+	}
+</style>

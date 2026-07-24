@@ -1,15 +1,13 @@
 ---
 import { listerPostsParTheme } from '@application/lister-posts-par-theme';
 import { astroPostRepository } from '@infrastructure/content/astro-post-repository';
-import { styleFromMode } from '@/ui/theme/modes';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
-import TagRubrique from '../components/TagRubrique.astro';
+import PostGrid from '../components/PostGrid.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 
-// Traversée end-to-end de l'hexagone : adaptateur infra → cas d'usage → domaine.
-// Rendu volontairement simple — la grille interactive arrive en Phase 3.
+// Hexagone : adaptateur infra → cas d'usage → domaine → grille.
 const lignes = await listerPostsParTheme(astroPostRepository);
 const total = lignes.reduce((n, ligne) => n + ligne.posts.length, 0);
 ---
@@ -23,26 +21,14 @@ const total = lignes.reduce((n, ligne) => n + ligne.posts.length, 0);
 		<a class="skip-link" href="#contenu">Aller au contenu</a>
 		<Header />
 		<main id="contenu">
-			<h1>{SITE_TITLE}</h1>
-			<p class="compteur">{total} posts · {lignes.length} rubriques.</p>
+			<header class="intro">
+				<h1>{SITE_TITLE}</h1>
+				<p class="intro__sous-titre">
+					Une pratique du logiciel, un visuel à la fois. {total} posts, {lignes.length} rubriques.
+				</p>
+			</header>
 
-			{
-				lignes.map((ligne) => (
-					<section class="ligne">
-						<TagRubrique rubrique={ligne.rubrique} />
-						<ul>
-							{ligne.posts.map((post) => (
-								<li class="post" data-mode={post.mode} style={styleFromMode(post.mode)}>
-									<a href={post.lienLinkedIn} target="_blank" rel="noopener noreferrer">
-										{post.titre}
-									</a>
-									<span class="post__mode">{post.mode}</span>
-								</li>
-							))}
-						</ul>
-					</section>
-				))
-			}
+			<PostGrid lignes={lignes} />
 		</main>
 		<Footer />
 	</body>
@@ -50,41 +36,20 @@ const total = lignes.reduce((n, ligne) => n + ligne.posts.length, 0);
 
 <style>
 	main {
-		max-width: 60rem;
+		max-width: 72rem;
 		margin: 0 auto;
-		padding: 2rem 1.5rem;
+		padding: 2rem 1.5rem 4rem;
+	}
+	.intro {
+		margin-block: 1rem 2rem;
 	}
 	h1 {
-		font-size: clamp(2rem, 5vw, 3rem);
+		font-size: clamp(2rem, 5vw, 3.25rem);
 	}
-	.compteur {
-		color: var(--muted);
-		font-family: var(--font-mono, monospace);
-		margin: 0.5rem 0 2rem;
-	}
-	.ligne {
-		margin-block: 2rem;
-	}
-	.ligne ul {
-		list-style: none;
-		padding: 0;
+	.intro__sous-titre {
 		margin-top: 0.75rem;
-		display: grid;
-		gap: 0.5rem;
-	}
-	.post {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 1rem;
-		padding: 0.6rem 0.9rem;
-		border-left: 4px solid var(--acc);
-		background: var(--panel, transparent);
-	}
-	.post__mode {
-		font-family: var(--font-mono, monospace);
-		font-size: 0.75rem;
+		max-width: 44ch;
 		color: var(--muted);
-		text-transform: uppercase;
+		font-family: var(--font-mono, monospace);
 	}
 </style>
