@@ -1,0 +1,77 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Le projet Astro vit dans le sous-dossier astro/.
+defaults:
+  run:
+    working-directory: astro
+
+jobs:
+  # Porte de qualité bloquante (action.md §8/§9) : lint → typecheck → tests → e2e → build.
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Installer pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Installer Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: astro/pnpm-lock.yaml
+
+      - name: Installer les dépendances
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Tests unitaires & intégration
+        run: pnpm test
+
+      - name: Navigateurs Playwright
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Tests end-to-end
+        run: pnpm test:e2e --project=chromium
+
+      - name: Build
+        run: pnpm build
+
+      - name: Publier le build
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: astro/dist
+          if-no-files-found: error
+
+  # Audit performances/SEO/a11y — cible ≥ 0,95 (action.md §7). Non bloquant tant que
+  # les seuils ne sont pas calibrés sur un premier run réel (voir lighthouserc.json).
+  lighthouse:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: astro/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - name: Lighthouse CI
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          configPath: ./lighthouserc.json
+          uploadArtifacts: true

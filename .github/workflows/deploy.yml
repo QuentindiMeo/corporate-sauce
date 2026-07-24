@@ -1,0 +1,72 @@
+name: Deploy
+
+# Déploiement de la galerie. Choisir la cible via la variable de dépôt
+# `DEPLOY_TARGET` (Settings → Secrets and variables → Actions → Variables) :
+#   - "cloudflare"   → Cloudflare Pages (défaut recommandé)
+#   - "github-pages" → GitHub Pages (repli)
+# Tant que DEPLOY_TARGET n'est pas défini, aucun job ne s'exécute.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: astro
+
+jobs:
+  # --- Option A : Cloudflare Pages -----------------------------------------
+  # Secrets requis : CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID.
+  # Alternative sans workflow : connecter le dépôt dans le tableau de bord
+  # Cloudflare Pages (build `pnpm build`, sortie `astro/dist`) → previews par PR
+  # et prod automatiques, ce fichier devient alors inutile.
+  cloudflare:
+    if: vars.DEPLOY_TARGET == 'cloudflare'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: astro/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - name: Déployer sur Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=qdm-galerie
+
+  # --- Option B : GitHub Pages (repli) -------------------------------------
+  # Prérequis : dans astro.config.mjs, définir `site` (et `base` si le dépôt
+  # n'est pas servi à la racine du domaine). Activer Pages : Settings → Pages →
+  # Source = GitHub Actions.
+  github-pages:
+    if: vars.DEPLOY_TARGET == 'github-pages'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: astro/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: astro/dist
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,63 +1,117 @@
-# Astro Starter Kit: Blog
+# Galerie QDM
+
+Site vitrine des posts LinkedIn de **QDM — _Question. Design. Materialize._**
+Galerie de vignettes (une par post) regroupées par thème ; survol qui grossit et
+incline la vignette ; clic → modale (visuel HD + texte complet + lien LinkedIn).
+Français, responsive, accessible (WCAG AA), minimaliste.
+
+Plan de développement complet et suivi des phases : [`../action.md`](../action.md).
+
+## Stack
+
+- **Astro 7** (statique), Content Collections, `astro:assets` (images WebP responsives)
+- **Architecture hexagonale** : `domain` / `application` / `infrastructure` + UI (Astro)
+- **TDD** (Vitest + Container API + happy-dom) et **e2e** (Playwright + axe-core)
+- Typographie de la charte self-hostée (Space Grotesk, JetBrains Mono, Hanken Grotesk)
+
+## Prérequis
+
+- **Node ≥ 22.12** (le projet échoue sous une version antérieure).
+- **pnpm** (ne pas utiliser npm). Version épinglée via `packageManager`.
 
 ```sh
-pnpm create astro@latest -- --template blog
+# exemple avec nvm
+nvm use 22
+corepack enable   # fournit le bon pnpm depuis packageManager
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Commandes
 
-Features:
+| Commande            | Effet                                              |
+| ------------------- | -------------------------------------------------- |
+| `pnpm install`      | Installe les dépendances                           |
+| `pnpm dev`          | Serveur de développement                           |
+| `pnpm build`        | Build statique dans `dist/`                        |
+| `pnpm preview`      | Sert le build                                      |
+| `pnpm test`         | Tests unitaires & intégration (Vitest)             |
+| `pnpm test:watch`   | Vitest en continu (boucle TDD)                     |
+| `pnpm coverage`     | Couverture (seuil ≥ 90 % sur le cœur)              |
+| `pnpm test:e2e`     | Tests end-to-end (Playwright + axe)                |
+| `pnpm lint`         | ESLint                                             |
+| `pnpm typecheck`    | `astro check`                                      |
+| `pnpm check`        | Porte de qualité : lint + typecheck + test         |
 
-- ✅ Minimal styling (make it your own!)
-- ✅ 100/100 Lighthouse performance
-- ✅ SEO-friendly with canonical URLs and Open Graph data
-- ✅ Sitemap support
-- ✅ RSS Feed support
-- ✅ Markdown & MDX support
+Avant toute e2e locale : `pnpm exec playwright install chromium`.
 
-## 🚀 Project Structure
+## Ajouter ou modifier un post (sans redéployer de code)
 
-Inside of your Astro project, you'll see the following folders and files:
+Le contenu vit dans **`src/data/posts.json`** — pas dans le code. Pour ajouter un post :
 
-```text
-├── public/
-├── src/
-│   ├── assets/
-│   ├── components/
-│   ├── content/
-│   ├── layouts/
-│   └── pages/
-├── astro.config.mjs
-├── README.md
-├── package.json
-└── tsconfig.json
+1. Déposer le visuel (PNG 1080×1350) dans `src/assets/posts/`.
+2. Ajouter une entrée dans `src/data/posts.json` :
+
+   ```json
+   {
+     "id": "11-perf-cache",
+     "rubrique": "PERF",
+     "mode": "sombre",
+     "titre": "…",
+     "accroche": "…",
+     "corps": "…",
+     "takeaway": "… (optionnel)",
+     "cta": "… (optionnel)",
+     "image": "../assets/posts/11-perf-cache.png",
+     "imageAlt": "Description accessible du visuel (obligatoire)",
+     "lienLinkedIn": "https://www.linkedin.com/posts/…",
+     "datePublication": "2026-07-24",
+     "ordre": 3
+   }
+   ```
+
+   - `rubrique` ∈ `PERF · A11Y · DX · UI · ARCHI · HTML · COLLAB` (détermine la ligne).
+   - `mode` ∈ `sombre · clair · liant` (palette de la charte appliquée à la vignette et la modale).
+   - `ordre` = position dans sa ligne thématique.
+   - `lienLinkedIn` **doit** être une URL `https://…linkedin.com/…` (validée par le domaine).
+
+Le schéma (`src/content.config.ts`) valide chaque entrée au build.
+
+## Architecture (hexagonale)
+
+```
+src/
+├─ domain/            entités, value objects, ports (zéro dépendance framework)
+├─ application/       cas d'usage (dépend de domain/)
+├─ infrastructure/    adaptateurs (Content Collections → domain)
+├─ components/        UI Astro (grille, vignette, modale, primitives charte)
+├─ ui/theme|modal|seo logique UI testable (tokens, thème, modale, JSON-LD)
+├─ pages/  layouts/  styles/   présentation
+├─ assets/posts/      visuels optimisés
+└─ data/posts.json    source de contenu
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+Règle de dépendance : `pages/components → application → domain` ; `infrastructure → domain`.
+Le domaine n'importe jamais Astro (garde-fou ESLint dans `eslint.config.js`).
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+## Méthodologie — TDD
 
-The `src/content/` directory contains "collections" of related Markdown and MDX documents. Use `getCollection()` to retrieve posts from `src/content/blog/`, and type-check your frontmatter using an optional schema. See [Astro's Content Collections docs](https://docs.astro.build/en/guides/content-collections/) to learn more.
+Rouge → vert → refactor (voir `../action.md` §8). On écrit le test qui échoue
+d'abord, puis le minimum de code pour le faire passer, puis on nettoie. Le cœur
+(domain/application) se teste sans framework ; l'UI via la Container API ; les
+parcours via Playwright.
 
-Any static assets, like images, can be placed in the `public/` directory.
+## Déploiement
 
-## 🧞 Commands
+CI (`.github/workflows/ci.yml`) : lint → typecheck → test → e2e → build, bloquant.
 
-All commands are run from the root of the project, from a terminal:
+Déploiement (`.github/workflows/deploy.yml`) piloté par la variable de dépôt
+`DEPLOY_TARGET` :
 
-| Command                | Action                                           |
-| :--------------------- | :----------------------------------------------- |
-| `pnpm install`         | Installs dependencies                            |
-| `pnpm dev`             | Starts local dev server at `localhost:4321`      |
-| `pnpm build`           | Build your production site to `./dist/`          |
-| `pnpm preview`         | Preview your build locally, before deploying     |
-| `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `pnpm astro -- --help` | Get help using the Astro CLI                     |
+- **Cloudflare Pages** (`DEPLOY_TARGET=cloudflare`) — secrets `CLOUDFLARE_API_TOKEN`,
+  `CLOUDFLARE_ACCOUNT_ID`. Ou brancher directement le dépôt dans le tableau de bord
+  Cloudflare Pages (previews par PR + prod automatiques).
+- **GitHub Pages** (`DEPLOY_TARGET=github-pages`) — définir `site` (et `base`) dans
+  `astro.config.mjs`, puis Settings → Pages → Source = GitHub Actions.
 
-## 👀 Want to learn more?
-
-Check out [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
-
-## Credit
-
-This theme is based off of the lovely [Bear Blog](https://github.com/HermanMartinus/bearblog/).
+> À faire avant la mise en prod : renseigner le vrai domaine dans `astro.config.mjs`
+> (`site`) et `public/robots.txt`, et remplacer les liens LinkedIn `…-PLACEHOLDER`
+> de `src/data/posts.json` par les vraies URLs.
