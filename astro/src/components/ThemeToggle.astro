@@ -3,7 +3,13 @@
 // La résolution initiale (anti-flash) est faite par le script inline de BaseHead.
 ---
 
-<button type="button" class="theme-toggle" aria-pressed="false" aria-label="Basculer le thème">
+<button
+	type="button"
+	class="theme-toggle"
+	data-theme-toggle
+	aria-pressed="false"
+	aria-label="Basculer le thème"
+>
 	<span class="theme-toggle__icon" aria-hidden="true"></span>
 	<span class="theme-toggle__label">Thème</span>
 </button>
@@ -11,7 +17,9 @@
 <script>
 	import { autreTheme, CLE_STOCKAGE_THEME, type Theme } from '@/ui/theme/theme-preference';
 
-	const bouton = document.currentScript?.previousElementSibling as HTMLButtonElement | null;
+	// NB : `document.currentScript` est null dans un script de type module (Astro
+	// bundle et hisse ce <script>) — on cible donc le bouton par son attribut.
+	const bouton = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
 	const racine = document.documentElement;
 
 	function themeCourant(): Theme {

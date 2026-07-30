@@ -46,9 +46,13 @@ describe('PostCard', () => {
 		expect(html).toContain('data-post-id="demo-card"');
 	});
 
-	it('affiche le tag rubrique et un libellé accessible reprenant le titre', async () => {
+	it('affiche le titre du post au-dessus de l’image (sans tag en surimpression)', async () => {
 		const html = await carte({ titre: 'Un titre de post accrocheur' });
-		expect(html).toContain('PERF');
-		expect(html).toMatch(/aria-label="[^"]*Un titre de post accrocheur/);
+		expect(html).toContain('Un titre de post accrocheur');
+		expect(html).toMatch(/class="[^"]*post-card__titre/);
+		// Le titre précède l'image dans le flux (au-dessus).
+		expect(html.indexOf('post-card__titre')).toBeLessThan(html.indexOf('<img'));
+		// Plus de tag rubrique en surimpression sur la vignette.
+		expect(html).not.toMatch(/class="[^"]*post-card__tag/);
 	});
 });

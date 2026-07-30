@@ -30,10 +30,10 @@ const titreId = `rubrique-${ligne.rubrique.toLowerCase()}`;
 
 <style>
 	.post-row {
-		margin-block: 2.5rem;
+		margin-block: 1rem;
 	}
 	.post-row__titre {
-		margin-bottom: 1rem;
+		margin-bottom: 0.5rem;
 	}
 	/* Mobile : piste défilable horizontalement. Desktop : grille de 4. */
 	.post-row__piste {
@@ -43,6 +43,8 @@ const titreId = `rubrique-${ligne.rubrique.toLowerCase()}`;
 		display: grid;
 		grid-auto-flow: column;
 		grid-auto-columns: minmax(200px, 60vw);
+		/* Ratios natifs variables → on aligne en haut plutôt que d'étirer les cartes. */
+		align-items: start;
 		gap: 1rem;
 		overflow-x: auto;
 		scroll-snap-type: x mandatory;

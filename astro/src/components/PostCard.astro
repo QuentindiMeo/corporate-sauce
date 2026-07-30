@@ -3,7 +3,6 @@ import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 import type { Post } from '@domain/post';
 import { styleFromMode } from '@/ui/theme/modes';
-import TagRubrique from './TagRubrique.astro';
 
 interface Props {
 	post: Post;
@@ -27,6 +26,7 @@ const image = post.image as unknown as ImageMetadata;
 		data-post-id={post.id}
 		aria-label={`Ouvrir le post « ${post.titre} » (rubrique ${post.rubrique})`}
 	>
+		<p class="post-card__titre"><span>{post.titre}</span></p>
 		<Image
 			class="post-card__image"
 			src={image}
@@ -35,7 +35,6 @@ const image = post.image as unknown as ImageMetadata;
 			sizes="(max-width: 640px) 80vw, 260px"
 			loading={prioritaire ? 'eager' : 'lazy'}
 		/>
-		<span class="post-card__tag"><TagRubrique rubrique={post.rubrique} /></span>
 	</a>
 </article>
 
@@ -45,6 +44,10 @@ const image = post.image as unknown as ImageMetadata;
 		border-radius: 10px;
 		overflow: hidden;
 		background: var(--bg);
+		/* Couleur du texte = --fg DU MODE (posé en inline par styleFromMode), pas
+		   celui du chrome : sans ça, un titre pouvait tomber à ~1:1 (ex. crème sur
+		   crème). Ainsi le contraste titre/fond reste ≥ 14:1 dans les 3 modes. */
+		color: var(--fg);
 		border: 1px solid var(--border);
 		/* Animation progressive (charte) : profondeur au survol. */
 		transition:
@@ -58,20 +61,47 @@ const image = post.image as unknown as ImageMetadata;
 		z-index: 2;
 	}
 	.post-card__link {
-		display: block;
+		display: flex;
+		flex-direction: column;
+		aspect-ratio: 1 / 1;
 		text-decoration: none;
+		color: inherit;
+	}
+	.post-card__link:hover,
+	.post-card__link:focus {
+		text-decoration: revert;
+	}
+	.post-card__titre {
+		height: 20%;
+		margin: 0;
+		padding: 0 0.75rem;
+		/* Centrage vertical + horizontal du titre dans la bande (1 ou 2 lignes). */
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-family: var(--font-title, system-ui, sans-serif);
+		font-weight: 700;
+		font-size: 0.95rem;
+		line-height: 1.2;
+	}
+	/* Le clamp 2 lignes vit sur l'enfant, sans interférer avec le centrage. */
+	.post-card__titre span {
+		text-align: center;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
 	}
 	.post-card__image {
 		display: block;
 		width: 100%;
-		height: auto;
-		aspect-ratio: 1080 / 1350;
+		/* Remplit tout l'espace sous le titre pour que le lien reste carré ;
+		   recadrage centré sur le HAUT de l'image (le bas est rogné). */
+		flex: 1;
+		min-height: 0;
 		object-fit: cover;
-	}
-	.post-card__tag {
-		position: absolute;
-		top: 0.6rem;
-		left: 0.6rem;
+		object-position: top;
 	}
 
 	@media (prefers-reduced-motion: reduce) {

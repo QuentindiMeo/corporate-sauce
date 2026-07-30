@@ -65,6 +65,8 @@ const titreId = `modal-titre-${post.id}`;
 	.modal-post__visuel :global(img) {
 		width: 100%;
 		height: auto;
+		/* Même ratio que la vignette : 3/4, recadrage centré. */
+		aspect-ratio: 1080 / 1360;
 		border-radius: 8px;
 	}
 	.modal-post__titre {
