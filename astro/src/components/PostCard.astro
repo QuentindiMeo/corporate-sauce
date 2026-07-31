@@ -1,40 +1,48 @@
 ---
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
+import { isDarkMode } from '@domain/mode';
 import type { Post } from '@domain/post';
 import { styleFromMode } from '@/ui/theme/modes';
 
 interface Props {
 	post: Post;
 	/** `true` pour le 1er écran (désactive le lazy-load, améliore le LCP). */
-	prioritaire?: boolean;
+	priority?: boolean;
 }
 
-const { post, prioritaire = false } = Astro.props;
+const { post, priority = false } = Astro.props;
 
 // L'entité expose `image` en `PostImage` ; à l'exécution c'est l'`ImageMetadata`
 // d'Astro (voir infrastructure). On restaure le type pour le composant <Image>.
 const image = post.image as unknown as ImageMetadata;
 ---
 
-<article class="post-card" data-mode={post.mode} style={styleFromMode(post.mode)}>
+<article
+	class="post-card"
+	data-mode={post.mode}
+	data-dark={isDarkMode(post.mode) ? '' : undefined}
+	style={styleFromMode(post.mode)}
+>
 	<a
 		class="post-card__link"
-		href={post.lienLinkedIn}
+		href={post.linkedInUrl}
 		target="_blank"
 		rel="noopener noreferrer"
 		data-post-id={post.id}
-		aria-label={`Ouvrir le post « ${post.titre} » (rubrique ${post.rubrique})`}
+		aria-label={`Ouvrir le post « ${post.title} » (rubrique ${post.category})`}
 	>
-		<p class="post-card__titre"><span>{post.titre}</span></p>
-		<Image
-			class="post-card__image"
-			src={image}
-			alt={post.imageAlt}
-			widths={[360, 540, 720]}
-			sizes="(max-width: 640px) 80vw, 260px"
-			loading={prioritaire ? 'eager' : 'lazy'}
-		/>
+		<p class="post-card__title"><span>{post.title}</span></p>
+		<div class="post-card__media">
+			<Image
+				class="post-card__image"
+				src={image}
+				alt={post.imageAlt}
+				widths={[360, 540, 720]}
+				sizes="(max-width: 640px) 80vw, 260px"
+				loading={priority ? 'eager' : 'lazy'}
+			/>
+		</div>
 	</a>
 </article>
 
@@ -43,6 +51,9 @@ const image = post.image as unknown as ImageMetadata;
 		position: relative;
 		border-radius: 10px;
 		overflow: hidden;
+		/* Thème de couleur de la carte, dérivé du mode (attribut booléen data-dark) :
+		   aligne le color-scheme sur le fond du post (clair par défaut, dark si sombre/liant). */
+		color-scheme: light;
 		background: var(--bg);
 		/* Couleur du texte = --fg DU MODE (posé en inline par styleFromMode), pas
 		   celui du chrome : sans ça, un titre pouvait tomber à ~1:1 (ex. crème sur
@@ -53,6 +64,9 @@ const image = post.image as unknown as ImageMetadata;
 		transition:
 			transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1),
 			box-shadow 0.35s ease;
+	}
+	.post-card[data-dark] {
+		color-scheme: dark;
 	}
 	.post-card:hover,
 	.post-card:focus-within {
@@ -71,8 +85,8 @@ const image = post.image as unknown as ImageMetadata;
 	.post-card__link:focus {
 		text-decoration: revert;
 	}
-	.post-card__titre {
-		height: 20%;
+	.post-card__title {
+		height: 16%;
 		margin: 0;
 		padding: 0 0.75rem;
 		/* Centrage vertical + horizontal du titre dans la bande (1 ou 2 lignes). */
@@ -83,9 +97,10 @@ const image = post.image as unknown as ImageMetadata;
 		font-weight: 700;
 		font-size: 0.95rem;
 		line-height: 1.2;
+		text-wrap: balance;
 	}
 	/* Le clamp 2 lignes vit sur l'enfant, sans interférer avec le centrage. */
-	.post-card__titre span {
+	.post-card__title span {
 		text-align: center;
 		display: -webkit-box;
 		-webkit-line-clamp: 2;
@@ -93,13 +108,32 @@ const image = post.image as unknown as ImageMetadata;
 		-webkit-box-orient: vertical;
 		overflow: hidden;
 	}
-	.post-card__image {
-		display: block;
-		width: 100%;
-		/* Remplit tout l'espace sous le titre pour que le lien reste carré ;
-		   recadrage centré sur le HAUT de l'image (le bas est rogné). */
+	/* Le conteneur remplit exactement l'espace disponible sous le titre (le lien
+	   reste carré). Il porte le rognage. */
+	.post-card__media {
 		flex: 1;
 		min-height: 0;
+		overflow: hidden;
+		/* Grille 1×1 : permet de positionner l'image surdimensionnée et de laisser
+		   déborder ce qui dépasse (rogné par overflow). */
+		display: grid;
+	}
+	/*
+	 * LE TRICK : on garde le ratio imposé (aspect-ratio) SUR L'IMAGE tout en la
+	 * faisant COUVRIR le conteneur. Impossible sur un <img> dimensionné par flex
+	 * (une taille définie annule aspect-ratio). Ici l'image est en `auto` avec
+	 * `min-width/min-height: 100 %` : elle grandit jusqu'à couvrir les deux axes
+	 * du conteneur en conservant son ratio 1080/1360 ; le surplus déborde et est
+	 * rogné. `object-fit: cover` garantit des pixels non déformés.
+	 */
+	.post-card__image {
+		grid-area: 1 / 1;
+		place-self: start center; /* ancre en haut → on voit le haut de l'image */
+		width: auto;
+		height: auto;
+		min-width: 100%;
+		min-height: 100%;
+		aspect-ratio: 1080 / 1360;
 		object-fit: cover;
 		object-position: top;
 	}

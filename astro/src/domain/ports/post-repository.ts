@@ -5,6 +5,6 @@ import type { Post } from '../post';
  * (Content Collections Astro, JSON, API…). Le domaine ne connaît que ce contrat.
  */
 export interface PostRepository {
-	listerPosts(): Promise<Post[]>;
-	trouverParId(id: string): Promise<Post | null>;
+	listPosts(): Promise<Post[]>;
+	findById(id: string): Promise<Post | null>;
 }

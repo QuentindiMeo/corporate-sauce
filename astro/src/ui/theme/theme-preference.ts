@@ -5,25 +5,25 @@
  */
 export type Theme = 'light' | 'dark';
 
-export const CLE_STOCKAGE_THEME = 'qdm-theme';
+export const THEME_STORAGE_KEY = 'qdm-theme';
 
-function estTheme(valeur: string | null): valeur is Theme {
-	return valeur === 'light' || valeur === 'dark';
+function isTheme(value: string | null): value is Theme {
+	return value === 'light' || value === 'dark';
 }
 
 /**
  * Thème initial : le choix stocké s'il est valide, sinon la préférence système.
- * @param stocke  valeur lue dans `localStorage` (ou `null`)
- * @param systemeSombre  résultat de `matchMedia('(prefers-color-scheme: dark)')`
+ * @param stored  valeur lue dans `localStorage` (ou `null`)
+ * @param systemPrefersDark  résultat de `matchMedia('(prefers-color-scheme: dark)')`
  */
-export function resoudreThemeInitial(stocke: string | null, systemeSombre: boolean): Theme {
-	if (estTheme(stocke)) {
-		return stocke;
+export function resolveInitialTheme(stored: string | null, systemPrefersDark: boolean): Theme {
+	if (isTheme(stored)) {
+		return stored;
 	}
-	return systemeSombre ? 'dark' : 'light';
+	return systemPrefersDark ? 'dark' : 'light';
 }
 
 /** Renvoie le thème opposé (pour la bascule). */
-export function autreTheme(theme: Theme): Theme {
+export function toggleTheme(theme: Theme): Theme {
 	return theme === 'dark' ? 'light' : 'dark';
 }

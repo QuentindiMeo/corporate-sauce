@@ -3,8 +3,8 @@ import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 import type { Post } from '@domain/post';
 import { styleFromMode } from '@/ui/theme/modes';
-import PastilleQDM from './PastilleQDM.astro';
-import TagRubrique from './TagRubrique.astro';
+import QdmBadge from './QdmBadge.astro';
+import TagCategory from './TagCategory.astro';
 
 interface Props {
 	post: Post;
@@ -12,35 +12,40 @@ interface Props {
 
 const { post } = Astro.props;
 const image = post.image as unknown as ImageMetadata;
-const titreId = `modal-titre-${post.id}`;
+const titleId = `modal-title-${post.id}`;
 ---
 
 <article
 	class="modal-post"
 	data-mode={post.mode}
 	style={styleFromMode(post.mode)}
-	aria-labelledby={titreId}
+	aria-labelledby={titleId}
 >
-	<div class="modal-post__visuel">
-		<Image src={image} alt={post.imageAlt} widths={[540, 720, 1080]} sizes="(max-width: 900px) 90vw, 480px" />
+	<div class="modal-post__visual">
+		<Image
+			src={image}
+			alt={post.imageAlt}
+			widths={[540, 720, 1080]}
+			sizes="(max-width: 900px) 90vw, 480px"
+		/>
 	</div>
 
-	<div class="modal-post__texte">
+	<div class="modal-post__text">
 		<div class="modal-post__meta">
-			<TagRubrique rubrique={post.rubrique} />
+			<TagCategory category={post.category} />
 		</div>
-		<h2 id={titreId} class="modal-post__titre">{post.titre}</h2>
-		<p class="modal-post__accroche">{post.accroche}</p>
-		<p class="modal-post__corps">{post.corps}</p>
+		<h2 id={titleId} class="modal-post__title">{post.title}</h2>
+		<p class="modal-post__subtitle">{post.subtitle}</p>
+		<p class="modal-post__body">{post.body}</p>
 
 		{post.takeaway && <p class="modal-post__takeaway">{post.takeaway}</p>}
 		{post.cta && <p class="modal-post__cta">→ {post.cta}</p>}
 
-		<div class="modal-post__pied">
-			<PastilleQDM />
+		<div class="modal-post__footer">
+			<QdmBadge />
 			<a
-				class="modal-post__lien"
-				href={post.lienLinkedIn}
+				class="modal-post__link"
+				href={post.linkedInUrl}
 				target="_blank"
 				rel="noopener noreferrer"
 			>
@@ -62,22 +67,22 @@ const titreId = `modal-titre-${post.id}`;
 			grid-template-columns: minmax(0, 480px) 1fr;
 		}
 	}
-	.modal-post__visuel :global(img) {
+	.modal-post__visual :global(img) {
 		width: 100%;
 		height: auto;
 		/* Même ratio que la vignette : 3/4, recadrage centré. */
 		aspect-ratio: 1080 / 1360;
 		border-radius: 8px;
 	}
-	.modal-post__titre {
+	.modal-post__title {
 		font-size: clamp(1.5rem, 3vw, 2.25rem);
 		margin: 0.75rem 0;
 	}
-	.modal-post__accroche {
+	.modal-post__subtitle {
 		color: var(--muted);
 		font-size: 1.1rem;
 	}
-	.modal-post__corps {
+	.modal-post__body {
 		margin-top: 1rem;
 	}
 	.modal-post__takeaway {
@@ -93,7 +98,7 @@ const titreId = `modal-titre-${post.id}`;
 		font-family: var(--font-mono, monospace);
 		color: var(--acc-text, var(--warm-text, inherit));
 	}
-	.modal-post__pied {
+	.modal-post__footer {
 		display: flex;
 		align-items: center;
 		gap: 1rem;
@@ -101,7 +106,7 @@ const titreId = `modal-titre-${post.id}`;
 		padding-top: 1rem;
 		border-top: 1px solid var(--border);
 	}
-	.modal-post__lien {
+	.modal-post__link {
 		font-family: var(--font-mono, monospace);
 		font-weight: 700;
 		color: var(--acc-text, var(--cool-text, inherit));

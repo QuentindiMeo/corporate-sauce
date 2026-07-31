@@ -1,22 +1,22 @@
 ---
-import { listerPostsParTheme } from '@application/lister-posts-par-theme';
+import { listPostsByTheme } from '@application/list-posts-by-theme';
 import { astroPostRepository } from '@infrastructure/content/astro-post-repository';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import PostGrid from '../components/PostGrid.astro';
 import PostModal from '../components/PostModal.astro';
-import { galerieJsonLd } from '@/ui/seo/structured-data';
+import { galleryJsonLd } from '@/ui/seo/structured-data';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 
 // Hexagone : adaptateur infra → cas d'usage → domaine → grille.
-const lignes = await listerPostsParTheme(astroPostRepository);
-const posts = lignes.flatMap((ligne) => ligne.posts);
+const rows = await listPostsByTheme(astroPostRepository);
+const posts = rows.flatMap((row) => row.posts);
 const total = posts.length;
 
-const jsonLd = galerieJsonLd({
+const jsonLd = galleryJsonLd({
 	siteUrl: Astro.site?.href ?? Astro.url.origin,
-	nom: SITE_TITLE,
+	name: SITE_TITLE,
 	description: SITE_DESCRIPTION,
 	posts,
 });
@@ -34,12 +34,12 @@ const jsonLd = galerieJsonLd({
 		<main id="contenu">
 			<header class="intro">
 				<h1>{SITE_TITLE}</h1>
-				<p class="intro__sous-titre">
-					Une pratique du logiciel, un visuel à la fois. {total} posts, {lignes.length} rubriques.
+				<p class="intro__subtitle">
+					Une pratique du logiciel, un visuel à la fois. {total} posts, {rows.length} rubriques.
 				</p>
 			</header>
 
-			<PostGrid lignes={lignes} />
+			<PostGrid rows={rows} />
 		</main>
 		<PostModal posts={posts} />
 		<Footer />
@@ -58,7 +58,7 @@ const jsonLd = galerieJsonLd({
 	h1 {
 		font-size: clamp(2rem, 5vw, 3.25rem);
 	}
-	.intro__sous-titre {
+	.intro__subtitle {
 		margin-top: 0.75rem;
 		max-width: 44ch;
 		color: var(--muted);

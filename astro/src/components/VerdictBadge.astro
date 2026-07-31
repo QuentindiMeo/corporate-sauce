@@ -4,17 +4,18 @@ interface Props {
 }
 
 const { type } = Astro.props;
-const glyphe = type === 'ok' ? '✓' : '✕';
-const libelle = type === 'ok' ? 'Bonne pratique' : 'À éviter';
+const glyph = type === 'ok' ? '✓' : '✕';
+// Libellé accessible destiné à l'utilisateur → français.
+const label = type === 'ok' ? 'Bonne pratique' : 'À éviter';
 ---
 
-<span class={`badge-verdict badge-verdict--${type}`} role="img" aria-label={libelle}>
-	<span aria-hidden="true">{glyphe}</span>
+<span class={`verdict-badge verdict-badge--${type}`} role="img" aria-label={label}>
+	<span aria-hidden="true">{glyph}</span>
 </span>
 
 <style>
 	/* Charte §5 : cercle 44×44 px, glyphe 22 px blanc. Toujours ces dimensions. */
-	.badge-verdict {
+	.verdict-badge {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
@@ -25,10 +26,10 @@ const libelle = type === 'ok' ? 'Bonne pratique' : 'À éviter';
 		line-height: 1;
 		color: #fff;
 	}
-	.badge-verdict--ok {
+	.verdict-badge--ok {
 		background: var(--ok, #2e6a46);
 	}
-	.badge-verdict--bad {
+	.verdict-badge--bad {
 		background: var(--bad, #b23415);
 	}
 </style>

@@ -10,7 +10,7 @@ test.describe('Modale de post', () => {
 		await page.locator('[data-post-id]').first().click();
 
 		await expect(dialog).toBeVisible();
-		await expect(dialog.locator('.modal-post__titre')).toBeVisible();
+		await expect(dialog.locator('.modal-post__title')).toBeVisible();
 		await expect(dialog.getByRole('link', { name: /LinkedIn/ })).toBeVisible();
 	});
 

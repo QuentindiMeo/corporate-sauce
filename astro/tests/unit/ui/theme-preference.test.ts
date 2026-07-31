@@ -1,37 +1,37 @@
 import { describe, expect, it } from 'vitest';
 import {
-	CLE_STOCKAGE_THEME,
-	autreTheme,
-	resoudreThemeInitial,
+	THEME_STORAGE_KEY,
+	toggleTheme,
+	resolveInitialTheme,
 	type Theme,
 } from '@/ui/theme/theme-preference';
 
-describe('resoudreThemeInitial', () => {
+describe('resolveInitialTheme', () => {
 	it('privilégie le thème stocké quand il est valide', () => {
-		expect(resoudreThemeInitial('light', true)).toBe('light');
-		expect(resoudreThemeInitial('dark', false)).toBe('dark');
+		expect(resolveInitialTheme('light', true)).toBe('light');
+		expect(resolveInitialTheme('dark', false)).toBe('dark');
 	});
 
 	it('suit la préférence système en l’absence de choix stocké', () => {
-		expect(resoudreThemeInitial(null, true)).toBe('dark');
-		expect(resoudreThemeInitial(null, false)).toBe('light');
+		expect(resolveInitialTheme(null, true)).toBe('dark');
+		expect(resolveInitialTheme(null, false)).toBe('light');
 	});
 
 	it('ignore une valeur stockée invalide et retombe sur le système', () => {
-		expect(resoudreThemeInitial('bleu', true)).toBe('dark');
-		expect(resoudreThemeInitial('', false)).toBe('light');
+		expect(resolveInitialTheme('bleu', true)).toBe('dark');
+		expect(resolveInitialTheme('', false)).toBe('light');
 	});
 });
 
-describe('autreTheme', () => {
+describe('toggleTheme', () => {
 	it('bascule entre clair et sombre', () => {
-		expect(autreTheme('dark')).toBe<Theme>('light');
-		expect(autreTheme('light')).toBe<Theme>('dark');
+		expect(toggleTheme('dark')).toBe<Theme>('light');
+		expect(toggleTheme('light')).toBe<Theme>('dark');
 	});
 });
 
-describe('CLE_STOCKAGE_THEME', () => {
+describe('THEME_STORAGE_KEY', () => {
 	it('est une clé stable', () => {
-		expect(CLE_STOCKAGE_THEME).toBe('qdm-theme');
+		expect(THEME_STORAGE_KEY).toBe('qdm-theme');
 	});
 });

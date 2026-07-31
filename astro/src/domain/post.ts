@@ -1,6 +1,6 @@
-import type { LienLinkedIn } from './lien-linkedin';
+import type { Category } from './category';
+import type { LinkedInUrl } from './linkedin-url';
 import type { Mode } from './mode';
-import type { Rubrique } from './rubrique';
 
 /**
  * Référence structurelle à un visuel optimisé.
@@ -20,14 +20,14 @@ export interface PostImage {
  */
 export interface Post {
 	readonly id: string;
-	readonly rubrique: Rubrique;
+	readonly category: Category;
 	readonly mode: Mode;
 	/** Punchline / hook. */
-	readonly titre: string;
+	readonly title: string;
 	/** Sous-titre. */
-	readonly accroche: string;
+	readonly subtitle: string;
 	/** Texte complet du post. */
-	readonly corps: string;
+	readonly body: string;
 	/** Phrase-clé encadrée (optionnelle). */
 	readonly takeaway?: string;
 	/** Micro-CTA d'engagement (optionnel). */
@@ -35,8 +35,8 @@ export interface Post {
 	readonly image: PostImage;
 	/** Texte alternatif descriptif (obligatoire, a11y). */
 	readonly imageAlt: string;
-	readonly lienLinkedIn: LienLinkedIn;
-	readonly datePublication: Date;
+	readonly linkedInUrl: LinkedInUrl;
+	readonly publishedAt: Date;
 	/** Position au sein de sa ligne thématique. */
-	readonly ordre: number;
+	readonly order: number;
 }

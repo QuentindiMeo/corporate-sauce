@@ -55,8 +55,8 @@ describe('styleFromMode', () => {
 
 	it('inclut toutes les variables du mode', () => {
 		const style = styleFromMode('liant');
-		for (const [nom, valeur] of Object.entries(MODE_TOKENS.liant)) {
-			expect(style).toContain(`${nom}:${valeur}`);
+		for (const [name, value] of Object.entries(MODE_TOKENS.liant)) {
+			expect(style).toContain(`${name}:${value}`);
 		}
 	});
 });

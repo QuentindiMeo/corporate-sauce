@@ -5,8 +5,8 @@ import ThemeToggle from './ThemeToggle.astro';
 
 <header>
 	<nav>
-		<a class="marque" href="/">
-			<span class="chevron">›</span>{SITE_TITLE}<span class="curseur" aria-hidden="true"></span>
+		<a class="brand" href="/">
+			<span class="chevron">›</span>{SITE_TITLE}<span class="cursor" aria-hidden="true"></span>
 		</a>
 		<ThemeToggle />
 	</nav>
@@ -22,7 +22,7 @@ import ThemeToggle from './ThemeToggle.astro';
 		align-items: center;
 		justify-content: space-between;
 	}
-	.marque {
+	.brand {
 		font-family: var(--font-mono, monospace);
 		font-weight: 800;
 		text-decoration: none;
@@ -32,17 +32,18 @@ import ThemeToggle from './ThemeToggle.astro';
 		opacity: 0.6;
 		margin-right: 0.25em;
 	}
-	.curseur {
+	.cursor {
 		display: inline-block;
 		width: 0.5em;
 		height: 1.5em;
 		margin-left: 0.15em;
 		background: currentColor;
 		vertical-align: text-bottom;
-		animation: clignotement-curseur 1s step-end infinite;
+		/* Clignotement type terminal : 1 s, net (pas de fondu). */
+		animation: cursor-blink 1s step-end infinite;
 	}
 
-	@keyframes clignotement-curseur {
+	@keyframes cursor-blink {
 		0% {
 			opacity: 1;
 		}

@@ -1,18 +1,18 @@
 ---
-import type { Rubrique } from '@domain/rubrique';
+import type { Category } from '@domain/category';
 
 interface Props {
-	rubrique: Rubrique;
+	category: Category;
 }
 
-const { rubrique } = Astro.props;
+const { category } = Astro.props;
 ---
 
-<span class="tag-rubrique">{rubrique}</span>
+<span class="tag-category">{category}</span>
 
 <style>
 	/* Charte §5 : border 2px, mono 800, 20px, MAJUSCULES, radius 7px. */
-	.tag-rubrique {
+	.tag-category {
 		display: inline-block;
 		font-family: var(--font-mono, monospace);
 		font-weight: 800;

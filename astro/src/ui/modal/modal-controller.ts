@@ -12,64 +12,64 @@ export function initModal(root: ParentNode = document): () => void {
 		return () => {};
 	}
 
-	const boutonFermer = dialog.querySelector<HTMLElement>('[data-modal-close]');
-	const declencheurs = Array.from(root.querySelectorAll<HTMLElement>('[data-post-id]'));
-	let dernierDeclencheur: HTMLElement | null = null;
+	const closeButton = dialog.querySelector<HTMLElement>('[data-modal-close]');
+	const triggers = Array.from(root.querySelectorAll<HTMLElement>('[data-post-id]'));
+	let lastTrigger: HTMLElement | null = null;
 
-	function ouvrir(evenement: Event): void {
-		const cible = evenement.currentTarget as HTMLElement;
-		const id = cible.dataset.postId;
+	function open(event: Event): void {
+		const target = event.currentTarget as HTMLElement;
+		const id = target.dataset.postId;
 		if (!id) return;
 		const template = root.querySelector<HTMLTemplateElement>(
 			`template[data-post-template="${id}"]`,
 		);
 		if (!template) return;
 
-		evenement.preventDefault();
+		event.preventDefault();
 		body!.replaceChildren(template.content.cloneNode(true));
-		dernierDeclencheur = cible;
+		lastTrigger = target;
 		dialog!.showModal();
 	}
 
-	function fermer(): void {
+	function close(): void {
 		dialog!.close();
 	}
 
 	// Clic sur l'arrière-plan (::backdrop, hors de la boîte du dialog) → fermeture.
 	// On teste la position vs le rectangle du dialog (robuste tous navigateurs) ;
 	// `target === dialog` couvre le cas des environnements sans layout (tests).
-	function auClicDialog(evenement: MouseEvent): void {
+	function onDialogClick(event: MouseEvent): void {
 		const rect = dialog!.getBoundingClientRect();
-		const horsBoite =
+		const outsideBox =
 			rect.width > 0 &&
-			(evenement.clientX < rect.left ||
-				evenement.clientX > rect.right ||
-				evenement.clientY < rect.top ||
-				evenement.clientY > rect.bottom);
-		if (horsBoite || evenement.target === dialog) {
-			fermer();
+			(event.clientX < rect.left ||
+				event.clientX > rect.right ||
+				event.clientY < rect.top ||
+				event.clientY > rect.bottom);
+		if (outsideBox || event.target === dialog) {
+			close();
 		}
 	}
 
-	function auClose(): void {
+	function onClose(): void {
 		body!.replaceChildren();
-		dernierDeclencheur?.focus();
-		dernierDeclencheur = null;
+		lastTrigger?.focus();
+		lastTrigger = null;
 	}
 
-	for (const declencheur of declencheurs) {
-		declencheur.addEventListener('click', ouvrir);
+	for (const trigger of triggers) {
+		trigger.addEventListener('click', open);
 	}
-	boutonFermer?.addEventListener('click', fermer);
-	dialog.addEventListener('click', auClicDialog);
-	dialog.addEventListener('close', auClose);
+	closeButton?.addEventListener('click', close);
+	dialog.addEventListener('click', onDialogClick);
+	dialog.addEventListener('close', onClose);
 
 	return () => {
-		for (const declencheur of declencheurs) {
-			declencheur.removeEventListener('click', ouvrir);
+		for (const trigger of triggers) {
+			trigger.removeEventListener('click', open);
 		}
-		boutonFermer?.removeEventListener('click', fermer);
-		dialog.removeEventListener('click', auClicDialog);
-		dialog.removeEventListener('close', auClose);
+		closeButton?.removeEventListener('click', close);
+		dialog.removeEventListener('click', onDialogClick);
+		dialog.removeEventListener('close', onClose);
 	};
 }

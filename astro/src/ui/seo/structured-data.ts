@@ -1,18 +1,18 @@
 import type { Post } from '@domain/post';
 
-interface GalerieInput {
+interface GalleryInput {
 	siteUrl: string;
-	nom: string;
+	name: string;
 	description: string;
 	posts: readonly Post[];
 }
 
 /** Rend une URL absolue à partir du site (laisse intactes les URLs déjà absolues). */
-function urlAbsolue(siteUrl: string, chemin: string): string {
-	if (/^https?:\/\//.test(chemin)) {
-		return chemin;
+function absoluteUrl(siteUrl: string, path: string): string {
+	if (/^https?:\/\//.test(path)) {
+		return path;
 	}
-	return new URL(chemin, siteUrl).href;
+	return new URL(path, siteUrl).href;
 }
 
 /**
@@ -20,11 +20,11 @@ function urlAbsolue(siteUrl: string, chemin: string): string {
  * est un `CreativeWork` (un post). Injecté en `<script type="application/ld+json">`
  * dans la page d'accueil (SEO, action.md §7).
  */
-export function galerieJsonLd({ siteUrl, nom, description, posts }: GalerieInput): object {
+export function galleryJsonLd({ siteUrl, name, description, posts }: GalleryInput): object {
 	return {
 		'@context': 'https://schema.org',
 		'@type': 'ItemList',
-		name: nom,
+		name,
 		description,
 		numberOfItems: posts.length,
 		itemListElement: posts.map((post, index) => ({
@@ -32,10 +32,10 @@ export function galerieJsonLd({ siteUrl, nom, description, posts }: GalerieInput
 			position: index + 1,
 			item: {
 				'@type': 'CreativeWork',
-				name: post.titre,
-				abstract: post.accroche,
-				url: post.lienLinkedIn,
-				image: urlAbsolue(siteUrl, post.image.src),
+				name: post.title,
+				abstract: post.subtitle,
+				url: post.linkedInUrl,
+				image: absoluteUrl(siteUrl, post.image.src),
 				inLanguage: 'fr',
 			},
 		})),

@@ -2,9 +2,9 @@ import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { beforeAll, describe, expect, it } from 'vitest';
 import PostGrid from '@/components/PostGrid.astro';
 import PostRow from '@/components/PostRow.astro';
-import type { LigneThematique } from '@domain/post-collection';
-import visuel from '@/assets/posts/01-perf-virtualisation.png';
-import { unPost } from '../helpers/post-factory';
+import type { ThemeRow } from '@domain/post-collection';
+import visual from '@/assets/posts/01-perf-virtualisation.png';
+import { aPost } from '../helpers/post-factory';
 
 let container: AstroContainer;
 
@@ -12,11 +12,11 @@ beforeAll(async () => {
 	container = await AstroContainer.create();
 });
 
-function ligne(rubrique: LigneThematique['rubrique'], n: number): LigneThematique {
+function row(category: ThemeRow['category'], n: number): ThemeRow {
 	return {
-		rubrique,
+		category,
 		posts: Array.from({ length: n }, (_, i) =>
-			unPost({ id: `${rubrique}-${i}`, rubrique, image: visuel }),
+			aPost({ id: `${category}-${i}`, category, image: visual }),
 		),
 	};
 }
@@ -24,7 +24,7 @@ function ligne(rubrique: LigneThematique['rubrique'], n: number): LigneThematiqu
 describe('PostRow', () => {
 	it('affiche le tag rubrique et une carte par post', async () => {
 		const html = await container.renderToString(PostRow, {
-			props: { ligne: ligne('PERF', 3) },
+			props: { row: row('PERF', 3) },
 		});
 		expect(html).toContain('PERF');
 		expect((html.match(/data-post-id=/g) ?? []).length).toBe(3);
@@ -32,7 +32,7 @@ describe('PostRow', () => {
 
 	it('est un repère de région étiqueté par sa rubrique (a11y)', async () => {
 		const html = await container.renderToString(PostRow, {
-			props: { ligne: ligne('A11Y', 1) },
+			props: { row: row('A11Y', 1) },
 		});
 		expect(html).toMatch(/<section[^>]+aria-labelledby/);
 	});
@@ -40,8 +40,8 @@ describe('PostRow', () => {
 
 describe('PostGrid', () => {
 	it('rend chaque ligne dans l’ordre fourni', async () => {
-		const lignes = [ligne('PERF', 2), ligne('A11Y', 1), ligne('UI', 4)];
-		const html = await container.renderToString(PostGrid, { props: { lignes } });
+		const rows = [row('PERF', 2), row('A11Y', 1), row('UI', 4)];
+		const html = await container.renderToString(PostGrid, { props: { rows } });
 
 		const positions = ['PERF', 'A11Y', 'UI'].map((r) => html.indexOf(r));
 		expect(positions).toEqual([...positions].sort((a, b) => a - b));
@@ -49,8 +49,8 @@ describe('PostGrid', () => {
 	});
 
 	it('rend le nombre total de cartes attendu', async () => {
-		const lignes = [ligne('PERF', 2), ligne('UI', 4)];
-		const html = await container.renderToString(PostGrid, { props: { lignes } });
+		const rows = [row('PERF', 2), row('UI', 4)];
+		const html = await container.renderToString(PostGrid, { props: { rows } });
 		expect((html.match(/data-post-id=/g) ?? []).length).toBe(6);
 	});
 });

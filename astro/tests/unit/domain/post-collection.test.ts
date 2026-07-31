@@ -1,42 +1,42 @@
 import { describe, expect, it } from 'vitest';
-import { grouperParTheme } from '@domain/post-collection';
-import { unPost } from '../../helpers/post-factory';
+import { groupByTheme } from '@domain/post-collection';
+import { aPost } from '../../helpers/post-factory';
 
-describe('grouperParTheme', () => {
+describe('groupByTheme', () => {
 	it('regroupe les posts par rubrique dans l’ordre canonique', () => {
-		const lignes = grouperParTheme([
-			unPost({ id: 'a', rubrique: 'UI' }),
-			unPost({ id: 'b', rubrique: 'PERF' }),
-			unPost({ id: 'c', rubrique: 'A11Y' }),
+		const rows = groupByTheme([
+			aPost({ id: 'a', category: 'UI' }),
+			aPost({ id: 'b', category: 'PERF' }),
+			aPost({ id: 'c', category: 'A11Y' }),
 		]);
 
-		expect(lignes.map((l) => l.rubrique)).toEqual(['PERF', 'A11Y', 'UI']);
+		expect(rows.map((r) => r.category)).toEqual(['PERF', 'A11Y', 'UI']);
 	});
 
 	it('omet les rubriques sans post', () => {
-		const lignes = grouperParTheme([unPost({ rubrique: 'DX' })]);
-		expect(lignes).toHaveLength(1);
-		expect(lignes[0].rubrique).toBe('DX');
+		const rows = groupByTheme([aPost({ category: 'DX' })]);
+		expect(rows).toHaveLength(1);
+		expect(rows[0].category).toBe('DX');
 	});
 
 	it('trie les posts d’une ligne par ordre puis id', () => {
-		const lignes = grouperParTheme([
-			unPost({ id: 'z', rubrique: 'PERF', ordre: 2 }),
-			unPost({ id: 'y', rubrique: 'PERF', ordre: 1 }),
-			unPost({ id: 'x', rubrique: 'PERF', ordre: 1 }),
+		const rows = groupByTheme([
+			aPost({ id: 'z', category: 'PERF', order: 2 }),
+			aPost({ id: 'y', category: 'PERF', order: 1 }),
+			aPost({ id: 'x', category: 'PERF', order: 1 }),
 		]);
 
-		expect(lignes[0].posts.map((p) => p.id)).toEqual(['x', 'y', 'z']);
+		expect(rows[0].posts.map((p) => p.id)).toEqual(['x', 'y', 'z']);
 	});
 
 	it('retourne une liste vide sans posts', () => {
-		expect(grouperParTheme([])).toEqual([]);
+		expect(groupByTheme([])).toEqual([]);
 	});
 
 	it('ne modifie pas le tableau source', () => {
-		const source = [unPost({ rubrique: 'UI' }), unPost({ rubrique: 'PERF' })];
-		const copie = [...source];
-		grouperParTheme(source);
-		expect(source).toEqual(copie);
+		const source = [aPost({ category: 'UI' }), aPost({ category: 'PERF' })];
+		const copy = [...source];
+		groupByTheme(source);
+		expect(source).toEqual(copy);
 	});
 });

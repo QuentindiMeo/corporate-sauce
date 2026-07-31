@@ -15,29 +15,29 @@
 </button>
 
 <script>
-	import { autreTheme, CLE_STOCKAGE_THEME, type Theme } from '@/ui/theme/theme-preference';
+	import { toggleTheme, THEME_STORAGE_KEY, type Theme } from '@/ui/theme/theme-preference';
 
 	// NB : `document.currentScript` est null dans un script de type module (Astro
 	// bundle et hisse ce <script>) — on cible donc le bouton par son attribut.
-	const bouton = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
-	const racine = document.documentElement;
+	const button = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
+	const root = document.documentElement;
 
-	function themeCourant(): Theme {
-		return racine.dataset.theme === 'light' ? 'light' : 'dark';
+	function currentTheme(): Theme {
+		return root.dataset.theme === 'light' ? 'light' : 'dark';
 	}
 
-	function synchroniser(theme: Theme): void {
-		racine.dataset.theme = theme;
-		bouton?.setAttribute('aria-pressed', String(theme === 'light'));
+	function sync(theme: Theme): void {
+		root.dataset.theme = theme;
+		button?.setAttribute('aria-pressed', String(theme === 'light'));
 	}
 
-	synchroniser(themeCourant());
+	sync(currentTheme());
 
-	bouton?.addEventListener('click', () => {
-		const suivant = autreTheme(themeCourant());
-		synchroniser(suivant);
+	button?.addEventListener('click', () => {
+		const next = toggleTheme(currentTheme());
+		sync(next);
 		try {
-			localStorage.setItem(CLE_STOCKAGE_THEME, suivant);
+			localStorage.setItem(THEME_STORAGE_KEY, next);
 		} catch {
 			/* stockage indisponible : la bascule reste effective pour la session */
 		}

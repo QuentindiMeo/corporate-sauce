@@ -1,16 +1,16 @@
 ---
-import type { LigneThematique } from '@domain/post-collection';
+import type { ThemeRow } from '@domain/post-collection';
 import PostRow from './PostRow.astro';
 
 interface Props {
-	lignes: LigneThematique[];
+	rows: ThemeRow[];
 }
 
-const { lignes } = Astro.props;
+const { rows } = Astro.props;
 ---
 
 <div class="post-grid">
-	{lignes.map((ligne, i) => <PostRow ligne={ligne} prioritaire={i === 0} />)}
+	{rows.map((row, i) => <PostRow row={row} priority={i === 0} />)}
 </div>
 
 <style>
