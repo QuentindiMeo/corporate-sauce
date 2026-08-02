@@ -12,6 +12,7 @@ interface Props {
 }
 
 const { post, priority = false } = Astro.props;
+const headerMode = post.mode === 'clair' ? 'sombre' : 'clair';
 
 // L'entité expose `image` en `PostImage` ; à l'exécution c'est l'`ImageMetadata`
 // d'Astro (voir infrastructure). On restaure le type pour le composant <Image>.
@@ -22,7 +23,7 @@ const image = post.image as unknown as ImageMetadata;
 	class="post-card"
 	data-mode={post.mode}
 	data-dark={isDarkMode(post.mode) ? '' : undefined}
-	style={styleFromMode(post.mode)}
+	style={styleFromMode(headerMode)}
 >
 	<a
 		class="post-card__link"
