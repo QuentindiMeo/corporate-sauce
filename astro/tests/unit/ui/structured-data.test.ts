@@ -9,14 +9,14 @@ const base = {
 };
 
 describe('galleryJsonLd', () => {
-	it('produit un ItemList schema.org', () => {
+	it('produces a schema.org ItemList', () => {
 		const data = galleryJsonLd({ ...base, posts: [aPost()] }) as Record<string, unknown>;
 		expect(data['@context']).toBe('https://schema.org');
 		expect(data['@type']).toBe('ItemList');
 		expect(data.name).toBe('Galerie QDM');
 	});
 
-	it('liste un CreativeWork par post, position croissante', () => {
+	it('lists one CreativeWork per post, with increasing position', () => {
 		const posts = [aPost({ id: 'a', title: 'Titre A' }), aPost({ id: 'b', title: 'Titre B' })];
 		const data = galleryJsonLd({ ...base, posts }) as {
 			itemListElement: Array<{ position: number; item: Record<string, unknown> }>;
@@ -28,7 +28,7 @@ describe('galleryJsonLd', () => {
 		expect(data.itemListElement[0].item.name).toBe('Titre A');
 	});
 
-	it('reprend le lien LinkedIn comme URL de l’item', () => {
+	it('uses the LinkedIn URL as the item URL', () => {
 		const post = aPost();
 		const data = galleryJsonLd({ ...base, posts: [post] }) as {
 			itemListElement: Array<{ item: { url: string } }>;
@@ -36,7 +36,7 @@ describe('galleryJsonLd', () => {
 		expect(data.itemListElement[0].item.url).toBe(post.linkedInUrl);
 	});
 
-	it('rend l’URL de l’image absolue à partir du site', () => {
+	it('makes the image URL absolute from the site', () => {
 		const post = aPost({ image: { src: '/_astro/x.webp', width: 1, height: 1, format: 'webp' } });
 		const data = galleryJsonLd({ ...base, posts: [post] }) as {
 			itemListElement: Array<{ item: { image: string } }>;
@@ -44,7 +44,7 @@ describe('galleryJsonLd', () => {
 		expect(data.itemListElement[0].item.image).toBe('https://qdm.example/_astro/x.webp');
 	});
 
-	it('conserve une URL d’image déjà absolue', () => {
+	it('keeps an already-absolute image URL', () => {
 		const post = aPost({
 			image: { src: 'https://cdn.example/x.webp', width: 1, height: 1, format: 'webp' },
 		});

@@ -1,8 +1,8 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
-test.describe('Accessibilité — accueil', () => {
-	test('aucune violation axe critique/sérieuse', async ({ page }) => {
+test.describe('Accessibility — home', () => {
+	test('no critical/serious axe violation', async ({ page }) => {
 		await page.goto('/');
 		const resultats = await new AxeBuilder({ page })
 			.withTags(['wcag2a', 'wcag2aa'])
@@ -13,13 +13,13 @@ test.describe('Accessibilité — accueil', () => {
 		expect(graves).toEqual([]);
 	});
 
-	test('la page est en français et n’a qu’un seul h1', async ({ page }) => {
+	test('the page is in French and has a single h1', async ({ page }) => {
 		await page.goto('/');
 		await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
 		await expect(page.locator('h1')).toHaveCount(1);
 	});
 
-	test('le lien d’évitement est le premier élément focusable', async ({ page }) => {
+	test('the skip link is the first focusable element', async ({ page }) => {
 		await page.goto('/');
 		await page.keyboard.press('Tab');
 		const focus = page.locator(':focus');
@@ -27,7 +27,7 @@ test.describe('Accessibilité — accueil', () => {
 		await expect(focus).toHaveAttribute('href', '#contenu');
 	});
 
-	test('les cartes sont atteignables et déclenchables au clavier', async ({ page }) => {
+	test('cards are reachable and activatable via keyboard', async ({ page }) => {
 		await page.goto('/');
 		const premiereCarte = page.locator('[data-post-id]').first();
 		await premiereCarte.focus();
@@ -38,8 +38,8 @@ test.describe('Accessibilité — accueil', () => {
 	});
 });
 
-test.describe('SEO — accueil', () => {
-	test('injecte un JSON-LD ItemList valide', async ({ page }) => {
+test.describe('SEO — home', () => {
+	test('injects a valid ItemList JSON-LD', async ({ page }) => {
 		await page.goto('/');
 		const contenu = await page.locator('script[type="application/ld+json"]').textContent();
 		const data = JSON.parse(contenu ?? '{}');

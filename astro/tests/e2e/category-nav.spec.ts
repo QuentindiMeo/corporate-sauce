@@ -1,9 +1,9 @@
 import { expect, test } from '@playwright/test';
 
-test.describe('Navbar des rubriques (scrollspy)', () => {
+test.describe('Category navbar (scrollspy)', () => {
 	test.use({ viewport: { width: 1440, height: 900 } });
 
-	test('au chargement en haut de page, la première rubrique est active', async ({ page }) => {
+	test('on load at the top of the page, the first category is active', async ({ page }) => {
 		await page.goto('/');
 
 		const links = page.locator('[data-nav-category]');
@@ -11,7 +11,7 @@ test.describe('Navbar des rubriques (scrollspy)', () => {
 		await expect(links.nth(1)).toHaveAttribute('aria-current', 'false');
 	});
 
-	test('l’ancre mène à la section correspondante', async ({ page }) => {
+	test('the anchor leads to the matching section', async ({ page }) => {
 		await page.goto('/');
 		const secondLink = page.locator('[data-nav-category]').nth(1);
 		const slug = await secondLink.getAttribute('data-nav-category');

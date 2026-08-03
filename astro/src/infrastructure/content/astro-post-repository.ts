@@ -1,9 +1,10 @@
 import { getCollection, getEntry, type CollectionEntry } from 'astro:content';
-import { createLinkedInUrl } from '@domain/linkedin-url';
-import type { Post } from '@domain/post';
-import type { PostRepository } from '@domain/ports/post-repository';
 
-/** Mappe une entrée de la collection Astro vers l'entité de domaine `Post`. */
+import { createLinkedInUrl } from '@domain/linkedin-url';
+import type { PostRepository } from '@domain/ports/post-repository';
+import type { Post } from '@domain/post';
+
+// ? Mappe une entrée de la collection Astro vers l'entité de domaine `Post`.
 function toPost(entry: CollectionEntry<'posts'>): Post {
 	const data = entry.data;
 	return {
@@ -15,16 +16,15 @@ function toPost(entry: CollectionEntry<'posts'>): Post {
 		body: data.body,
 		takeaway: data.takeaway,
 		cta: data.cta,
-		// `ImageMetadata` d'Astro satisfait structurellement `PostImage`.
-		image: data.image,
+		image: data.image, // ? `ImageMetadata` d'Astro satisfait structurellement `PostImage`.
 		imageAlt: data.imageAlt,
 		linkedInUrl: createLinkedInUrl(data.linkedInUrl),
 		publishedAt: data.publishedAt,
 		order: data.order,
+		pages: data.pages?.map((page) => ({ image: page.image, alt: page.alt })),
 	};
 }
 
-/** Adaptateur : implémente le port `PostRepository` via les Content Collections. */
 export const astroPostRepository: PostRepository = {
 	async listPosts() {
 		const entries = await getCollection('posts');

@@ -1,7 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
-import type { Post } from '@domain/post';
+import { isCarousel, type Post } from '@domain/post';
 import { styleFromMode } from '@/ui/theme/modes';
 import QdmBadge from './QdmBadge.astro';
 import TagCategory from './TagCategory.astro';
@@ -13,6 +13,12 @@ interface Props {
 const { post } = Astro.props;
 const image = post.image as unknown as ImageMetadata;
 const titleId = `modal-title-${post.id}`;
+
+const carousel = isCarousel(post);
+const carouselPages = (post.pages ?? []).map((page) => ({
+	src: page.image as unknown as ImageMetadata,
+	alt: page.alt,
+}));
 ---
 
 <article
@@ -22,12 +28,72 @@ const titleId = `modal-title-${post.id}`;
 	aria-labelledby={titleId}
 >
 	<div class="modal-post__visual">
-		<Image
-			src={image}
-			alt={post.imageAlt}
-			widths={[540, 720, 1080]}
-			sizes="(max-width: 900px) 90vw, 480px"
-		/>
+		{
+			carousel ? (
+				<div class="carousel" data-carousel>
+					<div
+						class="carousel__track"
+						data-carousel-track
+						tabindex="0"
+						aria-label="Pages du carrousel (flèches gauche/droite)"
+					>
+						{carouselPages.map((page, i) => (
+							<div
+								class="carousel__slide"
+								role="group"
+								aria-roledescription="diapositive"
+								aria-label={`Page ${i + 1} sur ${carouselPages.length}`}
+							>
+								<Image
+									src={page.src}
+									alt={page.alt}
+									widths={[540, 720, 1080]}
+									sizes="(max-width: 900px) 90vw, 480px"
+								/>
+							</div>
+						))}
+					</div>
+
+					<button
+						type="button"
+						class="carousel__nav carousel__nav--prev"
+						data-carousel-prev
+						aria-label="Page précédente"
+					>
+						<span aria-hidden="true">‹</span>
+					</button>
+					<button
+						type="button"
+						class="carousel__nav carousel__nav--next"
+						data-carousel-next
+						aria-label="Page suivante"
+					>
+						<span aria-hidden="true">›</span>
+					</button>
+
+					<div class="carousel__dots">
+						{carouselPages.map((_, i) => (
+							<button
+								type="button"
+								class="carousel__dot"
+								data-carousel-dot={i}
+								aria-label={`Aller à la page ${i + 1}`}
+							/>
+						))}
+					</div>
+					<p class="carousel__counter" data-carousel-counter aria-live="polite">
+						1 / {carouselPages.length}
+					</p>
+				</div>
+			) : (
+				<Image
+					src={image}
+					alt={post.imageAlt}
+					widths={[540, 720, 1080]}
+					sizes="(max-width: 900px) 90vw, 480px"
+				/>
+			)
+		}
 	</div>
 
 	<div class="modal-post__text">
@@ -72,6 +138,7 @@ const titleId = `modal-title-${post.id}`;
 		height: auto;
 		/* Même ratio que la vignette : 3/4, recadrage centré. */
 		aspect-ratio: 1080 / 1360;
+		object-fit: cover;
 		border-radius: 8px;
 	}
 	.modal-post__title {
@@ -110,5 +177,80 @@ const titleId = `modal-title-${post.id}`;
 		font-family: var(--font-mono, monospace);
 		font-weight: 700;
 		color: var(--acc-text, var(--cool-text, inherit));
+	}
+
+	.carousel {
+		position: relative;
+	}
+	.carousel__track {
+		display: flex;
+		gap: 0.75rem;
+		overflow-x: auto;
+		scroll-snap-type: x mandatory;
+		scroll-behavior: smooth;
+		border-radius: 8px;
+		-webkit-overflow-scrolling: touch;
+	}
+	.carousel__slide {
+		flex: 0 0 100%;
+		scroll-snap-align: start;
+	}
+	.carousel__nav {
+		position: absolute;
+		top: 50%;
+		transform: translateY(-50%);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 40px;
+		height: 40px;
+		border-radius: 50%;
+		border: 1px solid var(--border);
+		background: var(--bg);
+		color: var(--fg);
+		font-size: 1.4rem;
+		line-height: 1;
+		cursor: pointer;
+		z-index: 2;
+	}
+	.carousel__nav--prev {
+		left: 0.5rem;
+	}
+	.carousel__nav--next {
+		right: 0.5rem;
+	}
+	.carousel__nav:disabled {
+		opacity: 0.35;
+		cursor: default;
+	}
+	.carousel__dots {
+		display: flex;
+		justify-content: center;
+		gap: 0.4rem;
+		margin-top: 0.6rem;
+	}
+	.carousel__dot {
+		width: 8px;
+		height: 8px;
+		padding: 0;
+		border-radius: 50%;
+		border: 1px solid var(--acc);
+		background: transparent;
+		cursor: pointer;
+	}
+	.carousel__dot[aria-current='true'] {
+		background: var(--acc);
+	}
+	.carousel__counter {
+		margin-top: 0.4rem;
+		text-align: center;
+		font-family: var(--font-mono, monospace);
+		font-size: 0.8rem;
+		color: var(--muted);
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.carousel__track {
+			scroll-behavior: auto;
+		}
 	}
 </style>

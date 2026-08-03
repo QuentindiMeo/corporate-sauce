@@ -2,7 +2,7 @@
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 import { isDarkMode } from '@domain/mode';
-import type { Post } from '@domain/post';
+import { isCarousel, type Post } from '@domain/post';
 import { styleFromMode } from '@/ui/theme/modes';
 
 interface Props {
@@ -17,12 +17,21 @@ const headerMode = post.mode === 'clair' ? 'sombre' : 'clair';
 // L'entité expose `image` en `PostImage` ; à l'exécution c'est l'`ImageMetadata`
 // d'Astro (voir infrastructure). On restaure le type pour le composant <Image>.
 const image = post.image as unknown as ImageMetadata;
+
+// Carrousel : on empile jusqu'à 3 pages (le « fard »). La page 0 est de face.
+const postIsACarousel = isCarousel(post);
+const fardPages = (postIsACarousel && post.pages ? post.pages.slice(0, 3) : []).map((page) => ({
+	src: page.image as unknown as ImageMetadata,
+	alt: page.alt,
+}));
+const pageCount = post.pages?.length ?? 0;
 ---
 
 <article
 	class="post-card"
 	data-mode={post.mode}
 	data-dark={isDarkMode(post.mode) ? '' : undefined}
+	data-fard={postIsACarousel ? '' : undefined}
 	style={styleFromMode(headerMode)}
 >
 	<a
@@ -31,18 +40,39 @@ const image = post.image as unknown as ImageMetadata;
 		target="_blank"
 		rel="noopener noreferrer"
 		data-post-id={post.id}
-		aria-label={`Ouvrir le post « ${post.title} » (rubrique ${post.category})`}
+		aria-label={`Ouvrir le ${postIsACarousel ? 'carrousel' : 'post'} « ${post.title} »`}
+		aria-description={postIsACarousel ? `contient ${pageCount} pages` : undefined}
 	>
 		<p class="post-card__title"><span>{post.title}</span></p>
 		<div class="post-card__media">
-			<Image
-				class="post-card__image"
-				src={image}
-				alt={post.imageAlt}
-				widths={[360, 540, 720]}
-				sizes="(max-width: 640px) 80vw, 260px"
-				loading={priority ? 'eager' : 'lazy'}
-			/>
+			{
+				postIsACarousel ? (
+					<div class="fard">
+						{fardPages.map((page, i) => (
+							<Image
+								class={`fard__page fard__page--${i}`}
+								src={page.src}
+								alt={i === 0 ? page.alt : ''}
+								widths={[280, 420, 560]}
+								sizes="(max-width: 640px) 70vw, 220px"
+								loading={priority && i === 0 ? 'eager' : 'lazy'}
+							/>
+						))}
+						<span class="fard__badge">
+							{pageCount} pages
+						</span>
+					</div>
+				) : (
+					<Image
+						class="post-card__image"
+						src={image}
+						alt={post.imageAlt}
+						widths={[360, 540, 720]}
+						sizes="(max-width: 640px) 80vw, 260px"
+						loading={priority ? 'eager' : 'lazy'}
+					/>
+				)
+			}
 		</div>
 	</a>
 </article>
@@ -135,8 +165,70 @@ const image = post.image as unknown as ImageMetadata;
 		min-width: 100%;
 		min-height: 100%;
 		aspect-ratio: 1080 / 1360;
+		object-position: top;
+	}
+
+	/* ── « Fard » : folder card, 3 pages pliées l'une sur l'autre (post carrousel) ──────────── */
+	.post-card[data-fard] .post-card__media {
+		/* //? Laisse les pages du dessous dépasser légèrement (rogné au bord de la carte). */
+		overflow: visible;
+	}
+	.fard {
+		position: relative;
+		width: 100%;
+		height: 100%;
+	}
+	.fard__page {
+		position: absolute;
+		inset: 0;
+		margin: auto;
+		width: 80%;
+		height: 88%;
 		object-fit: cover;
 		object-position: top;
+		border-radius: 8px;
+		border: 1px solid var(--border);
+		background: var(--bg);
+		box-shadow: 0 6px 16px rgba(0, 0, 0, 0.28);
+		transform-origin: 50% 100%; /* //? Éventail depuis le bas : les hauts des pages arrière dépassent. */
+		transition: transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+	}
+	.fard__page--0 {
+		z-index: 3;
+		transform: rotate(0deg);
+	}
+	.fard__page--1 {
+		z-index: 2;
+		transform: rotate(-4deg) translateY(-2%);
+		filter: brightness(0.92);
+	}
+	.fard__page--2 {
+		z-index: 1;
+		transform: rotate(-8deg) translateY(-4%);
+		filter: brightness(0.84);
+	}
+	/* //? Le dossier s'ouvre au survol : les pages s'éventaillent davantage. */
+	.post-card[data-fard]:hover .fard__page--1,
+	.post-card[data-fard]:focus-within .fard__page--1 {
+		transform: rotate(-8deg) translateY(-3%);
+	}
+	.post-card[data-fard]:hover .fard__page--2,
+	.post-card[data-fard]:focus-within .fard__page--2 {
+		transform: rotate(-15deg) translateY(-6%);
+	}
+	.fard__badge {
+		position: absolute;
+		right: 0.5rem;
+		bottom: 0.5rem;
+		z-index: 4;
+		padding: 0.15em 0.45em;
+		border-radius: 6px;
+		font-family: var(--font-mono, monospace);
+		font-size: 0.7rem;
+		font-weight: 700;
+		letter-spacing: 0.06em;
+		background: var(--acc);
+		color: var(--acc-ink);
 	}
 
 	@media (prefers-reduced-motion: reduce) {
@@ -146,6 +238,9 @@ const image = post.image as unknown as ImageMetadata;
 		.post-card:hover,
 		.post-card:focus-within {
 			transform: none;
+		}
+		.fard__page {
+			transition: none;
 		}
 	}
 </style>

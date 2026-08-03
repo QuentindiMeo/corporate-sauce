@@ -1,13 +1,13 @@
-import { defineCollection } from 'astro:content';
 import { file } from 'astro/loaders';
 import { z } from 'astro/zod';
+import { defineCollection } from 'astro:content';
+
 import { CATEGORIES } from './domain/category';
 import { MODES } from './domain/mode';
 
 /**
- * Collection `posts` — chargée depuis `src/data/posts.json` (source versionnée,
- * mise à jour sans redéploiement de code). Le vocabulaire (rubriques, modes)
- * vient du domaine : une seule source de vérité. Voir action.md §2.
+ * ? Collection `posts` — chargée depuis `src/data/posts.json` (source versionnée, mise à jour sans redéploiement
+ * * de code). Le vocabulaire (rubriques, modes) vient du domaine : une seule source de vérité. Voir action.md §2.
  */
 const posts = defineCollection({
 	loader: file('src/data/posts.json'),
@@ -25,6 +25,12 @@ const posts = defineCollection({
 			linkedInUrl: z.string(),
 			publishedAt: z.coerce.date(),
 			order: z.number().int().positive(),
+
+			// ? Carrousel : au moins deux pages (visuel + alt par page).
+			pages: z
+				.array(z.object({ image: image(), alt: z.string() }))
+				.min(2)
+				.optional(),
 		}),
 });
 

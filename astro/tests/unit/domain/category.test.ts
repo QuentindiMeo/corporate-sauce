@@ -3,11 +3,11 @@ import { CATEGORIES, isCategory } from '@domain/category';
 import { isDarkMode, isMode, MODES } from '@domain/mode';
 
 describe('category', () => {
-	it('expose les 7 rubriques dans l’ordre d’affichage', () => {
+	it('exposes the 7 categories in display order', () => {
 		expect(CATEGORIES).toEqual(['PERF', 'A11Y', 'DX', 'UI', 'ARCHI', 'HTML', 'COLLAB']);
 	});
 
-	it('valide une rubrique connue et rejette l’inconnue', () => {
+	it('accepts a known category and rejects an unknown one', () => {
 		expect(isCategory('PERF')).toBe(true);
 		expect(isCategory('perf')).toBe(false);
 		expect(isCategory('AUTRE')).toBe(false);
@@ -15,17 +15,17 @@ describe('category', () => {
 });
 
 describe('mode', () => {
-	it('expose les 3 modes de la charte', () => {
+	it('exposes the 3 charter modes', () => {
 		expect(MODES).toEqual(['sombre', 'clair', 'liant']);
 	});
 
-	it('valide un mode connu et rejette l’inconnu', () => {
+	it('accepts a known mode and rejects an unknown one', () => {
 		expect(isMode('liant')).toBe(true);
 		expect(isMode('LIANT')).toBe(false);
 		expect(isMode('bleu')).toBe(false);
 	});
 
-	it('classe sombre et liant en dark, clair en light', () => {
+	it('classifies sombre and liant as dark, clair as light', () => {
 		expect(isDarkMode('sombre')).toBe(true);
 		expect(isDarkMode('liant')).toBe(true);
 		expect(isDarkMode('clair')).toBe(false);

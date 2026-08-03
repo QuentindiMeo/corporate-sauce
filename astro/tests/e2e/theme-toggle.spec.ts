@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
-test.describe('Bascule de thème (chrome)', () => {
-	test('le clic bascule data-theme et met à jour aria-pressed', async ({ page }) => {
+test.describe('Theme toggle (chrome)', () => {
+	test('clicking toggles data-theme and updates aria-pressed', async ({ page }) => {
 		await page.goto('/');
 		const html = page.locator('html');
 		const bouton = page.locator('[data-theme-toggle]');
@@ -16,7 +16,7 @@ test.describe('Bascule de thème (chrome)', () => {
 		await expect(bouton).toHaveAttribute('aria-pressed', String(bascule === 'light'));
 	});
 
-	test('le choix persiste après rechargement', async ({ page }) => {
+	test('the choice persists after reload', async ({ page }) => {
 		await page.goto('/');
 		const html = page.locator('html');
 		const bouton = page.locator('[data-theme-toggle]');

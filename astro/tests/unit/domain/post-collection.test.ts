@@ -3,7 +3,7 @@ import { groupByTheme } from '@domain/post-collection';
 import { aPost } from '../../helpers/post-factory';
 
 describe('groupByTheme', () => {
-	it('regroupe les posts par rubrique dans l’ordre canonique', () => {
+	it('groups posts by category in canonical order', () => {
 		const rows = groupByTheme([
 			aPost({ id: 'a', category: 'UI' }),
 			aPost({ id: 'b', category: 'PERF' }),
@@ -13,13 +13,13 @@ describe('groupByTheme', () => {
 		expect(rows.map((r) => r.category)).toEqual(['PERF', 'A11Y', 'UI']);
 	});
 
-	it('omet les rubriques sans post', () => {
+	it('omits categories with no post', () => {
 		const rows = groupByTheme([aPost({ category: 'DX' })]);
 		expect(rows).toHaveLength(1);
 		expect(rows[0].category).toBe('DX');
 	});
 
-	it('trie les posts d’une ligne par ordre puis id', () => {
+	it('sorts posts within a row by order then id', () => {
 		const rows = groupByTheme([
 			aPost({ id: 'z', category: 'PERF', order: 2 }),
 			aPost({ id: 'y', category: 'PERF', order: 1 }),
@@ -29,11 +29,11 @@ describe('groupByTheme', () => {
 		expect(rows[0].posts.map((p) => p.id)).toEqual(['x', 'y', 'z']);
 	});
 
-	it('retourne une liste vide sans posts', () => {
+	it('returns an empty list when there are no posts', () => {
 		expect(groupByTheme([])).toEqual([]);
 	});
 
-	it('ne modifie pas le tableau source', () => {
+	it('does not mutate the source array', () => {
 		const source = [aPost({ category: 'UI' }), aPost({ category: 'PERF' })];
 		const copy = [...source];
 		groupByTheme(source);

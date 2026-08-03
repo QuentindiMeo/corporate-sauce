@@ -148,5 +148,34 @@
 		"linkedInUrl": "https://www.linkedin.com/posts/qdm_html-semantique-PLACEHOLDER",
 		"publishedAt": "2026-07-07",
 		"order": 1
+	},
+	{
+		"id": "11-a11y-carrousel",
+		"category": "A11Y",
+		"mode": "clair",
+		"title": "Trois réflexes d’accessibilité, une page chacun.",
+		"subtitle": "ARIA, clavier, contraste : l’essentiel en un carrousel.",
+		"body": "Un carrousel pour réviser vite : le bon usage d’ARIA, la navigation au clavier, et le contraste comme seuil mesurable. Trois pages, trois réflexes à garder sous la main.",
+		"takeaway": "L’accessibilité tient en quelques réflexes, appliqués à chaque écran.",
+		"cta": "Lequel des trois vous échappe le plus souvent ?",
+		"image": "../assets/posts/05-a11y-aria.png",
+		"imageAlt": "Carrousel QDM « Accessibilité » : ARIA, clavier et contraste, une page par sujet.",
+		"linkedInUrl": "https://www.linkedin.com/posts/qdm_a11y-carrousel-PLACEHOLDER",
+		"publishedAt": "2026-07-14",
+		"order": 4,
+		"pages": [
+			{
+				"image": "../assets/posts/05-a11y-aria.png",
+				"alt": "Page 1 — ARIA : une div maquillée en bouton comparée à un bouton natif."
+			},
+			{
+				"image": "../assets/posts/08-a11y-clavier.png",
+				"alt": "Page 2 — Clavier : un formulaire parcouru à la touche Tab avec focus visible."
+			},
+			{
+				"image": "../assets/posts/09-a11y-contraste.png",
+				"alt": "Page 3 — Contraste : trois ratios comparés à leur seuil de lisibilité."
+			}
+		]
 	}
 ]

@@ -12,7 +12,7 @@ beforeAll(async () => {
 });
 
 describe('TagCategory', () => {
-	it('affiche la rubrique en majuscules', async () => {
+	it('renders the category in uppercase', async () => {
 		const html = await container.renderToString(TagCategory, {
 			props: { category: 'PERF' },
 		});
@@ -22,14 +22,14 @@ describe('TagCategory', () => {
 });
 
 describe('QdmBadge', () => {
-	it('affiche le logotype QDM', async () => {
+	it('renders the QDM logotype', async () => {
 		const html = await container.renderToString(QdmBadge);
 		expect(html).toContain('QDM');
 	});
 });
 
 describe('VerdictBadge', () => {
-	it('rend un ✓ avec un libellé accessible pour le verdict positif', async () => {
+	it('renders a ✓ with an accessible label for the positive verdict', async () => {
 		const html = await container.renderToString(VerdictBadge, {
 			props: { type: 'ok' },
 		});
@@ -37,7 +37,7 @@ describe('VerdictBadge', () => {
 		expect(html).toMatch(/aria-label="[^"]+"/);
 	});
 
-	it('rend un ✕ pour le verdict négatif', async () => {
+	it('renders a ✕ for the negative verdict', async () => {
 		const html = await container.renderToString(VerdictBadge, {
 			props: { type: 'bad' },
 		});
@@ -46,7 +46,7 @@ describe('VerdictBadge', () => {
 });
 
 describe('Highlight', () => {
-	it('entoure le contenu passé en slot', async () => {
+	it('wraps the content passed in the slot', async () => {
 		const html = await container.renderToString(Highlight, {
 			slots: { default: 'mot-clé' },
 		});

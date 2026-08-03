@@ -3,9 +3,9 @@ import type { LinkedInUrl } from './linkedin-url';
 import type { Mode } from './mode';
 
 /**
- * Référence structurelle à un visuel optimisé.
- * Volontairement défini dans le domaine (aucun import Astro) ; à l'exécution,
- * l'infrastructure y injecte l'`ImageMetadata` d'Astro, qui est compatible.
+ * ? Référence structurelle à un visuel optimisé.
+ * * Volontairement défini dans le domaine (aucun import Astro) ; à l'exécution,
+ * * l'infrastructure y injecte l'`ImageMetadata` d'Astro, qui est compatible.
  */
 export interface PostImage {
 	src: string;
@@ -14,29 +14,33 @@ export interface PostImage {
 	format: string;
 }
 
+// ? Une page d'un post carrousel (visuel + son texte alternatif).
+export interface PostPage {
+	readonly image: PostImage;
+	readonly alt: string;
+}
+
 /**
- * Entité métier : un post LinkedIn QDM.
- * Données pures — aucune dépendance framework. Voir action.md §2.
+ * ? Entité métier : un post LinkedIn QDM.
+ * ! Données pures — aucune dépendance framework. Voir action.md §2.
  */
 export interface Post {
 	readonly id: string;
 	readonly category: Category;
 	readonly mode: Mode;
-	/** Punchline / hook. */
-	readonly title: string;
-	/** Sous-titre. */
-	readonly subtitle: string;
-	/** Texte complet du post. */
-	readonly body: string;
-	/** Phrase-clé encadrée (optionnelle). */
-	readonly takeaway?: string;
-	/** Micro-CTA d'engagement (optionnel). */
-	readonly cta?: string;
+	readonly title: string; // ? Punchline / hook.
+	readonly subtitle: string; // ? Sous-titre.
+	readonly body: string; // ? Texte complet du post.
+	readonly takeaway?: string; // ? Phrase-clé encadrée.
+	readonly cta?: string; // ? Micro-CTA d'engagement.
 	readonly image: PostImage;
-	/** Texte alternatif descriptif (obligatoire, a11y). */
-	readonly imageAlt: string;
+	readonly imageAlt: string; // ? Texte alternatif descriptif (obligatoire, a11y).
 	readonly linkedInUrl: LinkedInUrl;
 	readonly publishedAt: Date;
-	/** Position au sein de sa ligne thématique. */
-	readonly order: number;
+	readonly order: number; // ? Position au sein de sa ligne thématique.
+	readonly pages?: readonly PostPage[]; // ? Pages d'un carrousel (≥ 2). Absent pour un post à visuel unique.
+}
+
+export function isCarousel(post: Post): boolean {
+	return (post.pages?.length ?? 0) >= 2;
 }

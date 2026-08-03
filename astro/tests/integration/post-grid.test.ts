@@ -22,7 +22,7 @@ function row(category: ThemeRow['category'], n: number): ThemeRow {
 }
 
 describe('PostRow', () => {
-	it('affiche le tag rubrique et une carte par post', async () => {
+	it('renders the category tag and one card per post', async () => {
 		const html = await container.renderToString(PostRow, {
 			props: { row: row('PERF', 3) },
 		});
@@ -30,7 +30,7 @@ describe('PostRow', () => {
 		expect((html.match(/data-post-id=/g) ?? []).length).toBe(3);
 	});
 
-	it('est un repère de région étiqueté par sa rubrique (a11y)', async () => {
+	it('is a region landmark labelled by its category (a11y)', async () => {
 		const html = await container.renderToString(PostRow, {
 			props: { row: row('A11Y', 1) },
 		});
@@ -39,7 +39,7 @@ describe('PostRow', () => {
 });
 
 describe('PostGrid', () => {
-	it('rend chaque ligne dans l’ordre fourni', async () => {
+	it('renders each row in the given order', async () => {
 		const rows = [row('PERF', 2), row('A11Y', 1), row('UI', 4)];
 		const html = await container.renderToString(PostGrid, { props: { rows } });
 
@@ -48,7 +48,7 @@ describe('PostGrid', () => {
 		expect(positions.every((p) => p >= 0)).toBe(true);
 	});
 
-	it('rend le nombre total de cartes attendu', async () => {
+	it('renders the expected total number of cards', async () => {
 		const rows = [row('PERF', 2), row('UI', 4)];
 		const html = await container.renderToString(PostGrid, { props: { rows } });
 		expect((html.match(/data-post-id=/g) ?? []).length).toBe(6);

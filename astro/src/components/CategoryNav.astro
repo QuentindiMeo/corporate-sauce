@@ -53,13 +53,14 @@ const CATEGORY_LABELS: Record<Category, string> = {
 	const sections = document.querySelectorAll('[aria-labelledby^="category-"]');
 
 	if (links.size > 0 && sections.length > 0) {
-		const setActive = (slug) => {
+		const setActive = (slug: string) => {
 			for (const [key, link] of links) {
 				link.setAttribute('aria-current', key === slug ? 'true' : 'false');
 			}
 		};
 
-		const slugOf = (section) => (section.getAttribute('aria-labelledby') ?? '').replace('category-', '');
+		const slugOf = (section: Element) =>
+			(section.getAttribute('aria-labelledby') ?? '').replace('category-', '');
 
 		// Défaut : la première rubrique est active (haut de page), avant tout scroll.
 		setActive(slugOf(sections[0]));

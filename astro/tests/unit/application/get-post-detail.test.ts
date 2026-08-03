@@ -4,7 +4,7 @@ import { fakePostRepository } from '../../helpers/fake-post-repository';
 import { aPost } from '../../helpers/post-factory';
 
 describe('getPostDetail', () => {
-	it('retourne le post correspondant à l’identifiant', async () => {
+	it('returns the post matching the id', async () => {
 		const repository = fakePostRepository([aPost({ id: 'cible' }), aPost({ id: 'autre' })]);
 
 		const post = await getPostDetail(repository, 'cible');
@@ -12,7 +12,7 @@ describe('getPostDetail', () => {
 		expect(post?.id).toBe('cible');
 	});
 
-	it('retourne null pour un identifiant inconnu', async () => {
+	it('returns null for an unknown id', async () => {
 		const repository = fakePostRepository([aPost({ id: 'cible' })]);
 		expect(await getPostDetail(repository, 'fantome')).toBeNull();
 	});

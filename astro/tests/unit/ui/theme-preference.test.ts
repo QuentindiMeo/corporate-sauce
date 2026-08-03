@@ -7,31 +7,31 @@ import {
 } from '@/ui/theme/theme-preference';
 
 describe('resolveInitialTheme', () => {
-	it('privilégie le thème stocké quand il est valide', () => {
+	it('prefers the stored theme when valid', () => {
 		expect(resolveInitialTheme('light', true)).toBe('light');
 		expect(resolveInitialTheme('dark', false)).toBe('dark');
 	});
 
-	it('suit la préférence système en l’absence de choix stocké', () => {
+	it('follows the system preference when no choice is stored', () => {
 		expect(resolveInitialTheme(null, true)).toBe('dark');
 		expect(resolveInitialTheme(null, false)).toBe('light');
 	});
 
-	it('ignore une valeur stockée invalide et retombe sur le système', () => {
+	it('ignores an invalid stored value and falls back to the system', () => {
 		expect(resolveInitialTheme('bleu', true)).toBe('dark');
 		expect(resolveInitialTheme('', false)).toBe('light');
 	});
 });
 
 describe('toggleTheme', () => {
-	it('bascule entre clair et sombre', () => {
+	it('toggles between light and dark', () => {
 		expect(toggleTheme('dark')).toBe<Theme>('light');
 		expect(toggleTheme('light')).toBe<Theme>('dark');
 	});
 });
 
 describe('THEME_STORAGE_KEY', () => {
-	it('est une clé stable', () => {
+	it('is a stable key', () => {
 		expect(THEME_STORAGE_KEY).toBe('qdm-theme');
 	});
 });

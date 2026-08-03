@@ -3,11 +3,11 @@ import { MODES } from '@domain/mode';
 import { MODE_TOKENS, styleFromMode, SIGNAL_TOKENS } from '@/ui/theme/modes';
 
 describe('MODE_TOKENS', () => {
-	it('définit les trois modes de la charte', () => {
+	it('defines the three charter modes', () => {
 		expect(Object.keys(MODE_TOKENS).sort()).toEqual([...MODES].sort());
 	});
 
-	it('reprend exactement les jetons du mode SOMBRE (charte §2)', () => {
+	it('matches the exact SOMBRE mode tokens (charter §2)', () => {
 		expect(MODE_TOKENS.sombre).toMatchObject({
 			'--bg': '#120A07',
 			'--acc': '#FF5A36',
@@ -17,7 +17,7 @@ describe('MODE_TOKENS', () => {
 		});
 	});
 
-	it('reprend exactement les jetons du mode CLAIR (charte §2)', () => {
+	it('matches the exact CLAIR mode tokens (charter §2)', () => {
 		expect(MODE_TOKENS.clair).toMatchObject({
 			'--bg': '#F6ECD4',
 			'--acc': '#F5A300',
@@ -26,7 +26,7 @@ describe('MODE_TOKENS', () => {
 		});
 	});
 
-	it('reprend les deux accents du mode LIANT (charte §2)', () => {
+	it('includes both LIANT mode accents (charter §2)', () => {
 		expect(MODE_TOKENS.liant).toMatchObject({
 			'--bg': '#0F1712',
 			'--cool': '#4FB07A',
@@ -37,7 +37,7 @@ describe('MODE_TOKENS', () => {
 });
 
 describe('SIGNAL_TOKENS', () => {
-	it('expose les jetons de signal ✓/✕ (charte §2)', () => {
+	it('exposes the ✓/✕ signal tokens (charter §2)', () => {
 		expect(SIGNAL_TOKENS).toMatchObject({
 			'--ok-text': '#276039',
 			'--bad': '#B23415',
@@ -46,14 +46,14 @@ describe('SIGNAL_TOKENS', () => {
 });
 
 describe('styleFromMode', () => {
-	it('produit une déclaration CSS inline des variables du mode', () => {
+	it('produces an inline CSS declaration of the mode variables', () => {
 		const style = styleFromMode('sombre');
 		expect(style).toContain('--bg:#120A07');
 		expect(style).toContain('--acc:#FF5A36');
 		expect(style.endsWith(';')).toBe(true);
 	});
 
-	it('inclut toutes les variables du mode', () => {
+	it('includes all the mode variables', () => {
 		const style = styleFromMode('liant');
 		for (const [name, value] of Object.entries(MODE_TOKENS.liant)) {
 			expect(style).toContain(`${name}:${value}`);

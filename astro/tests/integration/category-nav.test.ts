@@ -9,14 +9,14 @@ beforeAll(async () => {
 });
 
 describe('CategoryNav', () => {
-	it('est un repère de navigation étiqueté', async () => {
+	it('is a labelled navigation landmark', async () => {
 		const html = await container.renderToString(CategoryNav, {
 			props: { categories: ['PERF', 'A11Y'] },
 		});
 		expect(html).toMatch(/<nav[^>]+aria-label="[^"]+"/);
 	});
 
-	it('rend un lien d’ancre vers chaque rubrique', async () => {
+	it('renders an anchor link to each category', async () => {
 		const html = await container.renderToString(CategoryNav, {
 			props: { categories: ['PERF', 'UI'] },
 		});
@@ -26,7 +26,7 @@ describe('CategoryNav', () => {
 		expect(html).toContain('UI');
 	});
 
-	it('donne à chaque lien un libellé accessible humain (tout en gardant le code visible)', async () => {
+	it('gives each link a human accessible label (while keeping the visible code)', async () => {
 		const html = await container.renderToString(CategoryNav, {
 			props: { categories: ['PERF'] },
 		});
@@ -35,7 +35,7 @@ describe('CategoryNav', () => {
 		expect(html).toContain('>PERF<');
 	});
 
-	it('ne rend rien sans rubrique', async () => {
+	it('renders nothing without categories', async () => {
 		const html = await container.renderToString(CategoryNav, { props: { categories: [] } });
 		expect(html).not.toContain('<nav');
 	});

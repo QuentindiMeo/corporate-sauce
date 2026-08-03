@@ -1,8 +1,8 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
-test.describe('Modale de post', () => {
-	test('ouvre la modale au clic sur une carte', async ({ page }) => {
+test.describe('Post modal', () => {
+	test('opens the modal when clicking a card', async ({ page }) => {
 		await page.goto('/');
 		const dialog = page.locator('[data-post-modal]');
 		await expect(dialog).toBeHidden();
@@ -14,7 +14,7 @@ test.describe('Modale de post', () => {
 		await expect(dialog.getByRole('link', { name: /LinkedIn/ })).toBeVisible();
 	});
 
-	test('ferme la modale avec Échap et restaure le focus sur la carte', async ({ page }) => {
+	test('closes the modal with Escape and restores focus to the card', async ({ page }) => {
 		await page.goto('/');
 		const carte = page.locator('[data-post-id]').first();
 		await carte.click();
@@ -28,7 +28,7 @@ test.describe('Modale de post', () => {
 		await expect(carte).toBeFocused();
 	});
 
-	test('ferme la modale au clic sur l’arrière-plan', async ({ page }) => {
+	test('closes the modal when clicking the backdrop', async ({ page }) => {
 		await page.goto('/');
 		await page.locator('[data-post-id]').first().click();
 		const dialog = page.locator('[data-post-modal]');
@@ -40,7 +40,7 @@ test.describe('Modale de post', () => {
 		await expect(dialog).toBeHidden();
 	});
 
-	test('aucune violation axe critique/sérieuse, modale ouverte', async ({ page }) => {
+	test('no critical/serious axe violation with the modal open', async ({ page }) => {
 		await page.goto('/');
 		await page.locator('[data-post-id]').first().click();
 		await expect(page.locator('[data-post-modal]')).toBeVisible();

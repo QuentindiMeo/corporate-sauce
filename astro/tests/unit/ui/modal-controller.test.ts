@@ -32,7 +32,7 @@ function elements() {
 }
 
 describe('initModal', () => {
-	it('ouvre la modale et injecte le contenu du post cliqué', () => {
+	it('opens the modal and injects the clicked post content', () => {
 		initModal(document);
 		const { dialog, body, card1 } = elements();
 
@@ -43,7 +43,7 @@ describe('initModal', () => {
 		expect(body.querySelector('[data-mode="clair"]')).not.toBeNull();
 	});
 
-	it('empêche la navigation par défaut du lien (amélioration progressive)', () => {
+	it('prevents the link default navigation (progressive enhancement)', () => {
 		initModal(document);
 		const { card1 } = elements();
 
@@ -53,7 +53,7 @@ describe('initModal', () => {
 		expect(evt.defaultPrevented).toBe(true);
 	});
 
-	it('ferme la modale via le bouton et restaure le focus sur la carte', () => {
+	it('closes the modal via the button and restores focus to the card', () => {
 		initModal(document);
 		const { dialog, card1, closeButton, body } = elements();
 
@@ -65,7 +65,7 @@ describe('initModal', () => {
 		expect(document.activeElement).toBe(card1);
 	});
 
-	it('ferme la modale au clic sur l’arrière-plan (le dialog lui-même)', () => {
+	it('closes the modal when clicking the backdrop (the dialog itself)', () => {
 		initModal(document);
 		const { dialog, card1 } = elements();
 
@@ -75,7 +75,7 @@ describe('initModal', () => {
 		expect(dialog.open).toBe(false);
 	});
 
-	it('ignore un clic sur une carte sans template correspondant', () => {
+	it('ignores a click on a card with no matching template', () => {
 		document.querySelector('[data-post-template="p1"]')?.remove();
 		initModal(document);
 		const { dialog, card1 } = elements();

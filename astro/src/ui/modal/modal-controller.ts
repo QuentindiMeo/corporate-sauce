@@ -1,9 +1,11 @@
+import { initCarousel } from './carousel-controller';
+
 /**
- * Contrôleur de la modale de post (amélioration progressive).
- * Intercepte le clic sur les cartes (`[data-post-id]`), injecte dans le `<dialog>`
- * le contenu pré-rendu (`<template data-post-template="…">`), ouvre en modal et
- * restaure le focus sur la carte à la fermeture. Le `<dialog>` natif fournit le
- * piégeage du focus, la fermeture par `Échap` et l'arrière-plan inerte.
+ * ? Contrôleur de la modale de post (amélioration progressive).
+ * * Intercepte le clic sur les cartes (`[data-post-id]`), injecte dans le `<dialog>` le contenu pré-rendu
+ * * (`<template data-post-template="…">`), ouvre en modal et restaure le focus sur la carte à la fermeture.
+ * * Le `<dialog>` natif fournit le piégeage du focus, la fermeture par `Échap` et l'arrière-plan inerte.
+ * * Si le contenu injecté est un carrousel, l'initialise (et le nettoie à la fermeture).
  */
 export function initModal(root: ParentNode = document): () => void {
 	const dialog = root.querySelector<HTMLDialogElement>('[data-post-modal]');
@@ -15,6 +17,7 @@ export function initModal(root: ParentNode = document): () => void {
 	const closeButton = dialog.querySelector<HTMLElement>('[data-modal-close]');
 	const triggers = Array.from(root.querySelectorAll<HTMLElement>('[data-post-id]'));
 	let lastTrigger: HTMLElement | null = null;
+	let disposeCarousel: () => void = () => {};
 
 	function open(event: Event): void {
 		const target = event.currentTarget as HTMLElement;
@@ -29,15 +32,14 @@ export function initModal(root: ParentNode = document): () => void {
 		body!.replaceChildren(template.content.cloneNode(true));
 		lastTrigger = target;
 		dialog!.showModal();
+		disposeCarousel = initCarousel(body!);
 	}
 
 	function close(): void {
 		dialog!.close();
 	}
 
-	// Clic sur l'arrière-plan (::backdrop, hors de la boîte du dialog) → fermeture.
-	// On teste la position vs le rectangle du dialog (robuste tous navigateurs) ;
-	// `target === dialog` couvre le cas des environnements sans layout (tests).
+	// ? Clic sur l'arrière-plan (::backdrop, hors de la boîte du dialog) → fermeture.
 	function onDialogClick(event: MouseEvent): void {
 		const rect = dialog!.getBoundingClientRect();
 		const outsideBox =
@@ -52,6 +54,8 @@ export function initModal(root: ParentNode = document): () => void {
 	}
 
 	function onClose(): void {
+		disposeCarousel();
+		disposeCarousel = () => {};
 		body!.replaceChildren();
 		lastTrigger?.focus();
 		lastTrigger = null;
