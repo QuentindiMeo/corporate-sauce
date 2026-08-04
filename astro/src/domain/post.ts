@@ -28,9 +28,9 @@ export interface Post {
 	readonly id: string;
 	readonly category: Category;
 	readonly mode: Mode;
-	readonly title: string; // ? Punchline / hook.
-	readonly subtitle: string; // ? Sous-titre.
-	readonly body: string; // ? Texte complet du post.
+	readonly title: string; // ? Libellé court (punchline / sujet).
+	readonly subtitle?: string; // ? Sous-titre.
+	readonly body: string; // ? Légende LinkedIn complète (paragraphes).
 	readonly takeaway?: string; // ? Phrase-clé encadrée.
 	readonly cta?: string; // ? Micro-CTA d'engagement.
 	readonly image: PostImage;
@@ -38,6 +38,7 @@ export interface Post {
 	readonly linkedInUrl: LinkedInUrl;
 	readonly publishedAt: Date;
 	readonly order: number; // ? Position au sein de sa ligne thématique.
+	readonly hashtags?: readonly string[]; // ? Hashtags de la légende (sans le « # »).
 	readonly pages?: readonly PostPage[]; // ? Pages d'un carrousel (≥ 2). Absent pour un post à visuel unique.
 }
 

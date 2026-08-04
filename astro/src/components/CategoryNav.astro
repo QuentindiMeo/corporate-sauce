@@ -32,7 +32,8 @@ const CATEGORY_LABELS: Record<Category, string> = {
 							aria-label={`Aller à la rubrique ${CATEGORY_LABELS[category]} (${category})`}
 						>
 							<span class="category-nav__dot" aria-hidden="true" />
-							<span class="category-nav__label">{category}</span>
+							<span class="category-nav__code">{category}</span>
+							<span class="category-nav__full" aria-hidden="true">{CATEGORY_LABELS[category]}</span>
 						</a>
 					</li>
 				))}
@@ -42,7 +43,7 @@ const CATEGORY_LABELS: Record<Category, string> = {
 }
 
 <script>
-	// Scrollspy (amélioration progressive) : met en avant la rubrique visible.
+	// ? Scrollspy (amélioration progressive) : met en avant la rubrique visible.
 	const links = new Map();
 	for (const el of document.querySelectorAll('[data-nav-category]')) {
 		links.set(el.getAttribute('data-nav-category') ?? '', el);
@@ -99,7 +100,7 @@ const CATEGORY_LABELS: Record<Category, string> = {
 	.category-nav ul {
 		list-style: none;
 		margin: 0;
-		padding: 0.25rem 0 0.25rem 0.85rem;
+		padding: 0.25rem 0 0.25rem 0.25rem;
 		display: flex;
 		flex-direction: column;
 		gap: 0.1rem;
@@ -109,7 +110,6 @@ const CATEGORY_LABELS: Record<Category, string> = {
 	.category-nav__link {
 		display: flex;
 		align-items: center;
-		gap: 0.6rem;
 		padding: 0.3rem 0.5rem;
 		border-radius: 6px;
 		font-family: var(--font-mono, monospace);
@@ -125,6 +125,7 @@ const CATEGORY_LABELS: Record<Category, string> = {
 	.category-nav__dot {
 		width: 6px;
 		height: 6px;
+		margin-right: 0.5rem;
 		border-radius: 50%;
 		background: currentColor;
 		opacity: 0.55;
@@ -133,6 +134,24 @@ const CATEGORY_LABELS: Record<Category, string> = {
 			transform 0.2s ease,
 			opacity 0.2s ease,
 			background-color 0.2s ease;
+	}
+	/* //? Libellé complet : replié par défaut, révélé en douceur au survol/focus. */
+	.category-nav__full {
+		max-width: 0;
+		margin-left: 0;
+		opacity: 0;
+		overflow: hidden;
+		white-space: nowrap;
+		transition:
+			max-width 0.3s ease,
+			margin-left 0.3s ease,
+			opacity 0.25s ease;
+	}
+	.category-nav__link:hover .category-nav__full,
+	.category-nav__link:focus-visible .category-nav__full {
+		max-width: 16rem;
+		margin-left: 0.5rem;
+		opacity: 1;
 	}
 	.category-nav__link:hover,
 	.category-nav__link:focus-visible {

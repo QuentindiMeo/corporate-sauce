@@ -22,6 +22,7 @@ function toPost(entry: CollectionEntry<'posts'>): Post {
 		publishedAt: data.publishedAt,
 		order: data.order,
 		pages: data.pages?.map((page) => ({ image: page.image, alt: page.alt })),
+		hashtags: data.hashtags,
 	};
 }
 

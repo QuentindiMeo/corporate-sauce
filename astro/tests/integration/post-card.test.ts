@@ -1,7 +1,7 @@
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { beforeAll, describe, expect, it } from 'vitest';
 
-import visual from '@/assets/posts/01-perf-virtualisation.png';
+import visual from '@/assets/posts/01-virtualisation.png';
 import PostCard from '@/components/PostCard.astro';
 import { aPost } from '../helpers/post-factory';
 

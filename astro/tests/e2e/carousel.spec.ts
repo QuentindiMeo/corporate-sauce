@@ -6,8 +6,10 @@ test.describe('Carousel (fard folder card)', () => {
 		await page.goto('/');
 		const fard = page.locator('.post-card[data-fard]').first();
 		await expect(fard).toBeVisible();
+		// ? La pile n'affiche que 3 épaisseurs, quel que soit le nombre réel de pages…
 		await expect(fard.locator('.fard__page')).toHaveCount(3);
-		await expect(fard.locator('.fard__badge')).toHaveText(/3\s*pages/);
+		// ? …et le badge annonce le total réel (« N pages »).
+		await expect(fard.locator('.fard__badge')).toHaveText(/\d+\s*pages/);
 	});
 
 	test('the modal opens a navigable carousel (next + counter)', async ({ page }) => {
@@ -17,14 +19,15 @@ test.describe('Carousel (fard folder card)', () => {
 		const dialog = page.locator('[data-post-modal]');
 		await expect(dialog).toBeVisible();
 		const counter = dialog.locator('[data-carousel-counter]');
-		await expect(counter).toHaveText('1 / 3');
+		// ? Compteur « 1 / N » (N = nombre réel de pages, ≥ 2).
+		await expect(counter).toHaveText(/^1 \/ \d+$/);
 
 		await dialog.locator('[data-carousel-next]').click();
-		await expect(counter).toHaveText('2 / 3');
+		await expect(counter).toHaveText(/^2 \/ \d+$/);
 
-		// Un point permet d'aller directement à une page.
+		// ? Un point permet d'aller directement à une page.
 		await dialog.locator('[data-carousel-dot]').nth(2).click();
-		await expect(counter).toHaveText('3 / 3');
+		await expect(counter).toHaveText(/^3 \/ \d+$/);
 	});
 
 	test('no critical/serious axe violation with the carousel open', async ({ page }) => {

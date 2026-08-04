@@ -101,11 +101,21 @@ const carouselPages = (post.pages ?? []).map((page) => ({
 			<TagCategory category={post.category} />
 		</div>
 		<h2 id={titleId} class="modal-post__title">{post.title}</h2>
-		<p class="modal-post__subtitle">{post.subtitle}</p>
+		{post.subtitle && <p class="modal-post__subtitle">{post.subtitle}</p>}
 		<p class="modal-post__body">{post.body}</p>
 
 		{post.takeaway && <p class="modal-post__takeaway">{post.takeaway}</p>}
 		{post.cta && <p class="modal-post__cta">→ {post.cta}</p>}
+
+		{
+			post.hashtags && post.hashtags.length > 0 && (
+				<ul class="modal-post__hashtags">
+					{post.hashtags.map((tag) => (
+						<li>#{tag}</li>
+					))}
+				</ul>
+			)
+		}
 
 		<div class="modal-post__footer">
 			<QdmBadge />
@@ -151,6 +161,18 @@ const carouselPages = (post.pages ?? []).map((page) => ({
 	}
 	.modal-post__body {
 		margin-top: 1rem;
+		white-space: pre-line; /* //? Légende LinkedIn multi-paragraphes : on préserve les retours à la ligne. */
+	}
+	.modal-post__hashtags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.4rem 0.6rem;
+		list-style: none;
+		margin: 1.25rem 0 0;
+		padding: 0;
+		font-family: var(--font-mono, monospace);
+		font-size: 0.8rem;
+		color: var(--acc-text, var(--muted));
 	}
 	.modal-post__takeaway {
 		margin-top: 1.25rem;
