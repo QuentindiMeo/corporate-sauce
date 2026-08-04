@@ -14,7 +14,7 @@
 		"image": "../assets/posts/01-virtualisation.png",
 		"imageAlt": "Visuel QDM « L'impact de la virtualisation » (PERF).",
 		"linkedInUrl": "https://www.linkedin.com/posts/qdm_virtualization-PLACEHOLDER",
-		"publishedAt": "2026-01-06",
+		"publishedAt": "2026-07-28",
 		"order": 1
 	},
 	{
@@ -32,7 +32,7 @@
 		"image": "../assets/posts/02-poids-de-page.png",
 		"imageAlt": "Visuel QDM « Gérer son poids de page » (PERF).",
 		"linkedInUrl": "https://www.linkedin.com/posts/qdm_light-loading-PLACEHOLDER",
-		"publishedAt": "2026-01-10",
+		"publishedAt": "2026-07-29",
 		"order": 2
 	},
 	{
@@ -50,7 +50,7 @@
 		"image": "../assets/posts/04-readme.png",
 		"imageAlt": "Visuel QDM « README : quand et on y met quoi ? » (DX).",
 		"linkedInUrl": "https://www.linkedin.com/posts/qdm_readme-PLACEHOLDER",
-		"publishedAt": "2026-01-18",
+		"publishedAt": "2026-07-22",
 		"order": 1
 	},
 	{
@@ -68,7 +68,7 @@
 		"image": "../assets/posts/05-aria.png",
 		"imageAlt": "Visuel QDM « Utiliser ARIA correctement » (A11Y).",
 		"linkedInUrl": "https://www.linkedin.com/posts/qdm_aria-PLACEHOLDER",
-		"publishedAt": "2026-01-22",
+		"publishedAt": "2026-07-21",
 		"order": 1
 	},
 	{
@@ -116,7 +116,7 @@
 			}
 		],
 		"linkedInUrl": "https://www.linkedin.com/posts/qdm_semantics-PLACEHOLDER",
-		"publishedAt": "2026-01-26",
+		"publishedAt": "2026-08-05",
 		"order": 1
 	},
 	{
@@ -164,7 +164,7 @@
 			}
 		],
 		"linkedInUrl": "https://www.linkedin.com/posts/qdm_errors-PLACEHOLDER",
-		"publishedAt": "2026-01-30",
+		"publishedAt": "2026-08-04",
 		"order": 1
 	},
 	{
@@ -182,7 +182,7 @@
 		"image": "../assets/posts/11-couverture-tests.png",
 		"imageAlt": "Visuel QDM « L'illusion de la couverture de tests » (DX).",
 		"linkedInUrl": "https://www.linkedin.com/posts/qdm_unit-testing-PLACEHOLDER",
-		"publishedAt": "2026-02-15",
+		"publishedAt": "2026-08-11",
 		"order": 2
 	},
 	{
@@ -230,7 +230,7 @@
 			}
 		],
 		"linkedInUrl": "https://www.linkedin.com/posts/qdm_dark-mode-PLACEHOLDER",
-		"publishedAt": "2026-02-19",
+		"publishedAt": "2026-08-18",
 		"order": 2
 	},
 	{
@@ -278,7 +278,7 @@
 			}
 		],
 		"linkedInUrl": "https://www.linkedin.com/posts/qdm_performance-percue-PLACEHOLDER",
-		"publishedAt": "2026-02-23",
+		"publishedAt": "2026-08-25",
 		"order": 3
 	},
 	{
@@ -296,7 +296,7 @@
 		"image": "../assets/posts/14-typographie.png",
 		"imageAlt": "Visuel QDM « Typographie & langue » (A11Y).",
 		"linkedInUrl": "https://www.linkedin.com/posts/qdm_orthographe-PLACEHOLDER",
-		"publishedAt": "2026-02-27",
+		"publishedAt": "2026-09-01",
 		"order": 4
 	},
 	{
@@ -308,7 +308,7 @@
 		"image": "../assets/posts/15-nommage.png",
 		"imageAlt": "Visuel QDM « Nommage » (DX).",
 		"linkedInUrl": "https://www.linkedin.com/posts/qdm_nommage-PLACEHOLDER",
-		"publishedAt": "2026-03-03",
+		"publishedAt": "2026-08-26",
 		"order": 3
 	},
 	{
@@ -326,7 +326,7 @@
 		"image": "../assets/posts/16-dette-technique.png",
 		"imageAlt": "Visuel QDM « Les commentaires comme dette technique » (ARCHI).",
 		"linkedInUrl": "https://www.linkedin.com/posts/qdm_dette-technique-PLACEHOLDER",
-		"publishedAt": "2026-03-07",
+		"publishedAt": "2026-08-19",
 		"order": 3
 	},
 	{
@@ -344,7 +344,7 @@
 		"image": "../assets/posts/17-commits.png",
 		"imageAlt": "Visuel QDM « Messages de commit explicites » (DX).",
 		"linkedInUrl": "https://www.linkedin.com/posts/qdm_commit-messages-PLACEHOLDER",
-		"publishedAt": "2026-03-11",
+		"publishedAt": "2026-08-12",
 		"order": 4
 	},
 	{
@@ -392,7 +392,7 @@
 			}
 		],
 		"linkedInUrl": "https://www.linkedin.com/posts/qdm_texte-alternatif-PLACEHOLDER",
-		"publishedAt": "2026-03-15",
+		"publishedAt": "2026-09-02",
 		"order": 5
 	},
 	{
@@ -410,7 +410,7 @@
 		"image": "../assets/posts/19-runbook-astreinte.png",
 		"imageAlt": "Visuel QDM « Runbook & astreinte » (COLLAB).",
 		"linkedInUrl": "https://www.linkedin.com/posts/qdm_astreinte-PLACEHOLDER",
-		"publishedAt": "2026-03-19",
+		"publishedAt": "2026-08-07",
 		"order": 1
 	},
 	{
@@ -458,7 +458,7 @@
 			}
 		],
 		"linkedInUrl": "https://www.linkedin.com/posts/qdm_cinq-relations-PLACEHOLDER",
-		"publishedAt": "2026-03-23",
+		"publishedAt": "2026-08-14",
 		"order": 2
 	},
 	{
@@ -476,7 +476,7 @@
 		"image": "../assets/posts/21-incertitude-qa.png",
 		"imageAlt": "Visuel QDM « Zones d'incertitude & QA » (COLLAB).",
 		"linkedInUrl": "https://www.linkedin.com/posts/qdm_confiance-qa-PLACEHOLDER",
-		"publishedAt": "2026-03-27",
+		"publishedAt": "2026-08-21",
 		"order": 3
 	},
 	{
@@ -524,7 +524,7 @@
 			}
 		],
 		"linkedInUrl": "https://www.linkedin.com/posts/qdm_etats-invisibles-designer-PLACEHOLDER",
-		"publishedAt": "2026-03-31",
+		"publishedAt": "2026-07-31",
 		"order": 4
 	},
 	{
@@ -542,7 +542,7 @@
 		"image": "../assets/posts/23-tickets-recurrents.png",
 		"imageAlt": "Visuel QDM « Tickets récurrents & recette » (COLLAB).",
 		"linkedInUrl": "https://www.linkedin.com/posts/qdm_relation-support-PLACEHOLDER",
-		"publishedAt": "2026-04-04",
+		"publishedAt": "2026-07-24",
 		"order": 5
 	}
 ]

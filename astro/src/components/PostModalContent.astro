@@ -1,16 +1,19 @@
 ---
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
-import { isCarousel, type Post } from '@domain/post';
+import { isCarousel, isScheduled, type Post } from '@domain/post';
+import { formatPublicationDate, toIsoDate } from '@/ui/format/date';
 import { styleFromMode } from '@/ui/theme/modes';
 import QdmBadge from './QdmBadge.astro';
 import TagCategory from './TagCategory.astro';
 
 interface Props {
 	post: Post;
+	now?: Date;	// ? Instant de référence pour « posté / à venir ». Injectable pour les tests ; sinon le build.
 }
 
-const { post } = Astro.props;
+const { post, now = new Date() } = Astro.props;
+const scheduled = isScheduled(post, now);
 const image = post.image as unknown as ImageMetadata;
 const titleId = `modal-title-${post.id}`;
 
@@ -99,6 +102,9 @@ const carouselPages = (post.pages ?? []).map((page) => ({
 	<div class="modal-post__text">
 		<div class="modal-post__meta">
 			<TagCategory category={post.category} />
+			<time class="modal-post__date" datetime={toIsoDate(post.publishedAt)}>
+				{scheduled ? 'À venir — ' : 'Posté le '}{formatPublicationDate(post.publishedAt)}
+			</time>
 		</div>
 		<h2 id={titleId} class="modal-post__title">{post.title}</h2>
 		{post.subtitle && <p class="modal-post__subtitle">{post.subtitle}</p>}
@@ -143,13 +149,33 @@ const carouselPages = (post.pages ?? []).map((page) => ({
 			grid-template-columns: minmax(0, 480px) 1fr;
 		}
 	}
+	.modal-post__visual {
+		margin: auto;
+	}
 	.modal-post__visual :global(img) {
 		width: 100%;
 		height: auto;
-		/* Même ratio que la vignette : 3/4, recadrage centré. */
-		aspect-ratio: 1080 / 1360;
+		aspect-ratio: 1080 / 1360; /* //? Même ratio que la vignette : 3/4, recadrage centré. */
 		object-fit: cover;
 		border-radius: 8px;
+	}
+	/* //? Rubrique + date sur une même ligne ; la date se rejette à droite et repasse à la ligne si la place manque. */
+	.modal-post__meta {
+		margin-right: 1.5rem;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.5rem 1rem;
+	}
+	/* //? Légende (charte §3) : mono, majuscules, interlettrage large, couleur discrète. */
+	.modal-post__date {
+		font-family: var(--font-mono, monospace);
+		font-size: 0.8rem;
+		font-weight: 700;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: var(--kicker, var(--muted));
 	}
 	.modal-post__title {
 		font-size: clamp(1.5rem, 3vw, 2.25rem);

@@ -1,5 +1,7 @@
 import type { Post } from '@domain/post';
 
+import { toIsoDate } from '@/ui/format/date';
+
 interface GalleryInput {
 	siteUrl: string;
 	name: string;
@@ -7,7 +9,7 @@ interface GalleryInput {
 	posts: readonly Post[];
 }
 
-/** Rend une URL absolue à partir du site (laisse intactes les URLs déjà absolues). */
+// ? Rend une URL absolue à partir du site (laisse intactes les URLs déjà absolues)
 function absoluteUrl(siteUrl: string, path: string): string {
 	if (/^https?:\/\//.test(path)) {
 		return path;
@@ -16,9 +18,9 @@ function absoluteUrl(siteUrl: string, path: string): string {
 }
 
 /**
- * Données structurées schema.org de la galerie : un `ItemList` dont chaque item
- * est un `CreativeWork` (un post). Injecté en `<script type="application/ld+json">`
- * dans la page d'accueil (SEO, action.md §7).
+ * ? Données structurées schema.org de la galerie : un `ItemList` dont chaque item
+ * ? est un `CreativeWork` (un post). Injecté en `<script type="application/ld+json">`
+ * ? dans la page d'accueil (SEO, action.md §7).
  */
 export function galleryJsonLd({ siteUrl, name, description, posts }: GalleryInput): object {
 	return {
@@ -36,6 +38,7 @@ export function galleryJsonLd({ siteUrl, name, description, posts }: GalleryInpu
 				abstract: post.subtitle,
 				url: post.linkedInUrl,
 				image: absoluteUrl(siteUrl, post.image.src),
+				datePublished: toIsoDate(post.publishedAt),
 				inLanguage: 'fr',
 			},
 		})),

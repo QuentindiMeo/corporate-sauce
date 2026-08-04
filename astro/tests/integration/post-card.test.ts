@@ -11,7 +11,7 @@ beforeAll(async () => {
 	container = await AstroContainer.create();
 });
 
-function card(overrides = {}) {
+function card(overrides = {}, extraProps: Record<string, unknown> = {}) {
 	const post = aPost({
 		id: 'demo-card',
 		category: 'PERF',
@@ -21,8 +21,10 @@ function card(overrides = {}) {
 		image: visual,
 		...overrides,
 	});
-	return container.renderToString(PostCard, { props: { post } });
+	return container.renderToString(PostCard, { props: { post, ...extraProps } });
 }
+
+const now = new Date('2026-08-04T12:00:00Z');
 
 describe('Feature: PostCard component', () => {
 	it('Given a post, When the card is rendered, Then the image carries the alt text', async () => {
@@ -68,5 +70,36 @@ describe('Feature: PostCard component', () => {
 	it('Given a post without pages, When the card is rendered, Then it stays a simple thumbnail (no fard)', async () => {
 		const html = await card();
 		expect(html).not.toContain('data-fard');
+	});
+
+	it('Given a post still to be published, When the card is rendered, Then it is marked « à venir »', async () => {
+		const html = await card({ publishedAt: new Date('2026-09-02T00:00:00Z') }, { now });
+		expect(html).toContain('data-scheduled');
+		expect(html).toMatch(/class="[^"]*post-card__scheduled/);
+		expect(html).toContain('À venir');
+	});
+
+	it('Given a scheduled post, When the card is rendered, Then the state is in the accessible name, not colour alone', async () => {
+		const html = await card({ publishedAt: new Date('2026-09-02T00:00:00Z') }, { now });
+		expect(html).toMatch(/aria-label="[^"]*\(à venir\)"/);
+	});
+
+	it('Given an already-published post, When the card is rendered, Then no « à venir » marker appears', async () => {
+		const html = await card({ publishedAt: new Date('2026-07-21T00:00:00Z') }, { now });
+		expect(html).not.toContain('data-scheduled');
+		expect(html).not.toContain('À venir');
+	});
+
+	it('Given an already-published post, Then the accessible name states it is published', async () => {
+		const html = await card({ publishedAt: new Date('2026-07-21T00:00:00Z') }, { now });
+		expect(html).toMatch(/aria-label="[^"]*\(posté\)"/);
+	});
+
+	it('Given either state, Then the mention is separated from the title by a space', async () => {
+		// Régression : « … »(posté) collé au guillemet fermant s'entend dans un lecteur d'écran.
+		const published = await card({ publishedAt: new Date('2026-07-21T00:00:00Z') }, { now });
+		const scheduled = await card({ publishedAt: new Date('2026-09-02T00:00:00Z') }, { now });
+		expect(published).toContain('» (posté)');
+		expect(scheduled).toContain('» (à venir)');
 	});
 });

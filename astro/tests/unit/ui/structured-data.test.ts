@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import { galleryJsonLd } from '@/ui/seo/structured-data';
 import { aPost } from '../../helpers/post-factory';
 
@@ -42,6 +43,14 @@ describe('Feature: gallery JSON-LD', () => {
 			itemListElement: Array<{ item: { image: string } }>;
 		};
 		expect(data.itemListElement[0].item.image).toBe('https://qdm.example/_astro/x.webp');
+	});
+
+	it('Given a post, When the JSON-LD is built, Then its publication date is exposed as a bare ISO day', () => {
+		const post = aPost({ publishedAt: new Date('2026-07-21T00:00:00Z') });
+		const data = galleryJsonLd({ ...base, posts: [post] }) as {
+			itemListElement: Array<{ item: { datePublished: string } }>;
+		};
+		expect(data.itemListElement[0].item.datePublished).toBe('2026-07-21');
 	});
 
 	it('Given an already-absolute image URL, When the JSON-LD is built, Then the URL is kept as-is', () => {

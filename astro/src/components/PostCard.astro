@@ -2,16 +2,32 @@
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 import { isDarkMode } from '@domain/mode';
-import { isCarousel, type Post } from '@domain/post';
+import { isCarousel, isScheduled, type Post } from '@domain/post';
 import { styleFromMode } from '@/ui/theme/modes';
 
 interface Props {
 	post: Post;
-	/** `true` pour le 1er écran (désactive le lazy-load, améliore le LCP). */
-	priority?: boolean;
+	priority?: boolean; // ? `true` pour le 1er écran (désactive le lazy-load, améliore le LCP).
+	now?: Date; // ? Instant de référence pour « posté / à venir ». Injectable pour les tests ; sinon le build.
 }
 
-const { post, priority = false } = Astro.props;
+const inferAriaDescription = (post: Post): string | undefined => {
+	const pageCount = post.pages?.length ?? 0;
+	return `Contient ${pageCount} page${pageCount > 1 ? 's' : ''}.`;
+};
+
+const inferAriaLabel = (post: Post, now: Date): string => {
+	const postShape = isCarousel(post) ? 'carrousel' : 'post';
+	const scheduledMention = isScheduled(post, now) ? ' (à venir)' : ' (posté)';
+	return `Ouvrir le ${postShape} « ${post.title} »${scheduledMention}`;
+};
+
+const { post, priority = false, now = new Date() } = Astro.props;
+const postAria = { label: inferAriaLabel(post, now), description: isCarousel(post) ? inferAriaDescription(post) : undefined };
+
+// ? Post encore à paraître : signalé par une pastille ET par le nom accessible du lien
+// ? (charte §2 : le sens ne repose jamais sur la couleur seule).
+const scheduled = isScheduled(post, now);
 const headerMode = post.mode === 'clair' ? 'sombre' : 'clair';
 
 // L'entité expose `image` en `PostImage` ; à l'exécution c'est l'`ImageMetadata`
@@ -32,6 +48,7 @@ const pageCount = post.pages?.length ?? 0;
 	data-mode={post.mode}
 	data-dark={isDarkMode(post.mode) ? '' : undefined}
 	data-fard={postIsACarousel ? '' : undefined}
+	data-scheduled={scheduled ? '' : undefined}
 	style={styleFromMode(headerMode)}
 >
 	<a
@@ -40,10 +57,11 @@ const pageCount = post.pages?.length ?? 0;
 		target="_blank"
 		rel="noopener noreferrer"
 		data-post-id={post.id}
-		aria-label={`Ouvrir le ${postIsACarousel ? 'carrousel' : 'post'} « ${post.title} »`}
-		aria-description={postIsACarousel ? `contient ${pageCount} pages` : undefined}
+		aria-label={postAria.label}
+		aria-description={postAria.description}
 	>
 		<p class="post-card__title"><span>{post.title}</span></p>
+		{scheduled && <span class="post-card__scheduled">À venir</span>}
 		<div class="post-card__media">
 			{
 				postIsACarousel ? (
@@ -225,6 +243,25 @@ const pageCount = post.pages?.length ?? 0;
 	.post-card[data-fard]:hover .fard__page--2,
 	.post-card[data-fard]:focus-within .fard__page--2 {
 		transform: rotate(-15deg) translateY(-6%);
+	}
+	/* //? Pastille « à venir » : en haut à GAUCHE, juste sous la bande de titre — l'autre coin bas-droit est pris par
+		? le compteur de pages du fard. Contour plutôt qu'aplat, pour ne pas se confondre avec ce compteur ; fond plein
+		? pour rester lisible sur l'image. Même plan que le titre (z 5), donc au-dessus des pages dépliées. */
+	.post-card__scheduled {
+		position: absolute;
+		top: calc(16% + 0.5rem);
+		left: 0.5rem;
+		z-index: 6;
+		padding: 0.15em 0.5em;
+		border: 1px solid var(--acc-text);
+		border-radius: 6px;
+		background: var(--bg);
+		color: var(--acc-text);
+		font-family: var(--font-mono, monospace);
+		font-size: 0.65rem;
+		font-weight: 700;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
 	}
 	.fard__badge {
 		position: absolute;

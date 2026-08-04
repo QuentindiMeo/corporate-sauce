@@ -45,3 +45,13 @@ export interface Post {
 export function isCarousel(post: Post): boolean {
 	return (post.pages?.length ?? 0) >= 2;
 }
+
+/**
+ * ? Post programmé : sa date de publication est encore à venir.
+ * ! `now` est passé en paramètre (jamais `new Date()` ici) : le domaine reste pur et
+ * ! testable. Le site étant statique, la référence est l'instant du BUILD — un post
+ * ! programmé ne cesse d'être « à venir » qu'au prochain build.
+ */
+export function isScheduled(post: Post, now: Date): boolean {
+	return post.publishedAt.getTime() > now.getTime();
+}
