@@ -36,24 +36,6 @@
 		"order": 2
 	},
 	{
-		"id": "03-semver",
-		"category": "ARCHI",
-		"mode": "sombre",
-		"title": "(Vraiment) Respecter le versioning sémantique",
-		"body": "Glisser un changement qui casse tout dans une mise à jour \"mineure\", c'est tentant quand on veut éviter d'incrémenter le numéro majeur.\nC'est aussi trahir silencieusement tous ceux qui dépendent de votre code.\n\nMAJOR.MINOR.PATCH n'est pas une simple convention de numérotation.\nC'est une promesse faite aux équipes qui vous font confiance.\n\nUn breaking change glissé dans un patch ne passe pas inaperçu : il force une migration silencieuse.\nLes builds cassent sans raison apparente. Les équipes perdent du temps à chercher ce qui a changé.\nEt la prochaine fois, elles liront vos notes de version avec suspicion.\n\nDeux réflexes pour honorer le contrat :\n→ Monter de major sans hésiter dès qu'une interface publique change — ce n'est pas un aveu de faiblesse, c'est un signal de sérieux.\n→ Déprécier avant de supprimer — une version qui avertit vaut mieux qu'une version qui coupe tout.\n\nUn numéro de version n'est pas qu'un identifiant technique.\nC'est aussi le degré de confiance que vous accordez à ceux qui lisent votre changelog.",
-		"hashtags": [
-			"BonnesPratiques",
-			"DéveloppementWeb",
-			"API",
-			"SemVer"
-		],
-		"image": "../assets/posts/03-semver.png",
-		"imageAlt": "Visuel QDM « (Vraiment) Respecter le versioning sémantique » (ARCHI).",
-		"linkedInUrl": "https://www.linkedin.com/posts/qdm_semver-PLACEHOLDER",
-		"publishedAt": "2026-01-14",
-		"order": 1
-	},
-	{
 		"id": "04-readme",
 		"category": "DX",
 		"mode": "sombre",
@@ -184,60 +166,6 @@
 		"linkedInUrl": "https://www.linkedin.com/posts/qdm_errors-PLACEHOLDER",
 		"publishedAt": "2026-01-30",
 		"order": 1
-	},
-	{
-		"id": "08-clavier",
-		"category": "A11Y",
-		"mode": "clair",
-		"title": "Valoriser la navigation au clavier",
-		"body": "Appuyer sur Tab pour passer au champ suivant, c'est un réflexe que beaucoup ont.\nQuand le focus disparaît ou saute dans le désordre, l'abandon aussi est universel.\nLa navigation au clavier n'est pas une option d'accessibilité : c'est les fondations.\n\nUne souris qui tombe en panne, un formulaire à remplir, un trackpad qui déraille.\nPour ceux qui utilisent un lecteur d'écran ou une commande vocale, c'est sur chaque page, chaque jour.\nRésultat : sans clavier, naviguer est un calvaire.\n\nDeux réflexes pour vérifier qu'une interface tient debout :\n→ Ranger la souris cinq minutes et naviguer sur votre propre site au clavier.\n→ Vérifier que chaque élément interactif est atteignable, visible et utilisable.\n\nOn pourrait aussi parler des raccourcis clavier, si précieux pour la productivité des tâches répétitives.\nL'accessibilité motrice n'est pas une contrainte réservée à quelques profils.\nC'est une exigence de base pour tout le monde — y compris vos utilisateurs valides.",
-		"hashtags": [
-			"DéveloppementWeb",
-			"UX",
-			"Design",
-			"Accessibilité"
-		],
-		"image": "../assets/posts/08-clavier.png",
-		"imageAlt": "Visuel QDM « Navigation au clavier » (A11Y).",
-		"linkedInUrl": "https://www.linkedin.com/posts/qdm_keyboard-PLACEHOLDER",
-		"publishedAt": "2026-02-03",
-		"order": 2
-	},
-	{
-		"id": "09-contraste",
-		"category": "A11Y",
-		"mode": "clair",
-		"title": "L'importance des seuils de contraste",
-		"body": "Du gris clair sur blanc, c'est classe comme association... mais pour une partie de votre audience, ce n'est qu'une ombre confuse.\nLe contraste de couleur n'est pas une question de goût, c'est un seuil bien défini :\n4,5:1 pour le texte normal, 3:1 pour le grand texte (cf. guide WCAG).\n\nVotre œil jeune et reposé sur un bon écran, ce n'est pas l'œil de référence.\nUne part importante de la population a une vision des couleurs ou une acuité réduite, et ça empire avec l'âge.\nRésultat : sous le seuil du WCAG, le lecteur abandonne.\n\nDeux réflexes pour un contraste qui tient la route :\n→ Mesurer le ratio avec un outil, pas le juger à l'œil. (e.g. WebAIM Contrast Checker)\n→ Viser 4,5:1 (texte) et 3:1 (grand texte), sans exception.\n\nL'accessibilité visuelle n'est pas un cas particulier ni un détail.\nElle impacte le parcours de tout le monde, y compris le vôtre dans dix ans.",
-		"hashtags": [
-			"UX",
-			"WCAG",
-			"Design",
-			"Accessibilité"
-		],
-		"image": "../assets/posts/09-contraste.png",
-		"imageAlt": "Visuel QDM « L'importance des seuils de contraste » (A11Y).",
-		"linkedInUrl": "https://www.linkedin.com/posts/qdm_contrast-PLACEHOLDER",
-		"publishedAt": "2026-02-07",
-		"order": 3
-	},
-	{
-		"id": "10-lisibilite",
-		"category": "UI",
-		"mode": "clair",
-		"title": "La lisibilité des visuels",
-		"body": "Du texte bleu sur noir, c'est très élégant. Sur votre écran. En intérieur.\nDehors, sur un mobile, c'est une soupe de pixels que personne ne lit.\n\nJusqu'à 70 % de votre audience est sur téléphone. Et une partie lit en plein soleil. Le texte clair sur fond sombre perd énormément en lisibilité : la lumière ambiante écrase le contraste et l'écran se transforme en miroir. Le \"sombre sur clair\" encaisse beaucoup mieux le soleil que l'inverse.\nRésultat : le lecteur ne se casse pas la tête à lire. Il scrolle.\n\nOui, Claude vous génère des visuels catchy en quelques secondes. Mais \"splendide sur mon écran\" ne veut pas dire \"lisible dans le fil d'actualité\".\n\nDeux réflexes pour des visuels lisibles partout :\n→ Bannir le foncé sur foncé, le clair sur clair.\n→ Tester le visuel sur votre téléphone, dehors. Pas sur un ordinateur dans un bureau.\n\nLe dark mode est une vraie tendance mais c'est aussi un piège à lisibilité.\nLe meilleur visuel n'est pas le plus beau en studio, mais c'est celui qu'on lit encore à une main, dans n'importe quel environnement.",
-		"hashtags": [
-			"Mobile",
-			"Accessibilité",
-			"Design",
-			"Darkmode"
-		],
-		"image": "../assets/posts/10-lisibilite.png",
-		"imageAlt": "Visuel QDM « La lisibilité des visuels » (UI).",
-		"linkedInUrl": "https://www.linkedin.com/posts/qdm_dark-text-claude-PLACEHOLDER",
-		"publishedAt": "2026-02-11",
-		"order": 2
 	},
 	{
 		"id": "11-couverture-tests",

@@ -129,6 +129,16 @@ const pageCount = post.pages?.length ?? 0;
 		font-size: 0.95rem;
 		line-height: 1.2;
 		text-wrap: balance;
+		/* //? Au-dessus des pages du fard (z 1-3) et du badge (z 4) : en s'ouvrant,
+		   l'éventail déborde vers le haut et passait PAR-DESSUS le titre. */
+		position: relative;
+		z-index: 5;
+		/* Halo dans la couleur opposée au texte (--bg et --fg sont les deux pôles
+		   du mode, posés en inline) : le titre reste lisible sur la page qui glisse
+		   dessous, quel que soit le mode. */
+		text-shadow:
+			0 1px 2px var(--bg),
+			0 0 6px var(--bg);
 	}
 	/* Le clamp 2 lignes vit sur l'enfant, sans interférer avec le centrage. */
 	.post-card__title span {

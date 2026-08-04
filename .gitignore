@@ -3,3 +3,4 @@ contents/
 *_charte/
 *.zip
 *.md
+!README.md
