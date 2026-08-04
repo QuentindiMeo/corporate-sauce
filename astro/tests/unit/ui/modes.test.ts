@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
+
+import { MODE_TOKENS, SIGNAL_TOKENS, styleFromMode } from '@/ui/theme/modes';
 import { MODES } from '@domain/mode';
-import { MODE_TOKENS, styleFromMode, SIGNAL_TOKENS } from '@/ui/theme/modes';
 
 describe('Feature: mode tokens', () => {
 	it('Given MODE_TOKENS, Then the three charter modes are defined', () => {
@@ -33,6 +34,13 @@ describe('Feature: mode tokens', () => {
 			'--warm': '#F2A65A',
 			'--fg': '#E7F0E9',
 		});
+	});
+
+	it('Given any mode, Then it carries an --ink2 keyed to the flat colour it fills (§11)', () => {
+		// Secondary text on a flat fill never uses opacity: each mode gets the --ink2 matching its own flat colour — rust, ambre, abricot — all ≥ 4,5:1.
+		expect(MODE_TOKENS.sombre['--ink2']).toBe('#4A1D10');
+		expect(MODE_TOKENS.clair['--ink2']).toBe('#5A3D00');
+		expect(MODE_TOKENS.liant['--ink2']).toBe('#5A4020');
 	});
 });
 
