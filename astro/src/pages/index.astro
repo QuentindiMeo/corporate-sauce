@@ -1,5 +1,6 @@
 ---
 import { listPostsByTheme } from '@application/list-posts-by-theme';
+import { isScheduled } from '@domain/post';
 import { astroPostRepository } from '@infrastructure/content/astro-post-repository';
 import BaseHead from '../components/BaseHead.astro';
 import CategoryNav from '../components/CategoryNav.astro';
@@ -10,11 +11,15 @@ import PostModal from '../components/PostModal.astro';
 import { galleryJsonLd } from '@/ui/seo/structured-data';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 
-// Hexagone : adaptateur infra → cas d'usage → domaine → grille.
+// ? Hexagone : adaptateur infra → cas d'usage → domaine → grille.
 const rows = await listPostsByTheme(astroPostRepository);
 const categories = rows.map((row) => row.category);
 const posts = rows.flatMap((row) => row.posts);
 const total = posts.length;
+
+// ? Posts encore à paraître, comptés à l'instant du BUILD (site statique) : le compteur se met à jour au prochain déploiement
+const now = new Date();
+const scheduledCount = posts.filter((post) => isScheduled(post, now)).length;
 
 const jsonLd = galleryJsonLd({
 	siteUrl: Astro.site?.href ?? Astro.url.origin,
@@ -40,7 +45,9 @@ const jsonLd = galleryJsonLd({
 				<p class="intro__subtitle">
 					Secrets de fabrication logicielle et tuyaux en tout genre.<br/>Une conviction par visuel, sans détour.
 				</p>
-				<p class="intro__meta">{total} posts · {rows.length} rubriques</p>
+				<p class="intro__meta">
+					{total} posts{scheduledCount > 0 && ` (${scheduledCount} à pourvoir)`} · {rows.length} rubriques
+				</p>
 			</header>
 
 			<PostGrid rows={rows} />

@@ -87,11 +87,11 @@ const CATEGORY_LABELS: Record<Category, string> = {
 		position: fixed;
 		top: 50%;
 		transform: translateY(-50%);
-		left: max(1rem, calc(50vw - 50rem));
+		left: max(1.5rem, calc(50vw - 50rem));
 		z-index: 10;
 		display: none;
 	}
-	@media (min-width: 84rem) {
+	@media (min-width: 32rem) {
 		.category-nav {
 			display: block;
 		}
@@ -120,7 +120,8 @@ const CATEGORY_LABELS: Record<Category, string> = {
 		color: var(--muted);
 		transition:
 			color 0.2s ease,
-			background-color 0.2s ease;
+			background-color 0.2s ease,
+			box-shadow 0.2s ease;
 	}
 	.category-nav__dot {
 		width: 6px;
@@ -153,11 +154,24 @@ const CATEGORY_LABELS: Record<Category, string> = {
 		margin-left: 0.5rem;
 		opacity: 1;
 	}
+	/* //? Déplié, le libellé complet déborde du rail et passe AU-DESSUS des vignettes (le contenu fait 80vw centré, le
+		? rail vit dans la gouttière). Le fond doit donc être franchement opaque : un voile laissait lire l'image à
+		? travers le texte. `--bg` plutôt que `--panel`, qui n'est pas défini dans le chrome (seulement dans les modes
+		? de post) et retombait sur un gris à 8 %. Le halo + l'ombre détachent la pastille du fond quand elle est posée
+		? sur la page, de même couleur. */
 	.category-nav__link:hover,
 	.category-nav__link:focus-visible {
 		color: var(--fg);
-		background: var(--panel, rgba(127, 127, 127, 0.08));
+		background: var(--bg);
+		/* Halo en --muted, pas en --border : une vignette en mode sombre a EXACTEMENT le
+		   même fond que le chrome sombre (#120A07), donc un filet discret y disparaît,
+		   ombre portée comprise. --muted tient 7,3:1 (sombre) et 6,1:1 (clair). */
+		box-shadow:
+			0 0 0 1px var(--muted),
+			0 6px 18px rgb(0 0 0 / 0.28);
 	}
+	/* La rubrique courante garde son accent au survol (la règle suit celle du hover,
+	   à spécificité égale) : c'est --acc-text sur --bg, vérifié ≥ 4,5:1 dans les deux thèmes. */
 	.category-nav__link[aria-current='true'] {
 		color: var(--acc-text, var(--acc));
 	}

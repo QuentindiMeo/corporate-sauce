@@ -4,3 +4,4 @@ contents/
 *.zip
 *.md
 !README.md
+.lighthouseci/
