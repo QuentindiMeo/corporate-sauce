@@ -1,8 +1,8 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
-test.describe('Accessibility — home', () => {
-	test('no critical/serious axe violation', async ({ page }) => {
+test.describe('Feature: home accessibility', () => {
+	test('Given the home page, When it is audited with axe, Then there is no critical or serious violation', async ({ page }) => {
 		await page.goto('/');
 		const resultats = await new AxeBuilder({ page })
 			.withTags(['wcag2a', 'wcag2aa'])
@@ -13,13 +13,13 @@ test.describe('Accessibility — home', () => {
 		expect(graves).toEqual([]);
 	});
 
-	test('the page is in French and has a single h1', async ({ page }) => {
+	test('Given the home page, When it is loaded, Then it is in French and has a single h1', async ({ page }) => {
 		await page.goto('/');
 		await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
 		await expect(page.locator('h1')).toHaveCount(1);
 	});
 
-	test('the skip link is the first focusable element', async ({ page }) => {
+	test('Given the home page, When Tab is pressed, Then the skip link is the first focusable element', async ({ page }) => {
 		await page.goto('/');
 		await page.keyboard.press('Tab');
 		const focus = page.locator(':focus');
@@ -27,7 +27,7 @@ test.describe('Accessibility — home', () => {
 		await expect(focus).toHaveAttribute('href', '#contenu');
 	});
 
-	test('cards are reachable and activatable via keyboard', async ({ page }) => {
+	test('Given the home page, When a card is focused and Enter is pressed, Then the modal opens', async ({ page }) => {
 		await page.goto('/');
 		const premiereCarte = page.locator('[data-post-id]').first();
 		await premiereCarte.focus();
@@ -38,8 +38,8 @@ test.describe('Accessibility — home', () => {
 	});
 });
 
-test.describe('SEO — home', () => {
-	test('injects a valid ItemList JSON-LD', async ({ page }) => {
+test.describe('Feature: home SEO', () => {
+	test('Given the home page, When it is loaded, Then a valid ItemList JSON-LD is injected', async ({ page }) => {
 		await page.goto('/');
 		const contenu = await page.locator('script[type="application/ld+json"]').textContent();
 		const data = JSON.parse(contenu ?? '{}');

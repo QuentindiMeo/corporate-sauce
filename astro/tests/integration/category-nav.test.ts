@@ -8,15 +8,15 @@ beforeAll(async () => {
 	container = await AstroContainer.create();
 });
 
-describe('CategoryNav', () => {
-	it('is a labelled navigation landmark', async () => {
+describe('Feature: CategoryNav component', () => {
+	it('Given categories, When the nav is rendered, Then it is a labelled navigation landmark', async () => {
 		const html = await container.renderToString(CategoryNav, {
 			props: { categories: ['PERF', 'A11Y'] },
 		});
 		expect(html).toMatch(/<nav[^>]+aria-label="[^"]+"/);
 	});
 
-	it('renders an anchor link to each category', async () => {
+	it('Given categories, When the nav is rendered, Then an anchor link points to each category', async () => {
 		const html = await container.renderToString(CategoryNav, {
 			props: { categories: ['PERF', 'UI'] },
 		});
@@ -26,7 +26,7 @@ describe('CategoryNav', () => {
 		expect(html).toContain('UI');
 	});
 
-	it('gives each link a human accessible label (while keeping the visible code)', async () => {
+	it('Given a category, When the nav is rendered, Then its link has a human accessible label while keeping the visible code', async () => {
 		const html = await container.renderToString(CategoryNav, {
 			props: { categories: ['PERF'] },
 		});
@@ -35,7 +35,7 @@ describe('CategoryNav', () => {
 		expect(html).toContain('>PERF<');
 	});
 
-	it('renders nothing without categories', async () => {
+	it('Given no categories, When the nav is rendered, Then nothing is output', async () => {
 		const html = await container.renderToString(CategoryNav, { props: { categories: [] } });
 		expect(html).not.toContain('<nav');
 	});

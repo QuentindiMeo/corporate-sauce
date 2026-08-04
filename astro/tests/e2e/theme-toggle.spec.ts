@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
-test.describe('Theme toggle (chrome)', () => {
-	test('clicking toggles data-theme and updates aria-pressed', async ({ page }) => {
+test.describe('Feature: theme toggle (chrome)', () => {
+	test('Given the home page, When the toggle is clicked, Then data-theme flips and aria-pressed updates', async ({ page }) => {
 		await page.goto('/');
 		const html = page.locator('html');
 		const bouton = page.locator('[data-theme-toggle]');
@@ -16,7 +16,7 @@ test.describe('Theme toggle (chrome)', () => {
 		await expect(bouton).toHaveAttribute('aria-pressed', String(bascule === 'light'));
 	});
 
-	test('the choice persists after reload', async ({ page }) => {
+	test('Given a toggled theme, When the page is reloaded, Then the choice persists', async ({ page }) => {
 		await page.goto('/');
 		const html = page.locator('html');
 		const bouton = page.locator('[data-theme-toggle]');

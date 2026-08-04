@@ -31,8 +31,8 @@ function elements() {
 	};
 }
 
-describe('initModal', () => {
-	it('opens the modal and injects the clicked post content', () => {
+describe('Feature: post modal controller', () => {
+	it('Given a card, When it is clicked, Then the modal opens with the clicked post content', () => {
 		initModal(document);
 		const { dialog, body, card1 } = elements();
 
@@ -43,7 +43,7 @@ describe('initModal', () => {
 		expect(body.querySelector('[data-mode="clair"]')).not.toBeNull();
 	});
 
-	it('prevents the link default navigation (progressive enhancement)', () => {
+	it('Given a card link, When it is clicked, Then the default navigation is prevented (progressive enhancement)', () => {
 		initModal(document);
 		const { card1 } = elements();
 
@@ -53,7 +53,7 @@ describe('initModal', () => {
 		expect(evt.defaultPrevented).toBe(true);
 	});
 
-	it('closes the modal via the button and restores focus to the card', () => {
+	it('Given an open modal, When the close button is clicked, Then the modal closes and focus returns to the card', () => {
 		initModal(document);
 		const { dialog, card1, closeButton, body } = elements();
 
@@ -65,7 +65,7 @@ describe('initModal', () => {
 		expect(document.activeElement).toBe(card1);
 	});
 
-	it('closes the modal when clicking the backdrop (the dialog itself)', () => {
+	it('Given an open modal, When the backdrop is clicked, Then the modal closes', () => {
 		initModal(document);
 		const { dialog, card1 } = elements();
 
@@ -75,7 +75,7 @@ describe('initModal', () => {
 		expect(dialog.open).toBe(false);
 	});
 
-	it('ignores a click on a card with no matching template', () => {
+	it('Given a card with no matching template, When it is clicked, Then nothing opens', () => {
 		document.querySelector('[data-post-template="p1"]')?.remove();
 		initModal(document);
 		const { dialog, card1 } = elements();

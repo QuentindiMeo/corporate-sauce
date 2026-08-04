@@ -11,8 +11,8 @@ beforeAll(async () => {
 	container = await AstroContainer.create();
 });
 
-describe('TagCategory', () => {
-	it('renders the category in uppercase', async () => {
+describe('Feature: TagCategory component', () => {
+	it('Given a category, When the tag is rendered, Then the category appears in uppercase', async () => {
 		const html = await container.renderToString(TagCategory, {
 			props: { category: 'PERF' },
 		});
@@ -21,15 +21,15 @@ describe('TagCategory', () => {
 	});
 });
 
-describe('QdmBadge', () => {
-	it('renders the QDM logotype', async () => {
+describe('Feature: QdmBadge component', () => {
+	it('Given the badge, When it is rendered, Then the QDM logotype appears', async () => {
 		const html = await container.renderToString(QdmBadge);
 		expect(html).toContain('QDM');
 	});
 });
 
-describe('VerdictBadge', () => {
-	it('renders a ✓ with an accessible label for the positive verdict', async () => {
+describe('Feature: VerdictBadge component', () => {
+	it('Given the positive verdict, When the badge is rendered, Then a ✓ with an accessible label appears', async () => {
 		const html = await container.renderToString(VerdictBadge, {
 			props: { type: 'ok' },
 		});
@@ -37,7 +37,7 @@ describe('VerdictBadge', () => {
 		expect(html).toMatch(/aria-label="[^"]+"/);
 	});
 
-	it('renders a ✕ for the negative verdict', async () => {
+	it('Given the negative verdict, When the badge is rendered, Then a ✕ appears', async () => {
 		const html = await container.renderToString(VerdictBadge, {
 			props: { type: 'bad' },
 		});
@@ -45,8 +45,8 @@ describe('VerdictBadge', () => {
 	});
 });
 
-describe('Highlight', () => {
-	it('wraps the content passed in the slot', async () => {
+describe('Feature: Highlight component', () => {
+	it('Given slot content, When the highlight is rendered, Then the content is wrapped', async () => {
 		const html = await container.renderToString(Highlight, {
 			slots: { default: 'mot-clé' },
 		});

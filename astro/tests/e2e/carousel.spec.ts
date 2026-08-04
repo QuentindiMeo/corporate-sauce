@@ -1,8 +1,8 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
-test.describe('Carousel (fard folder card)', () => {
-	test('the carousel thumbnail shows a stack of pages + badge', async ({ page }) => {
+test.describe('Feature: carousel (fard folder card)', () => {
+	test('Given a carousel post, When the thumbnail is rendered, Then it shows a stack of pages and a badge', async ({ page }) => {
 		await page.goto('/');
 		const fard = page.locator('.post-card[data-fard]').first();
 		await expect(fard).toBeVisible();
@@ -12,7 +12,7 @@ test.describe('Carousel (fard folder card)', () => {
 		await expect(fard.locator('.fard__badge')).toHaveText(/\d+\s*pages/);
 	});
 
-	test('the modal opens a navigable carousel (next + counter)', async ({ page }) => {
+	test('Given a carousel card, When it is opened and navigated, Then the counter advances (next button and dots)', async ({ page }) => {
 		await page.goto('/');
 		await page.locator('.post-card[data-fard] [data-post-id]').first().click();
 
@@ -30,7 +30,7 @@ test.describe('Carousel (fard folder card)', () => {
 		await expect(counter).toHaveText(/^3 \/ \d+$/);
 	});
 
-	test('no critical/serious axe violation with the carousel open', async ({ page }) => {
+	test('Given an open carousel modal, When it is audited with axe, Then there is no critical or serious violation', async ({ page }) => {
 		await page.goto('/');
 		await page.locator('.post-card[data-fard] [data-post-id]').first().click();
 		await expect(page.locator('[data-post-modal]')).toBeVisible();

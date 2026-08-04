@@ -13,7 +13,7 @@ beforeAll(async () => {
 	container = await AstroContainer.create();
 });
 
-function row(category: ThemeRow['category'], n: number): ThemeRow {
+function row(category: ThemeRow['Feature: category vocabulary'], n: number): ThemeRow {
 	return {
 		category,
 		posts: Array.from({ length: n }, (_, i) =>
@@ -22,8 +22,8 @@ function row(category: ThemeRow['category'], n: number): ThemeRow {
 	};
 }
 
-describe('PostRow', () => {
-	it('renders the category tag and one card per post', async () => {
+describe('Feature: PostRow component', () => {
+	it('Given a theme row, When it is rendered, Then it shows the category tag and one card per post', async () => {
 		const html = await container.renderToString(PostRow, {
 			props: { row: row('PERF', 3) },
 		});
@@ -31,7 +31,7 @@ describe('PostRow', () => {
 		expect((html.match(/data-post-id=/g) ?? []).length).toBe(3);
 	});
 
-	it('is a region landmark labelled by its category (a11y)', async () => {
+	it('Given a theme row, When it is rendered, Then it is a region landmark labelled by its category (a11y)', async () => {
 		const html = await container.renderToString(PostRow, {
 			props: { row: row('A11Y', 1) },
 		});
@@ -39,8 +39,8 @@ describe('PostRow', () => {
 	});
 });
 
-describe('PostGrid', () => {
-	it('renders each row in the given order', async () => {
+describe('Feature: PostGrid component', () => {
+	it('Given several rows, When the grid is rendered, Then each row appears in the given order', async () => {
 		const rows = [row('PERF', 2), row('A11Y', 1), row('UI', 4)];
 		const html = await container.renderToString(PostGrid, { props: { rows } });
 
@@ -49,7 +49,7 @@ describe('PostGrid', () => {
 		expect(positions.every((p) => p >= 0)).toBe(true);
 	});
 
-	it('renders the expected total number of cards', async () => {
+	it('Given several rows, When the grid is rendered, Then the expected total number of cards is present', async () => {
 		const rows = [row('PERF', 2), row('UI', 4)];
 		const html = await container.renderToString(PostGrid, { props: { rows } });
 		expect((html.match(/data-post-id=/g) ?? []).length).toBe(6);

@@ -3,8 +3,8 @@ import { listPostsByTheme } from '@application/list-posts-by-theme';
 import { fakePostRepository } from '../../helpers/fake-post-repository';
 import { aPost } from '../../helpers/post-factory';
 
-describe('listPostsByTheme', () => {
-	it('returns the theme rows grouped from the repository', async () => {
+describe('Feature: list posts by theme (use case)', () => {
+	it('Given a repository of posts, When listing by theme, Then the grouped theme rows are returned', async () => {
 		const repository = fakePostRepository([
 			aPost({ id: 'a', category: 'UI' }),
 			aPost({ id: 'b', category: 'PERF' }),
@@ -15,7 +15,7 @@ describe('listPostsByTheme', () => {
 		expect(rows.map((r) => r.category)).toEqual(['PERF', 'UI']);
 	});
 
-	it('returns an empty list when the repository is empty', async () => {
+	it('Given an empty repository, When listing by theme, Then an empty list is returned', async () => {
 		const rows = await listPostsByTheme(fakePostRepository([]));
 		expect(rows).toEqual([]);
 	});

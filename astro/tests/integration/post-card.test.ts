@@ -24,30 +24,30 @@ function card(overrides = {}) {
 	return container.renderToString(PostCard, { props: { post } });
 }
 
-describe('PostCard', () => {
-	it('renders an image with the alt text', async () => {
+describe('Feature: PostCard component', () => {
+	it('Given a post, When the card is rendered, Then the image carries the alt text', async () => {
 		const html = await card();
 		expect(html).toMatch(/<img[^>]+alt="Description accessible du visuel"/);
 	});
 
-	it('exposes the real post mode and applies the contrasting palette (inverted header)', async () => {
+	it('Given a post mode, When the card is rendered, Then data-mode is the real mode and the contrasting palette is applied (inverted header)', async () => {
 		const html = await card({ mode: 'clair' });
 		expect(html).toContain('data-mode="clair"');
 		expect(html).toContain('--bg:#120A07');
 	});
 
-	it('exposes a secure LinkedIn link', async () => {
+	it('Given a post, When the card is rendered, Then it exposes a secure LinkedIn link', async () => {
 		const html = await card();
 		expect(html).toMatch(/<a[^>]+href="https:\/\/www\.linkedin\.com/);
 		expect(html).toContain('rel="noopener noreferrer"');
 	});
 
-	it('carries the post id (modal hook, Phase 4)', async () => {
+	it('Given a post, When the card is rendered, Then it carries the post id (modal hook)', async () => {
 		const html = await card({ id: 'demo-card' });
 		expect(html).toContain('data-post-id="demo-card"');
 	});
 
-	it('shows the post title above the image (no overlaid tag)', async () => {
+	it('Given a post, When the card is rendered, Then the title shows above the image with no overlaid tag', async () => {
 		const html = await card({ title: 'Un titre de post accrocheur' });
 		expect(html).toContain('Un titre de post accrocheur');
 		expect(html).toMatch(/class="[^"]*post-card__title/);
@@ -57,7 +57,7 @@ describe('PostCard', () => {
 		expect(html).not.toMatch(/class="[^"]*post-card__tag/);
 	});
 
-	it('renders a fard for a carousel post', async () => {
+	it('Given a carousel post, When the card is rendered, Then it shows a fard (stack of pages + badge)', async () => {
 		const page = { image: visual, alt: 'Page du carrousel' };
 		const html = await card({ pages: [page, page, page] });
 		expect(html).toContain('data-fard');
@@ -65,7 +65,7 @@ describe('PostCard', () => {
 		expect(html).toContain('3 pages');
 	});
 
-	it('stays a simple thumbnail (no fard) without pages', async () => {
+	it('Given a post without pages, When the card is rendered, Then it stays a simple thumbnail (no fard)', async () => {
 		const html = await card();
 		expect(html).not.toContain('data-fard');
 	});

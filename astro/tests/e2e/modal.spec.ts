@@ -1,8 +1,8 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
-test.describe('Post modal', () => {
-	test('opens the modal when clicking a card', async ({ page }) => {
+test.describe('Feature: post modal', () => {
+	test('Given the home page, When a card is clicked, Then the modal opens', async ({ page }) => {
 		await page.goto('/');
 		const dialog = page.locator('[data-post-modal]');
 		await expect(dialog).toBeHidden();
@@ -14,7 +14,7 @@ test.describe('Post modal', () => {
 		await expect(dialog.getByRole('link', { name: /LinkedIn/ })).toBeVisible();
 	});
 
-	test('closes the modal with Escape and restores focus to the card', async ({ page }) => {
+	test('Given an open modal, When Escape is pressed, Then it closes and focus returns to the card', async ({ page }) => {
 		await page.goto('/');
 		const carte = page.locator('[data-post-id]').first();
 		await carte.click();
@@ -28,7 +28,7 @@ test.describe('Post modal', () => {
 		await expect(carte).toBeFocused();
 	});
 
-	test('closes the modal when clicking the backdrop', async ({ page }) => {
+	test('Given an open modal, When the backdrop is clicked, Then it closes', async ({ page }) => {
 		await page.goto('/');
 		await page.locator('[data-post-id]').first().click();
 		const dialog = page.locator('[data-post-modal]');
@@ -40,7 +40,7 @@ test.describe('Post modal', () => {
 		await expect(dialog).toBeHidden();
 	});
 
-	test('no critical/serious axe violation with the modal open', async ({ page }) => {
+	test('Given an open modal, When it is audited with axe, Then there is no critical or serious violation', async ({ page }) => {
 		await page.goto('/');
 		await page.locator('[data-post-id]').first().click();
 		await expect(page.locator('[data-post-modal]')).toBeVisible();
