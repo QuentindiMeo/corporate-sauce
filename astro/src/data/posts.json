@@ -3,7 +3,7 @@
 		"id": "01-virtualisation",
 		"category": "PERF",
 		"mode": "sombre",
-		"title": "Virtualisation",
+		"title": "L'impact de la virtualisation",
 		"body": "Votre liste affiche 2.000 éléments. L'utilisateur en voit 12. Mais le navigateur... en a bien rendu 2.000 !\nC'est ça, un DOM sans virtualisation : payer le coût total pour ne livrer qu'une fraction.\n\nChaque nœud du DOM a un prix — mémoire allouée, calcul des couches, temps pour les afficher...\nRésultat : une liste de 500 éléments non virtualisée peut bloquer la couche principale durant plusieurs secondes.\nPas à cause du réseau. Pas à cause du serveur. À cause d'éléments que personne ne lira jamais.\n\nLa règle est simple : une liste de 10.000 lignes a rarement besoin de plus de 20 nœuds de DOM simultanément.\nLe reste ? On le calcule à la volée, au scroll, et on le détruit dès qu'il sort de l'affichage (i.e. du viewport).\nC'est le principe de virtualisation — avec elle, on ne charge pas ce qu'on n'utilise pas, n'est rendu que ce qui est visible.\n\nCe que suivre ce principe implique concrètement :\n→ Afficher une liste de plus de 100 fragments, ça veut dire considérer sa virtualisation.\n→ Ouvrir l'onglet Performance des DevTools, puis scroller dans le tableau le plus volumineux et regarder combien de nœuds sont actifs.\n\nUn scroll saccadé n'est souvent pas un problème de machine.\nLe problème, c'est l'amas d'objets qu'on demande au navigateur de gérer en mémoire.",
 		"hashtags": [
 			"DéveloppementWeb",
@@ -12,7 +12,7 @@
 			"Performance"
 		],
 		"image": "../assets/posts/01-virtualisation.png",
-		"imageAlt": "Visuel QDM « Virtualisation » (PERF).",
+		"imageAlt": "Visuel QDM « L'impact de la virtualisation » (PERF).",
 		"linkedInUrl": "https://www.linkedin.com/posts/qdm_virtualization-PLACEHOLDER",
 		"publishedAt": "2026-01-06",
 		"order": 1
@@ -21,8 +21,8 @@
 		"id": "02-poids-de-page",
 		"category": "PERF",
 		"mode": "sombre",
-		"title": "Poids de page",
-		"body": "Charger une page web, c'est souvent télécharger 4 Mo et afficher 300 Ko.\nCe n'est pas la connexion de l'utilisateur qui est en cause.\nC'est ce qu'on lui envoie sans le lui demander.\n\nUne photo de produit exportée depuis Lightroom : 3,8 Mo.\nUne police Google chargée pour deux styles sur cinq : fichier complet quand même.\nUn script d'analytics qui se charge avant votre contenu : presque toujours.\n\nRésultat : l'utilisateur attend.\n• Sur un mobile en zone périurbaine, chaque Mo supplémentaire coûte des secondes réelles.\n• Sur un appareil d'entrée de gamme — celui que la majorité possède —, le scroll rame et les interactions ne répondent plus.\n• Ce sont exactement ces utilisateurs-là qui n'ont pas le choix du matériel.\n\nDans cette situation, le code le plus performant, c'est pas de code.\n\nTrois points à vérifier avant de déployer :\n→ Images — compressez-les au bon format (WebP plutôt que PNG/JPG), dimensionnées pour l'affichage réel.\n→ Fonts — vérifiez que vous publiez seulement les variantes utilisées dans l'interface.\n→ Scripts tiers — chaque pixel, tchat ou outil d'analyse se charge-t-il avant votre contenu ?\n\nOuvrez l'onglet Réseau de vos DevTools. Triez par taille.\nLa première ligne vous dit quoi corriger en premier.",
+		"title": "Gérer son poids de page",
+		"body": "Charger une page Web, c'est souvent télécharger 4 Mo et afficher 300 Ko.\nCe n'est pas la connexion de l'utilisateur qui est en cause.\nC'est ce qu'on lui envoie sans le lui demander.\n\nUne photo de produit exportée depuis Lightroom : 3,8 Mo.\nUne police Google chargée pour deux styles sur cinq : fichier complet quand même.\nUn script d'analytics qui se charge avant votre contenu : presque toujours.\n\nRésultat : l'utilisateur attend.\n• Sur un mobile en zone périurbaine, chaque Mo supplémentaire coûte des secondes réelles.\n• Sur un appareil d'entrée de gamme — celui que la majorité possède —, le scroll rame et les interactions ne répondent plus.\n• Ce sont exactement ces utilisateurs-là qui n'ont pas le choix du matériel.\n\nDans cette situation, le code le plus performant, c'est pas de code.\n\nTrois points à vérifier avant de déployer :\n→ Images — compressez-les au bon format (WebP plutôt que PNG/JPG), dimensionnées pour l'affichage réel.\n→ Fonts — vérifiez que vous publiez seulement les variantes utilisées dans l'interface.\n→ Scripts tiers — chaque pixel, tchat ou outil d'analyse se charge-t-il avant votre contenu ?\n\nOuvrez l'onglet Réseau de vos DevTools. Triez par taille.\nLa première ligne vous dit quoi corriger en premier.",
 		"hashtags": [
 			"DéveloppementWeb",
 			"Optimisation",
@@ -30,7 +30,7 @@
 			"Performance"
 		],
 		"image": "../assets/posts/02-poids-de-page.png",
-		"imageAlt": "Visuel QDM « Poids de page » (PERF).",
+		"imageAlt": "Visuel QDM « Gérer son poids de page » (PERF).",
 		"linkedInUrl": "https://www.linkedin.com/posts/qdm_light-loading-PLACEHOLDER",
 		"publishedAt": "2026-01-10",
 		"order": 2
@@ -39,7 +39,7 @@
 		"id": "03-semver",
 		"category": "ARCHI",
 		"mode": "sombre",
-		"title": "SemVer",
+		"title": "(Vraiment) Respecter le versioning sémantique",
 		"body": "Glisser un changement qui casse tout dans une mise à jour \"mineure\", c'est tentant quand on veut éviter d'incrémenter le numéro majeur.\nC'est aussi trahir silencieusement tous ceux qui dépendent de votre code.\n\nMAJOR.MINOR.PATCH n'est pas une simple convention de numérotation.\nC'est une promesse faite aux équipes qui vous font confiance.\n\nUn breaking change glissé dans un patch ne passe pas inaperçu : il force une migration silencieuse.\nLes builds cassent sans raison apparente. Les équipes perdent du temps à chercher ce qui a changé.\nEt la prochaine fois, elles liront vos notes de version avec suspicion.\n\nDeux réflexes pour honorer le contrat :\n→ Monter de major sans hésiter dès qu'une interface publique change — ce n'est pas un aveu de faiblesse, c'est un signal de sérieux.\n→ Déprécier avant de supprimer — une version qui avertit vaut mieux qu'une version qui coupe tout.\n\nUn numéro de version n'est pas qu'un identifiant technique.\nC'est aussi le degré de confiance que vous accordez à ceux qui lisent votre changelog.",
 		"hashtags": [
 			"BonnesPratiques",
@@ -48,7 +48,7 @@
 			"SemVer"
 		],
 		"image": "../assets/posts/03-semver.png",
-		"imageAlt": "Visuel QDM « SemVer » (ARCHI).",
+		"imageAlt": "Visuel QDM « (Vraiment) Respecter le versioning sémantique » (ARCHI).",
 		"linkedInUrl": "https://www.linkedin.com/posts/qdm_semver-PLACEHOLDER",
 		"publishedAt": "2026-01-14",
 		"order": 1
@@ -57,7 +57,7 @@
 		"id": "04-readme",
 		"category": "DX",
 		"mode": "sombre",
-		"title": "README",
+		"title": "README : quand et on y met quoi ?",
 		"body": "Écrire le README à la fin du projet, c'est tentant — le code est là, il suffit de le décrire.\nC'est aussi le meilleur moyen de documenter quelque chose qu'on ne comprend plus vraiment.\n\nUn README écrit après coup documente ce qui existe.\nUn README écrit avant clarifie ce qu'on est en train de construire.\n\nSi vous ne pouvez pas écrire comment utiliser votre outil en trois lignes, ce n'est pas un problème de documentation.\nC'est un indice que votre architecture n'est pas encore claire dans votre tête.\nLe README force la question qu'on reporte : « à quoi ça sert, concrètement ? »\n\nTrois réflexes pour que la documentation travaille pour vous :\n→ Donnez les instructions d'installation et de lancement en premier — si ça bloque, l'architecture bloquera aussi.\n→ Se demander qui va lire ce fichier — toute description doit être compréhensible par tous les lecteurs.\n→ Vulgarisez la logique métier du projet pour faciliter l'intégration de nouveaux contributeurs.\n\nLa documentation n'est pas la dernière étape du projet.\nC'est le premier test de clarté de votre design.",
 		"hashtags": [
 			"Productivité",
@@ -66,7 +66,7 @@
 			"Documentation"
 		],
 		"image": "../assets/posts/04-readme.png",
-		"imageAlt": "Visuel QDM « README » (DX).",
+		"imageAlt": "Visuel QDM « README : quand et on y met quoi ? » (DX).",
 		"linkedInUrl": "https://www.linkedin.com/posts/qdm_readme-PLACEHOLDER",
 		"publishedAt": "2026-01-18",
 		"order": 1
@@ -75,7 +75,7 @@
 		"id": "05-aria",
 		"category": "A11Y",
 		"mode": "sombre",
-		"title": "ARIA",
+		"title": "Utiliser ARIA correctement",
 		"body": "Coller des aria-label partout pour \"améliorer l'accessibilité\", c'est tentant.\nC'est aussi l'une des façons les plus sûres de la dégrader.\nLa règle officielle est sans appel : pas d'ARIA vaut mieux qu'un mauvais ARIA.\n\nUn mauvais attribut ARIA ne passe pas inaperçu : il ment.\nIl annonce un rôle qui ne correspond pas, un état qui n'existe pas, un label qui double ce que la balise dit déjà.\nRésultat : le lecteur d'écran donne de fausses indications, et l'utilisateur est dérouté.\n\nDeux réflexes pour ne pas aggraver ce qu'on veut corriger :\n→ S'appuyer sur le HTML natif : <button>, <label>, <dialog> et <fieldset> couvrent la majorité des cas.\n→ N'ajouter de l'ARIA que lorsqu'il n'existe aucune balise native pour le rôle ou l'état voulu.\n\nL'ARIA n'est pas un sent-bon à asperger.\nC'est un outil de dernier recours — puissant si précis, destructeur si approximatif.",
 		"hashtags": [
 			"DéveloppementWeb",
@@ -84,7 +84,7 @@
 			"HTML"
 		],
 		"image": "../assets/posts/05-aria.png",
-		"imageAlt": "Visuel QDM « ARIA » (A11Y).",
+		"imageAlt": "Visuel QDM « Utiliser ARIA correctement » (A11Y).",
 		"linkedInUrl": "https://www.linkedin.com/posts/qdm_aria-PLACEHOLDER",
 		"publishedAt": "2026-01-22",
 		"order": 1
@@ -93,8 +93,8 @@
 		"id": "06-carrousel-06",
 		"category": "HTML",
 		"mode": "clair",
-		"title": "Sémantique",
-		"body": "Coder une <div> cliquable pour éviter le style par défaut d'un <button>, c'est courant.\nC'est aussi repartir de zéro pour recoder ce que le navigateur avait déjà livré.\nLa balise correcte n'est pas une contrainte — c'est un raccourci.\n\nUn <button> apporte d'office : focus clavier, déclenchement avec Entrée, rôle accessible, états natifs.\nUne <div>, ça crée une boîte ; le reste, c'est votre problème.\nRésultat : vous réécrivez en moins bien ce que le navigateur offre déjà.\n\nTrois réflexes pour coder moins en produisant plus :\n→ Remplacer vos <div> cliquables par des <button> — constatez le résultat.\n→ Considérer <div> et <span> pour ce qu'ils sont : des conteneurs, rien de plus.\n→ Utiliser la paire <ul>-<li> quand vous présentez des listes d'éléments.\n\nRéinventer la roue, c'est toujours un risque de régression et de perte de temps.\nLe web sémantique, c'est moins de code et moins de bugs — livrés gratuitement par les balises natives.",
+		"title": "Bénéficier du Web sémantique",
+		"body": "Coder une <div> cliquable pour éviter le style par défaut d'un <button>, c'est courant.\nC'est aussi repartir de zéro pour recoder ce que le navigateur avait déjà livré.\nLa balise correcte n'est pas une contrainte — c'est un raccourci.\n\nUn <button> apporte d'office : focus clavier, déclenchement avec Entrée, rôle accessible, états natifs.\nUne <div>, ça crée une boîte ; le reste, c'est votre problème.\nRésultat : vous réécrivez en moins bien ce que le navigateur offre déjà.\n\nTrois réflexes pour coder moins en produisant plus :\n→ Remplacer vos <div> cliquables par des <button> — constatez le résultat.\n→ Considérer <div> et <span> pour ce qu'ils sont : des conteneurs, rien de plus.\n→ Utiliser la paire <ul>-<li> quand vous présentez des listes d'éléments.\n\nRéinventer la roue, c'est toujours un risque de régression et de perte de temps.\nLe Web sémantique, c'est moins de code et moins de bugs — livrés gratuitement par les balises natives.",
 		"hashtags": [
 			"Frontend",
 			"Accessibilité",
@@ -102,35 +102,35 @@
 			"HTML"
 		],
 		"image": "../assets/posts/carrousel-06/01.png",
-		"imageAlt": "Carrousel QDM « Sémantique » (HTML), 7 pages.",
+		"imageAlt": "Carrousel QDM « Bénéficier du Web sémantique » (HTML), 7 pages.",
 		"pages": [
 			{
 				"image": "../assets/posts/carrousel-06/01.png",
-				"alt": "« Sémantique » — page 1/7."
+				"alt": "« Bénéficier du Web sémantique » — page 1/7."
 			},
 			{
 				"image": "../assets/posts/carrousel-06/02.png",
-				"alt": "« Sémantique » — page 2/7."
+				"alt": "« Bénéficier du Web sémantique » — page 2/7."
 			},
 			{
 				"image": "../assets/posts/carrousel-06/03.png",
-				"alt": "« Sémantique » — page 3/7."
+				"alt": "« Bénéficier du Web sémantique » — page 3/7."
 			},
 			{
 				"image": "../assets/posts/carrousel-06/04.png",
-				"alt": "« Sémantique » — page 4/7."
+				"alt": "« Bénéficier du Web sémantique » — page 4/7."
 			},
 			{
 				"image": "../assets/posts/carrousel-06/05.png",
-				"alt": "« Sémantique » — page 5/7."
+				"alt": "« Bénéficier du Web sémantique » — page 5/7."
 			},
 			{
 				"image": "../assets/posts/carrousel-06/06.png",
-				"alt": "« Sémantique » — page 6/7."
+				"alt": "« Bénéficier du Web sémantique » — page 6/7."
 			},
 			{
 				"image": "../assets/posts/carrousel-06/07.png",
-				"alt": "« Sémantique » — page 7/7."
+				"alt": "« Bénéficier du Web sémantique » — page 7/7."
 			}
 		],
 		"linkedInUrl": "https://www.linkedin.com/posts/qdm_semantics-PLACEHOLDER",
@@ -141,7 +141,7 @@
 		"id": "07-carrousel-07",
 		"category": "UI",
 		"mode": "clair",
-		"title": "Messages d’erreur",
+		"title": "Rédiger de vrais bons messages d'erreur",
 		"body": "« Une erreur s'est produite. »\nC'est la phrase que l'utilisateur lit au pire moment :\nquand il espère valider une commande, envoyer un message important, soumettre un formulaire...\n\nEt c'est aussi la phrase la plus inutile qu'on puisse lui écrire.\n\nErreur 500 — pour quelqu'un qui essaie de prendre rendez-vous chez son médecin.\nChamp invalide — sans préciser lequel, ni pourquoi.\nSession caduque  — sans dire si la saisie est perdue ou comment recommencer.\n\nL'erreur, c'est le moment où l'utilisateur a le plus besoin d'aide.\nC'est aussi un des seules lignes de texte écrites par un développeur — souvent, sans relecture.\nOr un message d'erreur n'est pas un log, c'est une interface.\n\nDeux principes pour écrire des erreurs qui aident vraiment :\n→ Expliquer l'erreur en langage humain — pas donner le code HTTP, ni le nom de l'exception.\n→ Indiquer la marche à suivre — réessayer, contacter le support, corriger le champ X.\n\nTestez tout de suite : ouvrez votre application, déclenchez une erreur volontairement.\nMontrez le message à quelqu'un qui n'est pas dans la tech.\nObservez sa réaction, elle vous dira tout ce qu'il y a à corriger.",
 		"hashtags": [
 			"ProductDesign",
@@ -150,35 +150,35 @@
 			"UX"
 		],
 		"image": "../assets/posts/carrousel-07/01.png",
-		"imageAlt": "Carrousel QDM « Messages d’erreur » (UI), 7 pages.",
+		"imageAlt": "Carrousel QDM « Rédiger de vrais bons messages d'erreur » (UI), 7 pages.",
 		"pages": [
 			{
 				"image": "../assets/posts/carrousel-07/01.png",
-				"alt": "« Messages d’erreur » — page 1/7."
+				"alt": "« Rédiger de vrais bons messages d'erreur » — page 1/7."
 			},
 			{
 				"image": "../assets/posts/carrousel-07/02.png",
-				"alt": "« Messages d’erreur » — page 2/7."
+				"alt": "« Rédiger de vrais bons messages d'erreur » — page 2/7."
 			},
 			{
 				"image": "../assets/posts/carrousel-07/03.png",
-				"alt": "« Messages d’erreur » — page 3/7."
+				"alt": "« Rédiger de vrais bons messages d'erreur » — page 3/7."
 			},
 			{
 				"image": "../assets/posts/carrousel-07/04.png",
-				"alt": "« Messages d’erreur » — page 4/7."
+				"alt": "« Rédiger de vrais bons messages d'erreur » — page 4/7."
 			},
 			{
 				"image": "../assets/posts/carrousel-07/05.png",
-				"alt": "« Messages d’erreur » — page 5/7."
+				"alt": "« Rédiger de vrais bons messages d'erreur » — page 5/7."
 			},
 			{
 				"image": "../assets/posts/carrousel-07/06.png",
-				"alt": "« Messages d’erreur » — page 6/7."
+				"alt": "« Rédiger de vrais bons messages d'erreur » — page 6/7."
 			},
 			{
 				"image": "../assets/posts/carrousel-07/07.png",
-				"alt": "« Messages d’erreur » — page 7/7."
+				"alt": "« Rédiger de vrais bons messages d'erreur » — page 7/7."
 			}
 		],
 		"linkedInUrl": "https://www.linkedin.com/posts/qdm_errors-PLACEHOLDER",
@@ -189,7 +189,7 @@
 		"id": "08-clavier",
 		"category": "A11Y",
 		"mode": "clair",
-		"title": "Clavier",
+		"title": "Valoriser la navigation au clavier",
 		"body": "Appuyer sur Tab pour passer au champ suivant, c'est un réflexe que beaucoup ont.\nQuand le focus disparaît ou saute dans le désordre, l'abandon aussi est universel.\nLa navigation au clavier n'est pas une option d'accessibilité : c'est les fondations.\n\nUne souris qui tombe en panne, un formulaire à remplir, un trackpad qui déraille.\nPour ceux qui utilisent un lecteur d'écran ou une commande vocale, c'est sur chaque page, chaque jour.\nRésultat : sans clavier, naviguer est un calvaire.\n\nDeux réflexes pour vérifier qu'une interface tient debout :\n→ Ranger la souris cinq minutes et naviguer sur votre propre site au clavier.\n→ Vérifier que chaque élément interactif est atteignable, visible et utilisable.\n\nOn pourrait aussi parler des raccourcis clavier, si précieux pour la productivité des tâches répétitives.\nL'accessibilité motrice n'est pas une contrainte réservée à quelques profils.\nC'est une exigence de base pour tout le monde — y compris vos utilisateurs valides.",
 		"hashtags": [
 			"DéveloppementWeb",
@@ -198,7 +198,7 @@
 			"Accessibilité"
 		],
 		"image": "../assets/posts/08-clavier.png",
-		"imageAlt": "Visuel QDM « Clavier » (A11Y).",
+		"imageAlt": "Visuel QDM « Navigation au clavier » (A11Y).",
 		"linkedInUrl": "https://www.linkedin.com/posts/qdm_keyboard-PLACEHOLDER",
 		"publishedAt": "2026-02-03",
 		"order": 2
@@ -207,7 +207,7 @@
 		"id": "09-contraste",
 		"category": "A11Y",
 		"mode": "clair",
-		"title": "Contraste",
+		"title": "L'importance des seuils de contraste",
 		"body": "Du gris clair sur blanc, c'est classe comme association... mais pour une partie de votre audience, ce n'est qu'une ombre confuse.\nLe contraste de couleur n'est pas une question de goût, c'est un seuil bien défini :\n4,5:1 pour le texte normal, 3:1 pour le grand texte (cf. guide WCAG).\n\nVotre œil jeune et reposé sur un bon écran, ce n'est pas l'œil de référence.\nUne part importante de la population a une vision des couleurs ou une acuité réduite, et ça empire avec l'âge.\nRésultat : sous le seuil du WCAG, le lecteur abandonne.\n\nDeux réflexes pour un contraste qui tient la route :\n→ Mesurer le ratio avec un outil, pas le juger à l'œil. (e.g. WebAIM Contrast Checker)\n→ Viser 4,5:1 (texte) et 3:1 (grand texte), sans exception.\n\nL'accessibilité visuelle n'est pas un cas particulier ni un détail.\nElle impacte le parcours de tout le monde, y compris le vôtre dans dix ans.",
 		"hashtags": [
 			"UX",
@@ -216,7 +216,7 @@
 			"Accessibilité"
 		],
 		"image": "../assets/posts/09-contraste.png",
-		"imageAlt": "Visuel QDM « Contraste » (A11Y).",
+		"imageAlt": "Visuel QDM « L'importance des seuils de contraste » (A11Y).",
 		"linkedInUrl": "https://www.linkedin.com/posts/qdm_contrast-PLACEHOLDER",
 		"publishedAt": "2026-02-07",
 		"order": 3
@@ -225,7 +225,7 @@
 		"id": "10-lisibilite",
 		"category": "UI",
 		"mode": "clair",
-		"title": "Lisibilité",
+		"title": "La lisibilité des visuels",
 		"body": "Du texte bleu sur noir, c'est très élégant. Sur votre écran. En intérieur.\nDehors, sur un mobile, c'est une soupe de pixels que personne ne lit.\n\nJusqu'à 70 % de votre audience est sur téléphone. Et une partie lit en plein soleil. Le texte clair sur fond sombre perd énormément en lisibilité : la lumière ambiante écrase le contraste et l'écran se transforme en miroir. Le \"sombre sur clair\" encaisse beaucoup mieux le soleil que l'inverse.\nRésultat : le lecteur ne se casse pas la tête à lire. Il scrolle.\n\nOui, Claude vous génère des visuels catchy en quelques secondes. Mais \"splendide sur mon écran\" ne veut pas dire \"lisible dans le fil d'actualité\".\n\nDeux réflexes pour des visuels lisibles partout :\n→ Bannir le foncé sur foncé, le clair sur clair.\n→ Tester le visuel sur votre téléphone, dehors. Pas sur un ordinateur dans un bureau.\n\nLe dark mode est une vraie tendance mais c'est aussi un piège à lisibilité.\nLe meilleur visuel n'est pas le plus beau en studio, mais c'est celui qu'on lit encore à une main, dans n'importe quel environnement.",
 		"hashtags": [
 			"Mobile",
@@ -234,7 +234,7 @@
 			"Darkmode"
 		],
 		"image": "../assets/posts/10-lisibilite.png",
-		"imageAlt": "Visuel QDM « Lisibilité » (UI).",
+		"imageAlt": "Visuel QDM « La lisibilité des visuels » (UI).",
 		"linkedInUrl": "https://www.linkedin.com/posts/qdm_dark-text-claude-PLACEHOLDER",
 		"publishedAt": "2026-02-11",
 		"order": 2
@@ -243,7 +243,7 @@
 		"id": "11-couverture-tests",
 		"category": "DX",
 		"mode": "sombre",
-		"title": "Couverture de tests",
+		"title": "L'illusion de la couverture de tests",
 		"body": "90 % de couverture de tests... puis un refactoring de trois fichiers. 47 tests cassés même si comportement n'a pas été modifié. Ce n'est pas une suite de tests. C'est une dette technique déguisée en filet de sécurité.\n\nDes tests couplés à l'implémentation ne protègent pas le comportement — ils confortent la structure interne.\nIls vérifient que le code fait ce qu'il fait, pas ce qu'il est censé faire.\nEt à chaque refactoring, ils cassent — même quand l'utilisateur ne voit rien changer.\n\nLe résultat : les développeurs arrêtent de refacto pour ne pas avoir à réécrire les tests.\nLe code se calcifie. La couverture reste haute. Le système se dégrade.\nEn conséquence, un bon test doit survivre à une réécriture complète de son implémentation — tant que le résultat observable est intact.\n\nCe que ça implique concrètement :\n→ Tester ce qui ressort, pas les appels internes : si votre test mocke cinq méthodes privées, il teste votre implémentation et pas votre logique.\n→ Se demander : « si je réécris cette fonction de zéro, le test tient toujours ? » — si non, il y a une fuite au mauvais endroit.\n\nLa couverture de code mesure ce qu'on a exécuté. Elle ne mesure pas ce qu'on a garanti.",
 		"hashtags": [
 			"DéveloppementWeb",
@@ -252,7 +252,7 @@
 			"Testing"
 		],
 		"image": "../assets/posts/11-couverture-tests.png",
-		"imageAlt": "Visuel QDM « Couverture de tests » (DX).",
+		"imageAlt": "Visuel QDM « L'illusion de la couverture de tests » (DX).",
 		"linkedInUrl": "https://www.linkedin.com/posts/qdm_unit-testing-PLACEHOLDER",
 		"publishedAt": "2026-02-15",
 		"order": 2
@@ -261,7 +261,7 @@
 		"id": "12-carrousel-12",
 		"category": "ARCHI",
 		"mode": "sombre",
-		"title": "Dark mode",
+		"title": "Ce qu'est vraiment un dark mode",
 		"body": "Repeindre un mur en noir ne fait pas s'effondrer une maison. Si les murs se fissurent quand on en change la couleur, c'est que le problème n'a jamais été la couleur.\nActivez le dark mode sur n'importe quelle app et regardez ce qui casse :\n\nUn bouton invisible sur fond noir, un texte gris sur gris illisible, une icône qui reste plantée sur son carré blanc d'origine...\nRien de tout ça n'est un bug du dark mode. C'est un bug qui existait déjà en mode clair — caché par une couleur codée en dur au lieu d'un design token, ou un contraste jugé « à l'œil » plutôt que mesuré.\n\nLe mode sombre n'ajoute aucune garantie à un design system. C'est le test d'intégrité qui révèle les vrais bugs.\n\nCe que ça implique concrètement :\n→ Cherchez chaque #000000, chaque #FFFFFF en dur dans votre CSS — un design system robuste n'a que des tokens, pas de couleur en clair.\n→ Inversez votre thème et recalculez chaque contraste avec un outil, pas à l'œil — ce qui passait en mode clair par habitude ne passera pas deux fois.\n\nUn thème sombre raté n'est jamais un problème de dark mode.\nIl fragilise les fondations dès qu'on oublie de le tester.",
 		"hashtags": [
 			"DéveloppementWeb",
@@ -270,35 +270,35 @@
 			"DesignSystem"
 		],
 		"image": "../assets/posts/carrousel-12/01.png",
-		"imageAlt": "Carrousel QDM « Dark mode » (ARCHI), 7 pages.",
+		"imageAlt": "Carrousel QDM « Ce qu'est vraiment un dark mode » (ARCHI), 7 pages.",
 		"pages": [
 			{
 				"image": "../assets/posts/carrousel-12/01.png",
-				"alt": "« Dark mode » — page 1/7."
+				"alt": "« Ce qu'est vraiment un dark mode » — page 1/7."
 			},
 			{
 				"image": "../assets/posts/carrousel-12/02.png",
-				"alt": "« Dark mode » — page 2/7."
+				"alt": "« Ce qu'est vraiment un dark mode » — page 2/7."
 			},
 			{
 				"image": "../assets/posts/carrousel-12/03.png",
-				"alt": "« Dark mode » — page 3/7."
+				"alt": "« Ce qu'est vraiment un dark mode » — page 3/7."
 			},
 			{
 				"image": "../assets/posts/carrousel-12/04.png",
-				"alt": "« Dark mode » — page 4/7."
+				"alt": "« Ce qu'est vraiment un dark mode » — page 4/7."
 			},
 			{
 				"image": "../assets/posts/carrousel-12/05.png",
-				"alt": "« Dark mode » — page 5/7."
+				"alt": "« Ce qu'est vraiment un dark mode » — page 5/7."
 			},
 			{
 				"image": "../assets/posts/carrousel-12/06.png",
-				"alt": "« Dark mode » — page 6/7."
+				"alt": "« Ce qu'est vraiment un dark mode » — page 6/7."
 			},
 			{
 				"image": "../assets/posts/carrousel-12/07.png",
-				"alt": "« Dark mode » — page 7/7."
+				"alt": "« Ce qu'est vraiment un dark mode » — page 7/7."
 			}
 		],
 		"linkedInUrl": "https://www.linkedin.com/posts/qdm_dark-mode-PLACEHOLDER",
@@ -309,8 +309,8 @@
 		"id": "13-carrousel-13",
 		"category": "PERF",
 		"mode": "clair",
-		"title": "Performance perçue",
-		"body": "Un immeuble recevait des dizaines de plaintes sur la lenteur de ses ascenseurs. La solution la moins chère : installer des miroirs dans le hall d'attente. Les plaintes ont disparu. Pourtant le temps d'attente n'a pas changé d'une seconde...\n\nOn refait exactement la même erreur (à l'envers) sur les interfaces web : un écran figé plus de 200 ms sans le moindre retour, et l'utilisateur doute que son clic ait été pris en compte. Donc il reclique ; et sans garde-fou, il déclenche même l'action deux fois : un double paiement, un double envoi de formulaire, une double réservation...\n\nUne barre de progression de 5 secondes est ressentie plus rapide qu'un spinner qui en dure 3. Psychologiquement, l'un vous donne un repère à suivre, là où l'autre vous laisse attendre dans le vide. La performance perçue n'est pas un mensonge fait à l'utilisateur. C'est une information honnête donnée au bon rythme.\n\nCe que ça implique concrètement :\n→ Sous 200 ms, le retour est ressenti comme direct — même juste un changement d'état du bouton. Au-delà, l'utilisateur croit son clic perdu.\n→ Ajouter à tout spinner un titre, ou le remplacer par une barre de progression ou un skeleton : avec un repère, même approximatif, l'attente paraît plus courte.\n\nUn spinner ne rassure personne. Il fait juste patienter dans le noir.\nUn indicateur de progression montre à l'utilisateur qu'on ne l'oublie pas.",
+		"title": "L'impact de la performance perçue",
+		"body": "Un immeuble recevait des dizaines de plaintes sur la lenteur de ses ascenseurs. La solution la moins chère : installer des miroirs dans le hall d'attente. Les plaintes ont disparu. Pourtant le temps d'attente n'a pas changé d'une seconde...\n\nOn refait exactement la même erreur (à l'envers) sur les interfaces Web : un écran figé plus de 200 ms sans le moindre retour, et l'utilisateur doute que son clic ait été pris en compte. Donc il reclique ; et sans garde-fou, il déclenche même l'action deux fois : un double paiement, un double envoi de formulaire, une double réservation...\n\nUne barre de progression de 5 secondes est ressentie plus rapide qu'un spinner qui en dure 3. Psychologiquement, l'un vous donne un repère à suivre, là où l'autre vous laisse attendre dans le vide. La performance perçue n'est pas un mensonge fait à l'utilisateur. C'est une information honnête donnée au bon rythme.\n\nCe que ça implique concrètement :\n→ Sous 200 ms, le retour est ressenti comme direct — même juste un changement d'état du bouton. Au-delà, l'utilisateur croit son clic perdu.\n→ Ajouter à tout spinner un titre, ou le remplacer par une barre de progression ou un skeleton : avec un repère, même approximatif, l'attente paraît plus courte.\n\nUn spinner ne rassure personne. Il fait juste patienter dans le noir.\nUn indicateur de progression montre à l'utilisateur qu'on ne l'oublie pas.",
 		"hashtags": [
 			"DéveloppementWeb",
 			"Psychology",
@@ -318,35 +318,35 @@
 			"UX"
 		],
 		"image": "../assets/posts/carrousel-13/01.png",
-		"imageAlt": "Carrousel QDM « Performance perçue » (PERF), 7 pages.",
+		"imageAlt": "Carrousel QDM « L'impact de la performance perçue » (PERF), 7 pages.",
 		"pages": [
 			{
 				"image": "../assets/posts/carrousel-13/01.png",
-				"alt": "« Performance perçue » — page 1/7."
+				"alt": "« L'impact de la performance perçue » — page 1/7."
 			},
 			{
 				"image": "../assets/posts/carrousel-13/02.png",
-				"alt": "« Performance perçue » — page 2/7."
+				"alt": "« L'impact de la performance perçue » — page 2/7."
 			},
 			{
 				"image": "../assets/posts/carrousel-13/03.png",
-				"alt": "« Performance perçue » — page 3/7."
+				"alt": "« L'impact de la performance perçue » — page 3/7."
 			},
 			{
 				"image": "../assets/posts/carrousel-13/04.png",
-				"alt": "« Performance perçue » — page 4/7."
+				"alt": "« L'impact de la performance perçue » — page 4/7."
 			},
 			{
 				"image": "../assets/posts/carrousel-13/05.png",
-				"alt": "« Performance perçue » — page 5/7."
+				"alt": "« L'impact de la performance perçue » — page 5/7."
 			},
 			{
 				"image": "../assets/posts/carrousel-13/06.png",
-				"alt": "« Performance perçue » — page 6/7."
+				"alt": "« L'impact de la performance perçue » — page 6/7."
 			},
 			{
 				"image": "../assets/posts/carrousel-13/07.png",
-				"alt": "« Performance perçue » — page 7/7."
+				"alt": "« L'impact de la performance perçue » — page 7/7."
 			}
 		],
 		"linkedInUrl": "https://www.linkedin.com/posts/qdm_performance-percue-PLACEHOLDER",
@@ -375,7 +375,7 @@
 		"id": "15-nommage",
 		"category": "DX",
 		"mode": "clair",
-		"title": "Nommage",
+		"title": "S'appliquer sur le nommage des variables",
 		"body": "Tu ouvres un carton de déménagement nommé « Divers ». Tu te souviens de ce qu'il y avait dedans ? Personne ne s'en souvient. En code, c'est pareil : data, temp, flag2, handleClick2 — des cartons « Divers » qu'il faut rouvrir un par un, à chaque fois, pour savoir ce qu'ils contiennent vraiment.\n\nUn commentaire peut mentir après un refactoring silencieux où il est relu en vitesse. Un mauvais nom, lui, ment tout de suite, à tout le monde, tout le temps — au collègue qui reprend ton code, à toi dans six mois, et maintenant aussi à l'IA qui doit deviner ton intention pour comprendre le comportement escompté.\n\nRenommer une variable, ça n'a l'air de rien. C'est pourtant le refactoring le moins dangereux — et l'un des plus rentables : le comportement est identique, mais le gain de lisibilité est immédiat.\n\nPour mettre en place les bons réflexes :\n→ Bannis les noms tels que data, temp, flag, x, variable, REGEX...\n→ Lis le nom de la variable à voix haute. S'il ne représente pas sa valeur, la confusion sera encore pire pour les autres.\n\nUn commentaire, c'est ce qu'on écrit quand le nom a déjà échoué.\nLe meilleur commentaire, c'est celui qui n'a pas besoin d'exister.\n\n#CleanCode #Variables #DéveloppementWeb #CodeReview\n«»",
 		"image": "../assets/posts/15-nommage.png",
 		"imageAlt": "Visuel QDM « Nommage » (DX).",
@@ -387,7 +387,7 @@
 		"id": "16-dette-technique",
 		"category": "ARCHI",
 		"mode": "sombre",
-		"title": "Dette technique",
+		"title": "Les commentaires de code comme dette technique",
 		"body": "Un fusible a sauté chez vous. En attendant d'acheter le bon, vous mettez un fil de cuivre à la place. Ça fonctionne. Six mois plus tard, vous branchez une plaque électrique sur cette ligne ; les plombs sautent. Le code fait exactement pareil avec chaque raccourci pris sous pression. La dette technique n'apparaît pas parce qu'on va trop vite, elle apparaît parce que la décision d'aller trop vite n'a pas été mise en évidence.\n\nSans surlignage, un raccourci devient indiscernable d'un oubli. Et plus personne — ni le lead, ni la prochaine personne (ou IA !) qui rouvre le fichier — ne peut choisir sciemment s'il faut le corriger ou vivre avec.\n\nLa parade : la dette technique documentée n'est plus de la dette. C'est un backlog. Ce que ça implique concrètement :\n→ Au moment du raccourci, pas après : laissez un // TODO avec sa raison d'être et ouvrez un ticket.\n→ Cherchez « TODO » dans votre base de code. S'ils n'ont ni date, ni ticket, ni raison, ce n'est pas de la dette déguisée — mais des fils de cuivre non signalés.\n\nLe vrai danger quand on est pressé, ce n'est pas d'aller au plus rapide.\nLe danger, c'est que personne ne distingue une ruse d'une stratégie.",
 		"hashtags": [
 			"CodeReview",
@@ -396,7 +396,7 @@
 			"DetteTechnique"
 		],
 		"image": "../assets/posts/16-dette-technique.png",
-		"imageAlt": "Visuel QDM « Dette technique » (ARCHI).",
+		"imageAlt": "Visuel QDM « Les commentaires comme dette technique » (ARCHI).",
 		"linkedInUrl": "https://www.linkedin.com/posts/qdm_dette-technique-PLACEHOLDER",
 		"publishedAt": "2026-03-07",
 		"order": 3
@@ -405,7 +405,7 @@
 		"id": "17-commits",
 		"category": "DX",
 		"mode": "clair",
-		"title": "Messages de commit",
+		"title": "Messages de commit explicites",
 		"body": "Une note sur le frigo : « Ne pas toucher, réparé. » Réparé quoi ? Personne ne s'en souvient — pas même la personne qui l'a écrite.\nUn git commit -m \"fix\" a exactement le même effet, collée sur votre code.\n\nSauf qu'aujourd'hui, ce n'est plus seulement votre mémoire qui devra s'en souvenir. C'est un robot de revue, un outil de blame automatisé, et de plus en plus souvent, un assistant IA qui adaptera sa stratégie en fonction de ce seul texte.\n\nLe lecteur le plus exigeant de vos messages de commit n'est donc plus le lead tech. Les commits deviennent l'indice principal pour comprendre pourquoi une ligne a été modifiée — et ce système n'a aucune tolérance pour l'implicite.\n\nUn historique de \"fix\", \"wip\", \"update\" ne sert rien ni personne. Ni l'humain qui débogue six mois plus tard, ni la machine qui doit deviner une intention à partir du seul texte disponible.\n\nLe test est brutal et il prend trente secondes :\n→ Lancer git log --oneline -30 sur votre repository le plus actif.\n→ Compter les messages qui ne disent rien de plus que « fix », « wip » ou « update ».\n\nCette somme quantifie votre dette invisible. Postez-la en commentaire si vous l'osez ! je prends les paris sur la moyenne.",
 		"hashtags": [
 			"CodeReview",
@@ -414,7 +414,7 @@
 			"Git"
 		],
 		"image": "../assets/posts/17-commits.png",
-		"imageAlt": "Visuel QDM « Messages de commit » (DX).",
+		"imageAlt": "Visuel QDM « Messages de commit explicites » (DX).",
 		"linkedInUrl": "https://www.linkedin.com/posts/qdm_commit-messages-PLACEHOLDER",
 		"publishedAt": "2026-03-11",
 		"order": 4
@@ -423,7 +423,7 @@
 		"id": "18-carrousel-18",
 		"category": "A11Y",
 		"mode": "clair",
-		"title": "Texte alternatif",
+		"title": "Rédiger de bons textes alternatifs",
 		"body": "Ta mère t'appelle. Elle bloque sur un formulaire en ligne et te demande de l'aider à distance. « Il y a un rond bleu, avec une flèche blanche au milieu. » Description exacte, mais aucune information. Ce qui t'aurait aidé, c'est : « c'est le bouton pour valider. »\n\nUn lecteur d'écran traverse la même problématique à chaque image. Et il reçoit trop souvent « rond bleu », parce que l'attribut alt de l'image a été écrit en pensant à la forme — jamais à l'usage. Un texte alternatif ne décrit pas ce qu'une image montre, il décrit son effet sur la page.\n\nLe test tient en une seule question : que dirais-tu si tu décrivais cette page au téléphone, à quelqu'un qui ne voit pas l'écran ?\n\nCe que ça implique concrètement :\n→ Pour un logo-bouton (loupe, poubelle, flèche, hamburger) : décris l'action déclenchée — « Rechercher », « Supprimer », « Ouvrir le menu » — pas son apparence.\n→ Pour une image abstraite (photo de fond, séparateur visuel) : alt=\"\" présent mais volontairement vide — sinon le lecteur d'écran lit le nom du fichier.\n\nL'essentiel est de décrire la fonction. Pas la photo. Le reste, c'est du bruit infligé aux personnes qui ont le plus besoin d'aide.",
 		"hashtags": [
 			"DéveloppementWeb",
@@ -432,35 +432,35 @@
 			"Accessibilité"
 		],
 		"image": "../assets/posts/carrousel-18/01.png",
-		"imageAlt": "Carrousel QDM « Texte alternatif » (A11Y), 7 pages.",
+		"imageAlt": "Carrousel QDM « Rédiger de bons textes alternatifs » (A11Y), 7 pages.",
 		"pages": [
 			{
 				"image": "../assets/posts/carrousel-18/01.png",
-				"alt": "« Texte alternatif » — page 1/7."
+				"alt": "« Rédiger de bons textes alternatifs » — page 1/7."
 			},
 			{
 				"image": "../assets/posts/carrousel-18/02.png",
-				"alt": "« Texte alternatif » — page 2/7."
+				"alt": "« Rédiger de bons textes alternatifs » — page 2/7."
 			},
 			{
 				"image": "../assets/posts/carrousel-18/03.png",
-				"alt": "« Texte alternatif » — page 3/7."
+				"alt": "« Rédiger de bons textes alternatifs » — page 3/7."
 			},
 			{
 				"image": "../assets/posts/carrousel-18/04.png",
-				"alt": "« Texte alternatif » — page 4/7."
+				"alt": "« Rédiger de bons textes alternatifs » — page 4/7."
 			},
 			{
 				"image": "../assets/posts/carrousel-18/05.png",
-				"alt": "« Texte alternatif » — page 5/7."
+				"alt": "« Rédiger de bons textes alternatifs » — page 5/7."
 			},
 			{
 				"image": "../assets/posts/carrousel-18/06.png",
-				"alt": "« Texte alternatif » — page 6/7."
+				"alt": "« Rédiger de bons textes alternatifs » — page 6/7."
 			},
 			{
 				"image": "../assets/posts/carrousel-18/07.png",
-				"alt": "« Texte alternatif » — page 7/7."
+				"alt": "« Rédiger de bons textes alternatifs » — page 7/7."
 			}
 		],
 		"linkedInUrl": "https://www.linkedin.com/posts/qdm_texte-alternatif-PLACEHOLDER",
@@ -489,7 +489,7 @@
 		"id": "20-carrousel-20",
 		"category": "COLLAB",
 		"mode": "liant",
-		"title": "Entretien des relations",
+		"title": "Entretien des relations avec 5 métiers liés",
 		"body": "Personne n'attend que le moteur explose pour changer l'huile. Tout le monde sait qu'une voiture qu'on n'entretient qu'après la panne coûte dix fois plus cher, et qu'on perd confiance en elle. Et pourtant, la plupart des ingénieurs traitent leurs relations pro comme cette voiture qu'on ignore jusqu'à la panne.\n\nLa plupart des relations professionnelles ne se dégradent pas par conflit ouvert, mais par déficit d'entretien — personne ne prend l'initiative d'investir dans la relation avant qu'elle ne devienne un problème visible. La séniorité ne se mesure pas seulement à la qualité de nos produits ou à la vitesse de changer de rôle selon l'interlocuteur. Elle se mesure aussi à la capacité d'entretenir activement chacune de ces relations avant qu'elles n'aient besoin d'être réparées.\n\nCe que ça implique concrètement :\n→ Avec un junior : consacrer un créneau fixe de peer programming, plutôt que « quand on aura le temps ».\n→ Avec ton product owner : partager tôt les compromis techniques envisagés - et distinguer décision d'initiative.\n→ Avec ton project manager : transformer chaque estimation en conversation régulière sur les écarts.\n→ Avec ton architecte logiciel : soumettre les décisions à la revue plutôt que de la subir.\n→ Avec un lead design : proposer une revue de cohérence croisée, plutôt que d'attendre qu'elle soit imposée.\n\nPoste en commentaire pour laquelle des 5 tu vas faire de la place la semaine prochaine. C'est statistiquement la plus révélatrice de toutes.",
 		"hashtags": [
 			"Carrière",
@@ -498,35 +498,35 @@
 			"RelationsAuTravail"
 		],
 		"image": "../assets/posts/carrousel-20/01.png",
-		"imageAlt": "Carrousel QDM « Entretien des relations » (COLLAB), 7 pages.",
+		"imageAlt": "Carrousel QDM « Entretien des relations avec 5 métiers liés » (COLLAB), 7 pages.",
 		"pages": [
 			{
 				"image": "../assets/posts/carrousel-20/01.png",
-				"alt": "« Entretien des relations » — page 1/7."
+				"alt": "« Entretien des relations avec 5 métiers liés » — page 1/7."
 			},
 			{
 				"image": "../assets/posts/carrousel-20/02.png",
-				"alt": "« Entretien des relations » — page 2/7."
+				"alt": "« Entretien des relations avec 5 métiers liés » — page 2/7."
 			},
 			{
 				"image": "../assets/posts/carrousel-20/03.png",
-				"alt": "« Entretien des relations » — page 3/7."
+				"alt": "« Entretien des relations avec 5 métiers liés » — page 3/7."
 			},
 			{
 				"image": "../assets/posts/carrousel-20/04.png",
-				"alt": "« Entretien des relations » — page 4/7."
+				"alt": "« Entretien des relations avec 5 métiers liés » — page 4/7."
 			},
 			{
 				"image": "../assets/posts/carrousel-20/05.png",
-				"alt": "« Entretien des relations » — page 5/7."
+				"alt": "« Entretien des relations avec 5 métiers liés » — page 5/7."
 			},
 			{
 				"image": "../assets/posts/carrousel-20/06.png",
-				"alt": "« Entretien des relations » — page 6/7."
+				"alt": "« Entretien des relations avec 5 métiers liés » — page 6/7."
 			},
 			{
 				"image": "../assets/posts/carrousel-20/07.png",
-				"alt": "« Entretien des relations » — page 7/7."
+				"alt": "« Entretien des relations avec 5 métiers liés » — page 7/7."
 			}
 		],
 		"linkedInUrl": "https://www.linkedin.com/posts/qdm_cinq-relations-PLACEHOLDER",
@@ -537,7 +537,7 @@
 		"id": "21-incertitude-qa",
 		"category": "COLLAB",
 		"mode": "liant",
-		"title": "Zones d’incertitude & QA",
+		"title": "Zones d'incertitude & QA",
 		"body": "Tu vas voir ton médecin et tu lui dis : « Contrôlez tout, je sais pas ce que j'ai. » Il te fait l'examen standard. Générique. Il ne trouve rien de précis — il n'y avait rien de précis à chercher. Tu ne lui as pas dit que tu as mal en montant les escaliers depuis trois semaines. Le jour où tu le lui dis, l'examen change complètement de nature. Il sait où regarder. Il trouve.\n\nUn ticket « à tester » livré à ta QA sans un mot sur ce qui t'inquiète fait exactement la même chose. Donc, un ticket livré sans préciser les zones d'incertitude est un test à l'aveugle.\n\nTa QA reçoit un comportement attendu et rien d'autre. Elle teste sur des scénarios génériques, souvent loin des vrais risques — pas parce qu'elle cherche mal, mais parce que tu ne lui as donné aucun endroit précis où regarder. La confiance entre un dev et sa QA ne grandit pas quand il évite les bugs. Elle grandit le jour où il commence à dire « je ne suis pas sûr de ce parcours » avant qu'elle ne le trouve elle-même.\n\nPour remédier aux incertitudes :\n→ Relever les 3 parcours desquels tu doutes le plus.\n→ Regarder combien de ces 3 sont effectivement cassés — et si son rapport se concentre sur des cas que ni l'un ni l'autre n'aviez anticipés.\n\nPoste ce chiffre en commentaire. Elle te donne un indice sur ta capacité d'intuition — et il en dit plus sur ton anticipation que n'importe quelle ligne de code sans bug.",
 		"hashtags": [
 			"CodeReview",
@@ -546,7 +546,7 @@
 			"QA"
 		],
 		"image": "../assets/posts/21-incertitude-qa.png",
-		"imageAlt": "Visuel QDM « Zones d’incertitude & QA » (COLLAB).",
+		"imageAlt": "Visuel QDM « Zones d'incertitude & QA » (COLLAB).",
 		"linkedInUrl": "https://www.linkedin.com/posts/qdm_confiance-qa-PLACEHOLDER",
 		"publishedAt": "2026-03-27",
 		"order": 3
@@ -555,7 +555,7 @@
 		"id": "22-carrousel-22",
 		"category": "COLLAB",
 		"mode": "liant",
-		"title": "États invisibles & design",
+		"title": "L'effet de bord des maquettes",
 		"body": "Un architecte d'intérieur te montre le rendu 3D du salon terminé. Canapé, lumière parfaite, tout est beau. Personne ne te montre le tableau électrique. Chaque maquette Figma que tu implémentes fait exactement la même chose. Elle montre le salon fini — le chemin heureux, avec des données parfaites. Le vide, l'erreur, le chargement, le refus de permission : personne ne les a dessinés, et c'est toi qui hérites de la décision, seul, avec un budget design de zéro minute.\n\nEn bref : une maquette livrée sans revue des états invisibles n'est pas une spec, c'est une esquisse. Le dev qui code dessus ne code pas une décision, il code une hypothèse — et il la paiera en allers-retours, un par un, jusqu'à la livraison (voire même après).\n\nLe vrai travail de design ne se termine pas là où l'écran est beau. Il commence là où l'écran est vide, cassé, ou en train de charger — c'est précisément là que la plupart des maquettes s'arrêtent ; alors que le produit, lui, continue.\n\nCe que ça implique concrètement :\n→ Bloquer 20 minutes avec le designer avant de commencer à coder, et lister ensemble les états manquants — vide, erreur, chargement, permission refusée...\n→ Comparer le nombre d'allers-retours nécessaires par la suite.\n\nLa plupart des équipes qui essaient cette méthode voient tomber cette métrique à zéro. Et vous, combien de temps a duré votre plus longue période d'allers-retours ?",
 		"hashtags": [
 			"ProductDesign",
@@ -564,35 +564,35 @@
 			"UXDesign"
 		],
 		"image": "../assets/posts/carrousel-22/01.png",
-		"imageAlt": "Carrousel QDM « États invisibles & design » (COLLAB), 7 pages.",
+		"imageAlt": "Carrousel QDM « L'effet de bord des maquettes » (COLLAB), 7 pages.",
 		"pages": [
 			{
 				"image": "../assets/posts/carrousel-22/01.png",
-				"alt": "« États invisibles & design » — page 1/7."
+				"alt": "« L'effet de bord des maquettes » — page 1/7."
 			},
 			{
 				"image": "../assets/posts/carrousel-22/02.png",
-				"alt": "« États invisibles & design » — page 2/7."
+				"alt": "« L'effet de bord des maquettes » — page 2/7."
 			},
 			{
 				"image": "../assets/posts/carrousel-22/03.png",
-				"alt": "« États invisibles & design » — page 3/7."
+				"alt": "« L'effet de bord des maquettes » — page 3/7."
 			},
 			{
 				"image": "../assets/posts/carrousel-22/04.png",
-				"alt": "« États invisibles & design » — page 4/7."
+				"alt": "« L'effet de bord des maquettes » — page 4/7."
 			},
 			{
 				"image": "../assets/posts/carrousel-22/05.png",
-				"alt": "« États invisibles & design » — page 5/7."
+				"alt": "« L'effet de bord des maquettes » — page 5/7."
 			},
 			{
 				"image": "../assets/posts/carrousel-22/06.png",
-				"alt": "« États invisibles & design » — page 6/7."
+				"alt": "« L'effet de bord des maquettes » — page 6/7."
 			},
 			{
 				"image": "../assets/posts/carrousel-22/07.png",
-				"alt": "« États invisibles & design » — page 7/7."
+				"alt": "« L'effet de bord des maquettes » — page 7/7."
 			}
 		],
 		"linkedInUrl": "https://www.linkedin.com/posts/qdm_etats-invisibles-designer-PLACEHOLDER",

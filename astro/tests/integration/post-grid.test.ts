@@ -13,7 +13,7 @@ beforeAll(async () => {
 	container = await AstroContainer.create();
 });
 
-function row(category: ThemeRow['Feature: category vocabulary'], n: number): ThemeRow {
+function row(category: ThemeRow['category'], n: number): ThemeRow {
 	return {
 		category,
 		posts: Array.from({ length: n }, (_, i) =>
