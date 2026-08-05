@@ -1,5 +1,7 @@
 ---
 import type { Category } from '@domain/category';
+import type { RailItem } from '@/ui/nav/rail';
+import AnchorRail from './AnchorRail.astro';
 
 interface Props {
 	categories: Category[];
@@ -7,7 +9,7 @@ interface Props {
 
 const { categories } = Astro.props;
 
-// Libellés lisibles pour les lecteurs d'écran (le code court reste le texte visible).
+// ? Libellés lisibles pour les lecteurs d'écran (le code court reste le texte visible).
 const CATEGORY_LABELS: Record<Category, string> = {
 	PERF: 'Performance',
 	A11Y: 'Accessibilité',
@@ -17,167 +19,13 @@ const CATEGORY_LABELS: Record<Category, string> = {
 	HTML: 'HTML sémantique',
 	COLLAB: 'Collaboration',
 };
+
+const items: RailItem[] = categories.map((category) => ({
+	anchor: `category-${category.toLowerCase()}`,
+	code: category,
+	full: CATEGORY_LABELS[category],
+	label: `Aller à la rubrique ${CATEGORY_LABELS[category]} (${category})`,
+}));
 ---
 
-{
-	categories.length > 0 && (
-		<nav class="category-nav" aria-label="Navigation par rubrique">
-			<ul>
-				{categories.map((category) => (
-					<li>
-						<a
-							class="category-nav__link"
-							href={`#category-${category.toLowerCase()}`}
-							data-nav-category={category.toLowerCase()}
-							aria-label={`Aller à la rubrique ${CATEGORY_LABELS[category]} (${category})`}
-						>
-							<span class="category-nav__dot" aria-hidden="true" />
-							<span class="category-nav__code">{category}</span>
-							<span class="category-nav__full" aria-hidden="true">{CATEGORY_LABELS[category]}</span>
-						</a>
-					</li>
-				))}
-			</ul>
-		</nav>
-	)
-}
-
-<script>
-	// ? Scrollspy (amélioration progressive) : met en avant la rubrique visible.
-	const links = new Map();
-	for (const el of document.querySelectorAll('[data-nav-category]')) {
-		links.set(el.getAttribute('data-nav-category') ?? '', el);
-	}
-
-	// On observe les SECTIONS (elles pavent la page en continu → il y en a toujours
-	// une dans la bande), pas les titres fins. Elles portent aria-labelledby="category-…".
-	const sections = document.querySelectorAll('[aria-labelledby^="category-"]');
-
-	if (links.size > 0 && sections.length > 0) {
-		const setActive = (slug: string) => {
-			for (const [key, link] of links) {
-				link.setAttribute('aria-current', key === slug ? 'true' : 'false');
-			}
-		};
-
-		const slugOf = (section: Element) =>
-			(section.getAttribute('aria-labelledby') ?? '').replace('category-', '');
-
-		// Défaut : la première rubrique est active (haut de page), avant tout scroll.
-		setActive(slugOf(sections[0]));
-
-		const observer = new IntersectionObserver(
-			(entries) => {
-				for (const entry of entries) {
-					if (entry.isIntersecting) setActive(slugOf(entry.target));
-				}
-			},
-			// Bande active proche du haut du viewport : la section qui occupe le haut
-			// est « courante » (au tout début, c'est bien la première).
-			{ rootMargin: '-10% 0px -80% 0px', threshold: 0 },
-		);
-		for (const section of sections) observer.observe(section);
-	}
-</script>
-
-<style>
-	/* Rail vertical logé dans la gouttière gauche, sous la largeur max du contenu.
-	   Masqué quand l'espace latéral est insuffisant (pour ne pas chevaucher). */
-	.category-nav {
-		position: fixed;
-		top: 50%;
-		transform: translateY(-50%);
-		left: max(1.5rem, calc(50vw - 50rem));
-		z-index: 10;
-		display: none;
-	}
-	@media (min-width: 32rem) {
-		.category-nav {
-			display: block;
-		}
-	}
-
-	.category-nav ul {
-		list-style: none;
-		margin: 0;
-		padding: 0.25rem 0 0.25rem 0.25rem;
-		display: flex;
-		flex-direction: column;
-		gap: 0.1rem;
-		/* Fil vertical façon timeline. */
-		border-left: 1px solid var(--border);
-	}
-	.category-nav__link {
-		display: flex;
-		align-items: center;
-		padding: 0.3rem 0.5rem;
-		border-radius: 6px;
-		font-family: var(--font-mono, monospace);
-		font-size: 0.72rem;
-		font-weight: 700;
-		letter-spacing: 0.12em;
-		text-decoration: none;
-		color: var(--muted);
-		transition:
-			color 0.2s ease,
-			background-color 0.2s ease,
-			box-shadow 0.2s ease;
-	}
-	.category-nav__dot {
-		width: 6px;
-		height: 6px;
-		margin-right: 0.5rem;
-		border-radius: 50%;
-		background: currentColor;
-		opacity: 0.55;
-		flex: none;
-		transition:
-			transform 0.2s ease,
-			opacity 0.2s ease,
-			background-color 0.2s ease;
-	}
-	/* //? Libellé complet : replié par défaut, révélé en douceur au survol/focus. */
-	.category-nav__full {
-		max-width: 0;
-		margin-left: 0;
-		opacity: 0;
-		overflow: hidden;
-		white-space: nowrap;
-		transition:
-			max-width 0.3s ease,
-			margin-left 0.3s ease,
-			opacity 0.25s ease;
-	}
-	.category-nav__link:hover .category-nav__full,
-	.category-nav__link:focus-visible .category-nav__full {
-		max-width: 16rem;
-		margin-left: 0.5rem;
-		opacity: 1;
-	}
-	/* //? Déplié, le libellé complet déborde du rail et passe AU-DESSUS des vignettes (le contenu fait 80vw centré, le
-		? rail vit dans la gouttière). Le fond doit donc être franchement opaque : un voile laissait lire l'image à
-		? travers le texte. `--bg` plutôt que `--panel`, qui n'est pas défini dans le chrome (seulement dans les modes
-		? de post) et retombait sur un gris à 8 %. Le halo + l'ombre détachent la pastille du fond quand elle est posée
-		? sur la page, de même couleur. */
-	.category-nav__link:hover,
-	.category-nav__link:focus-visible {
-		color: var(--fg);
-		background: var(--bg);
-		/* Halo en --muted, pas en --border : une vignette en mode sombre a EXACTEMENT le
-		   même fond que le chrome sombre (#120A07), donc un filet discret y disparaît,
-		   ombre portée comprise. --muted tient 7,3:1 (sombre) et 6,1:1 (clair). */
-		box-shadow:
-			0 0 0 1px var(--muted),
-			0 6px 18px rgb(0 0 0 / 0.28);
-	}
-	/* La rubrique courante garde son accent au survol (la règle suit celle du hover,
-	   à spécificité égale) : c'est --acc-text sur --bg, vérifié ≥ 4,5:1 dans les deux thèmes. */
-	.category-nav__link[aria-current='true'] {
-		color: var(--acc-text, var(--acc));
-	}
-	.category-nav__link[aria-current='true'] .category-nav__dot {
-		opacity: 1;
-		background: var(--acc);
-		transform: scale(1.5);
-	}
-</style>
+<AnchorRail items={items} ariaLabel="Navigation par rubrique" view="theme" prefix="category-" />

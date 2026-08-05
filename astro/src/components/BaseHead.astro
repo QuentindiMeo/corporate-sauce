@@ -16,23 +16,31 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const { title, description, image = FallbackImage } = Astro.props;
 ---
 
-<!-- Anti-flash : applique le thème (choix stocké, sinon préférence système) avant le premier rendu. -->
+<!--
+	? Anti-flash : applique le thème (choix stocké, sinon préférence système) ET l'agencement de galerie avant le premier rendu.
+	! Inline et sans import : ce script doit s'exécuter avant la peinture. Les clés et les valeurs y sont donc littérales — elles
+	! doublent `theme-preference.ts` / `view-preference.ts`, dont les tests unitaires figent justement ces constantes.
+-->
 <script is:inline>
 	(() => {
-		const stocke = (() => {
+		const read = (key) => {
 			try {
-				return localStorage.getItem('qdm-theme');
+				return localStorage.getItem(key);
 			} catch {
 				return null;
 			}
-		})();
-		const theme =
-			stocke === 'light' || stocke === 'dark'
-				? stocke
+		};
+
+		const storedTheme = read('qdm-theme');
+		document.documentElement.dataset.theme =
+			storedTheme === 'light' || storedTheme === 'dark'
+				? storedTheme
 				: matchMedia('(prefers-color-scheme: dark)').matches
 					? 'dark'
 					: 'light';
-		document.documentElement.dataset.theme = theme;
+
+		const storedViewModel = read('qdm-view');
+		document.documentElement.dataset.view = storedViewModel === 'date' ? 'date' : 'theme';
 	})();
 </script>
 

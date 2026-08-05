@@ -1,5 +1,6 @@
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { beforeAll, describe, expect, it } from 'vitest';
+
 import CategoryNav from '@/components/CategoryNav.astro';
 
 let container: AstroContainer;
@@ -31,12 +32,20 @@ describe('Feature: CategoryNav component', () => {
 			props: { categories: ['PERF'] },
 		});
 		expect(html).toMatch(/aria-label="Aller à la rubrique Performance \(PERF\)"/);
-		// Le code court reste le texte visible (label-in-name respecté).
-		expect(html).toContain('>PERF<');
+		expect(html).toContain('>PERF<'); // ? Le code court reste le texte visible (label-in-name respecté).
 	});
 
 	it('Given no categories, When the nav is rendered, Then nothing is output', async () => {
 		const html = await container.renderToString(CategoryNav, { props: { categories: [] } });
 		expect(html).not.toContain('<nav');
+	});
+
+	it('Given the rail, When it is rendered, Then it declares the view it belongs to and its section prefix', async () => {
+		const html = await container.renderToString(CategoryNav, {
+			props: { categories: ['PERF'] },
+		});
+
+		expect(html).toContain('data-rail-view="theme"');
+		expect(html).toContain('data-rail-prefix="category-"');
 	});
 });

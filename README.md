@@ -1,10 +1,9 @@
 # QDM — Galerie des posts LinkedIn
 
-Site vitrine des posts LinkedIn de **QDM — _Question. Design. Materialize._**
-Galerie de vignettes regroupées par thème ; survol qui grossit et incline la vignette ;
-clic → modale (visuel HD + texte complet + lien LinkedIn). Français, responsive,
-accessible (WCAG AA), minimaliste. Construit avec **Astro** en **architecture hexagonale**
-et développé en **TDD**.
+Site vitrine des posts LinkedIn de **QDM — _Question. Design. Materialize._**  
+Galerie de vignettes regroupées par thème ou par date.  
+Français, responsive, accessible (WCAG AA), minimaliste.  
+Construit avec **Astro** en **architecture hexagonale** et développé en **TDD**.
 
 ## Structure du dépôt
 
@@ -21,14 +20,10 @@ et développé en **TDD**.
 └─ plan.md                spécification d'origine
 ```
 
-> ⚠️ L'application est dans le sous-dossier **`astro/`** : toutes les commandes ci-dessous
-> se lancent depuis `astro/`.
-
 ## Prérequis
 
 - **Node ≥ 22.12** (le build échoue sous une version antérieure).
-- **pnpm** (ne pas utiliser npm). La version est épinglée par le champ `packageManager`
-  de `astro/package.json` — `corepack` la fournit automatiquement.
+- **pnpm** (ne pas utiliser npm). voir `packageManager` dans `astro/package.json` — `corepack` le fournit automatiquement.
 
 ```sh
 nvm use 22        # ou toute version ≥ 22.12 (ex. via nvm/fnm)
@@ -39,15 +34,15 @@ corepack enable   # active le bon pnpm depuis packageManager
 
 ```sh
 cd astro
-pnpm install          # installe les dépendances
-pnpm dev              # http://localhost:4321
+pnpm install      # installe les dépendances
+pnpm dev          # http://localhost:4321
 ```
 
 Build de production + prévisualisation :
 
 ```sh
-pnpm build            # génère le site statique dans astro/dist/
-pnpm preview          # sert le build sur http://localhost:4321
+pnpm build        # génère le site statique dans astro/dist/
+pnpm preview      # sert le build sur http://localhost:4321
 ```
 
 ## Commandes (depuis `astro/`)
@@ -67,38 +62,52 @@ pnpm preview          # sert le build sur http://localhost:4321
 
 Avant la première exécution e2e en local : `pnpm exec playwright install chromium`.
 
+## Les deux vues de la galerie
+
+La même galerie s'affiche de deux façons, commutables par le bouton de vue de l'en-tête — il porte
+l'icône et le libellé de la **vue affichée** (« Par rubrique » ou « Par date »), et le clic bascule :
+
+| Vue                       | Agencement                                                       | Tri                                 |
+| ------------------------- | ---------------------------------------------------------------- | ----------------------------------- |
+| **Par rubrique** (défaut) | une ligne par rubrique (PERF, A11Y, DX, UI, ARCHI, HTML, COLLAB) | `order` puis `id`                   |
+| **Par date**              | flux unique, un groupe par mois (« AOÛT 2026 »)                  | `publishedAt` décroissant puis `id` |
+
+Le choix est mémorisé dans le cache du navigateur.
+
+> Le site étant **statique**, la chronologie et les pastilles « à venir » se figent à l'instant du build :
+> un post programmé ne devient « paru » qu'au prochain déploiement.
+
 ## Mettre à jour le contenu (sans redéployer de code)
 
-Les posts vivent dans **`astro/src/data/posts.json`** — pas dans le code. Pour ajouter
-un post : déposer le(s) visuel(s) dans `astro/src/assets/posts/` (un PNG portrait, ou un
-dossier `carrousel-XX/` pour un carrousel), puis ajouter une entrée JSON (`category`,
-`mode`, `title`, `body`, `hashtags`, `image`, `imageAlt`, `linkedInUrl`, `publishedAt`,
-`order`, et `pages[]` pour un carrousel).
-Le schéma (`astro/src/content.config.ts`) valide chaque entrée au build.
+L'identité des posts vit dans **`astro/src/data/posts.json`** — pas dans le code.  
+Pour ajouter un post : déposer le(s) visuel(s) dans `astro/src/assets/posts/` (un PNG portrait,
+ou un dossier `carrousel-XX/` pour un carrousel), puis ajouter une entrée JSON (`category`, `mode`, `title`, `body`,
+`hashtags`, `image`, `imageAlt`, `linkedInUrl`, `publishedAt`, `order`, et `pages[]` pour un carrousel).  
+Le schéma (`astro/src/content.config.ts`) valide chaque entrée au build.  
 Détails, exemples (post simple & carrousel) : **[`astro/README.md`](astro/README.md)**.
 
 ## Méthodologie — TDD
 
-Rouge → vert → refactor. Le test qui échoue s'écrit d'abord, puis le minimum de code
-pour le faire passer, puis on nettoie. Le cœur (domain/application) se teste sans
-framework ; l'UI via la Container API d'Astro ; les parcours via Playwright.
-Détails : [`action.md`](action.md) §8.
+Rouge → vert → refactor.  
+Le test qui échoue s'écrit d'abord, puis le code minimal pour le faire passer, puis on nettoie/refactor.  
+Le cœur (domain/application) se teste sans framework ; l'UI via la Container API d'Astro ; les parcours via Playwright.
 
 ## Intégration continue & déploiement
 
-- **CI** (`.github/workflows/ci.yml`) : `lint → typecheck → test → e2e → build`, bloquant,
-  sur chaque push/PR. Un job Lighthouse (non bloquant) audite perf/a11y/SEO.
-- **Déploiement** (`.github/workflows/deploy.yml`) : piloté par la variable de dépôt
-  `DEPLOY_TARGET` — `cloudflare` (Cloudflare Pages, secrets `CLOUDFLARE_API_TOKEN` /
-  `CLOUDFLARE_ACCOUNT_ID`) ou `github-pages`. Voir `astro/README.md` pour la mise en place.
+- **CI** (`.github/workflows/ci.yml`) : `lint → typecheck → test → e2e → build`, bloquant, sur chaque push/PR.  
+  Un job Lighthouse (non bloquant) audite perf/a11y/SEO.
+- **Déploiement** (`.github/workflows/deploy.yml`) : piloté par la variable de dépôt `DEPLOY_TARGET` — `cloudflare`
+  (Cloudflare Pages, secrets `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID`) ou `github-pages`.  
+  Voir `astro/README.md` pour la mise en place.
 
 ## À faire avant la mise en production
 
-1. Renseigner le **domaine réel** dans `astro/astro.config.mjs` (`site`) et
-   `astro/public/robots.txt` (actuellement `example.com`).
-2. Remplacer les **liens LinkedIn `…-PLACEHOLDER`** de `astro/src/data/posts.json` par les vraies URLs.
-3. Fournir les visuels de la rubrique **COLLAB** (7ᵉ ligne ; 6 rubriques affichées pour l'instant).
-4. Choisir la cible de déploiement (`DEPLOY_TARGET`) et calibrer les seuils Lighthouse sur un premier run réel.
+1. Renseigner le **domaine réel** dans `astro/astro.config.mjs` (`site`) et `astro/public/robots.txt` (actuellement `example.com`).
+2. Remplacer les **liens LinkedIn `…-PLACEHOLDER`** de `astro/src/data/posts.json` par les vraies URLs
+   (actuellement **19 sur 19**).
+3. Choisir la cible de déploiement (`DEPLOY_TARGET`) et calibrer les seuils Lighthouse sur un premier run réel.
+4. Si la chronologie doit rester juste sans intervention, planifier un **build périodique** (cron
+   Cloudflare Pages ou GitHub Actions) : voir l'encadré « site statique » plus haut.
 
 ## Dépannage
 

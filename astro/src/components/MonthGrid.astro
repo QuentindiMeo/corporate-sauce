@@ -1,0 +1,22 @@
+---
+import type { MonthRow as MonthRowModel } from '@domain/post-collection';
+import MonthRow from './MonthRow.astro';
+
+interface Props {
+	rows: MonthRowModel[];
+	priority?: boolean;	// ? `true` quand ce flux est la vue par défaut de la page (porte le candidat LCP).
+}
+
+const { rows, priority = false } = Astro.props;
+---
+
+<div class="month-grid">
+	{rows.map((row, i) => <MonthRow row={row} priority={priority && i === 0} />)}
+</div>
+
+<style>
+	.month-grid {
+		display: flex;
+		flex-direction: column;
+	}
+</style>

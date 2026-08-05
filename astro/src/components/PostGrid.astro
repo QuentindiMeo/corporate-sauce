@@ -4,13 +4,14 @@ import PostRow from './PostRow.astro';
 
 interface Props {
 	rows: ThemeRow[];
+	priority?: boolean; // ? `true` si la grille est la vue affichée au chargement. `false` pour un panneau masqué.
 }
 
-const { rows } = Astro.props;
+const { rows, priority = true } = Astro.props;
 ---
 
 <div class="post-grid">
-	{rows.map((row, i) => <PostRow row={row} priority={i === 0} />)}
+	{rows.map((row, i) => <PostRow row={row} priority={priority && i === 0} />)}
 </div>
 
 <style>

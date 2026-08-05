@@ -1,6 +1,7 @@
 ---
 import { SITE_TITLE } from '../consts';
 import ThemeToggle from './ThemeToggle.astro';
+import ViewToggle from './ViewToggle.astro';
 ---
 
 <header>
@@ -8,7 +9,10 @@ import ThemeToggle from './ThemeToggle.astro';
 		<a class="brand" href="/">
 			<span class="chevron">›</span>{SITE_TITLE}<span class="cursor" aria-hidden="true"></span>
 		</a>
-		<ThemeToggle />
+		<div class="controls">
+			<ViewToggle />
+			<ThemeToggle />
+		</div>
 	</nav>
 </header>
 
@@ -25,6 +29,12 @@ import ThemeToggle from './ThemeToggle.astro';
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
+		gap: 1rem;
+	}
+	.controls {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
 	}
 	.brand {
 		font-family: var(--font-mono, monospace);

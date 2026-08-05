@@ -1,0 +1,24 @@
+---
+import type { MonthRow } from '@domain/post-collection';
+import { formatMonth, formatMonthCode, formatMonthWithElision } from '@/ui/format/date';
+import type { RailItem } from '@/ui/nav/rail';
+import AnchorRail from './AnchorRail.astro';
+
+interface Props {
+	rows: MonthRow[];
+}
+
+const { rows } = Astro.props;
+
+const items: RailItem[] = rows.map((row) => {
+	const code = formatMonthCode(row.monthKey);
+	return {
+		anchor: `month-${row.monthKey}`,
+		code,
+		full: formatMonth(row.month),
+		label: `Aller au mois ${formatMonthWithElision(row.month)} (${code})`,
+	};
+});
+---
+
+<AnchorRail items={items} ariaLabel="Navigation par mois" view="date" prefix="month-" />

@@ -1,5 +1,5 @@
-import type { Post } from './post';
 import { CATEGORIES, type Category } from './category';
+import type { Post } from './post';
 
 // ? Une ligne de la grille : une rubrique et ses posts, triés.
 export interface ThemeRow {
@@ -26,4 +26,48 @@ export function groupByTheme(posts: readonly Post[]): ThemeRow[] {
 	}
 
 	return rows;
+}
+
+// ? Un groupe du flux chronologique : un mois calendaire et ses posts, du plus récent au plus ancien.
+export interface MonthRow {
+	readonly monthKey: string; // ? Clé `AAAA-MM` en UTC
+	readonly month: Date;	// ? 1er du mois à minuit UTC
+	readonly posts: readonly Post[];
+}
+
+/**
+ * ! Tout est calculé en UTC : `publishedAt` vient de `posts.json` en « AAAA-MM-JJ », coercé à minuit UTC.
+ * ! `getMonth()` (local) ferait basculer le 1er du mois dans le mois précédent sur tout fuseau derrière Greenwich.
+ */
+function monthKeyOf(date: Date): string {
+	return date.toISOString().slice(0, 7);
+}
+
+/**
+ * ? Regroupe les posts en un flux chronologique : un groupe par mois **présent** dans les données, du plus récent
+ * ? au plus ancien. Le tri intra-mois est décroissant par date, les ex æquo départagés par `id` (déterminisme).
+ * * Aucun mois vide n'instancie de ligne. `order` n'intervient pas.
+ */
+export function groupByMonth(posts: readonly Post[]): MonthRow[] {
+	const buckets = new Map<string, Post[]>();
+
+	for (const post of posts) {
+		const key = monthKeyOf(post.publishedAt);
+		const bucket = buckets.get(key);
+		if (bucket) {
+			bucket.push(post);
+		} else {
+			buckets.set(key, [post]);
+		}
+	}
+
+	return [...buckets.keys()]
+		.sort((a, b) => b.localeCompare(a))
+		.map((monthKey) => ({
+			monthKey,
+			month: new Date(`${monthKey}-01T00:00:00.000Z`),
+			posts: (buckets.get(monthKey) ?? []).sort(
+				(a, b) => b.publishedAt.getTime() - a.publishedAt.getTime() || a.id.localeCompare(b.id),
+			),
+		}));
 }

@@ -1,7 +1,15 @@
 {
 	"extends": "astro/tsconfigs/strict",
 	"include": [".astro/types.d.ts", "**/*"],
-	"exclude": ["dist", "vitest.config.ts", "playwright.config.ts", "eslint.config.js"],
+	"exclude": [
+		"dist",
+		"coverage",
+		"playwright-report",
+		"test-results",
+		"vitest.config.ts",
+		"playwright.config.ts",
+		"eslint.config.js"
+	],
 	"compilerOptions": {
 		"strictNullChecks": true,
 		"paths": {

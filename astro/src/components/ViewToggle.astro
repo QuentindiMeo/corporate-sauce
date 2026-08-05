@@ -1,0 +1,132 @@
+---
+/**
+ *  ? Îlot : bascule l'agencement de la galerie (par rubrique ⇄ par date) et persiste le choix.
+ *  * La résolution initiale (anti-flash) est faite par le script inline de BaseHead.
+ *
+ *  ? Le bouton AFFICHE L'ÉTAT COURANT : icône + libellé nomment la vue visible.
+ *  ! Conséquence a11y : pas d'`aria-pressed`. L'ARIA APG proscrit de changer le nom accessible d'un bouton
+ *  ! à bascule — « Par rubrique, enfoncé » ne veut rien dire. C'est donc un bouton d'ACTION dont le nom
+ *  ! énonce l'état puis l'action (« Par rubrique, basculer sur la vue par date »), grâce à un complément masqué visuellement mais lu.
+ *
+ *  ? Les DEUX états sont rendus au build et CSS n'en montre qu'un, comme les panneaux de galerie. Sinon un visiteur revenant en vue date
+ *  ? verrait « Par rubrique » le temps que le script hissé s'exécute (l'anti-flash de BaseHead tourne avant que ce bouton existe).
+ */
+---
+
+<div class="view-toggle">
+	<button type="button" class="view-toggle__button" data-view-toggle>
+		<span class="view-toggle__state" data-view-state="theme">
+			<span class="view-toggle__icon view-toggle__icon--rows" aria-hidden="true"></span>
+			<span class="view-toggle__label">Par rubrique</span>
+			<span class="visually-hidden">, basculer sur la vue par date</span>
+		</span>
+		<span class="view-toggle__state" data-view-state="date">
+			<span class="view-toggle__icon view-toggle__icon--calendar" aria-hidden="true"></span>
+			<span class="view-toggle__label">Par date</span>
+			<span class="visually-hidden">, basculer sur la vue par rubrique</span>
+		</span>
+	</button>
+	<!-- ? Le réagencement est purement visuel : on l'annonce aux lecteurs d'écran. -->
+	<p class="visually-hidden" data-view-status role="status" aria-live="polite"></p>
+</div>
+
+<script>
+	import {
+		toggleView,
+		viewAnnouncement,
+		VIEW_STORAGE_KEY,
+		type GalleryView,
+	} from '@/ui/view/view-preference';
+
+	// ! `document.currentScript` est null dans un script de type module (Astro bundle et hisse ce <script>) — on cible donc les nœuds par leurs attributs.
+	const button = document.querySelector<HTMLButtonElement>('[data-view-toggle]');
+	const status = document.querySelector<HTMLElement>('[data-view-status]');
+	const root = document.documentElement;
+
+	function currentView(): GalleryView {
+		return root.dataset.view === 'date' ? 'date' : 'theme';
+	}
+
+	button?.addEventListener('click', () => {
+		// ? Le script ne pose QUE `data-view` : icône, libellé, complément masqué et panneaux de galerie en découlent tous par CSS.
+		const next = toggleView(currentView());
+		root.dataset.view = next;
+		if (status) {
+			status.textContent = viewAnnouncement(next);
+		}
+		try {
+			localStorage.setItem(VIEW_STORAGE_KEY, next);
+		} catch {
+			/* //? stockage indisponible : la bascule reste effective pour la session */
+		}
+	});
+</script>
+
+<style>
+	.view-toggle__button {
+		display: inline-flex;
+		align-items: center;
+		font-family: var(--font-mono, monospace);
+		font-size: 0.85rem;
+		padding: 0.35em 0.7em;
+		border: 1px solid var(--border);
+		border-radius: 7px;
+		background: transparent;
+		color: inherit;
+		cursor: pointer;
+		transition:
+			background-color 0.3s ease,
+			color 0.3s ease,
+			border-color 0.3s ease;
+	}
+	.view-toggle__state {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5em;
+	}
+	/* //? Un état par vue : celui de la vue inactive sort du flux. `display:none` (et non
+		? `visibility`) l'exclut aussi de l'arbre a11y, donc le NOM ACCESSIBLE du bouton se
+		? réduit à l'état courant + son action. Sans `data-view` (JS coupé, ou avant
+		? l'anti-flash), c'est la vue par rubrique qui s'affiche. */
+	:root[data-view='date'] .view-toggle__state[data-view-state='theme'],
+	:root:not([data-view='date']) .view-toggle__state[data-view-state='date'] {
+		display: none;
+	}
+	/* //? La vue par date reste marquée d'un aplat accentué : le sens ne repose pas sur la
+		? couleur seule (le libellé le dit), mais le contraste aide à repérer qu'on a quitté
+		? l'agencement par défaut. --acc-ink sur --acc est le couple vérifié de la charte §2. */
+	:root[data-view='date'] .view-toggle__button {
+		border-color: var(--acc-text, var(--acc));
+		background: var(--acc);
+		color: var(--acc-ink);
+	}
+
+	/* Icônes tracées en CSS — ni emoji ni SVG externe (charte §9). */
+	.view-toggle__icon {
+		flex: none;
+		background-repeat: no-repeat;
+	}
+	/* « Par rubrique » : trois barres empilées = les lignes thématiques. */
+	.view-toggle__icon--rows {
+		width: 0.9em;
+		height: 0.75em;
+		background-image:
+			linear-gradient(currentColor, currentColor), linear-gradient(currentColor, currentColor),
+			linear-gradient(currentColor, currentColor);
+		background-size: 100% 2px;
+		background-position:
+			0 0,
+			0 50%,
+			0 100%;
+	}
+	/* « Par date » : un feuillet de calendrier — cadre + bandeau supérieur plein. */
+	.view-toggle__icon--calendar {
+		width: 0.8em;
+		height: 0.8em;
+		border: 2px solid currentColor;
+		border-radius: 2px;
+		background-image: linear-gradient(currentColor, currentColor);
+		background-size: 100% 3px;
+		background-position: 0 0;
+	}
+</style>

@@ -1,11 +1,10 @@
-/*
- * Design tokens QDM — chrome du site + reset accessible.
- * Les palettes des 3 modes (posts) sont appliquées en variables inline par
- * `styleFromMode` (src/ui/theme/modes.ts), source de vérité unique. Ici : le
- * chrome neutre du site (hors vignettes), avec bascule sombre/clair (data-theme).
+/**
+ * ? Design tokens QDM — chrome du site + reset accessible.
+ * * Les palettes des 3 modes (posts) sont appliquées en variables inline par `styleFromMode` (src/ui/theme/modes.ts), source de vérité unique.
+ * * Ici : le chrome neutre du site (hors vignettes), avec bascule sombre/clair (data-theme).
  */
 
-/* Chrome — thème SOMBRE (défaut), dérivé du mode Rust. */
+/* ! Chrome — thème SOMBRE (défaut), dérivé du mode Rust. */
 :root,
 :root[data-theme='dark'] {
 	--bg: #120a07;
@@ -18,7 +17,7 @@
 	color-scheme: dark;
 }
 
-/* Chrome — thème CLAIR, dérivé du mode Ambre. */
+/* ! Chrome — thème CLAIR, dérivé du mode Ambre. */
 :root[data-theme='light'] {
 	--bg: #f6ecd4;
 	--fg: #221b0e;
@@ -30,7 +29,6 @@
 	color-scheme: light;
 }
 
-/* Signal sémantique ✓/✕ (charte §2), commun à tous les modes. */
 :root {
 	--ok: #2e6a46;
 	--ok-text: #276039;
@@ -59,8 +57,8 @@ body {
 	-webkit-font-smoothing: antialiased;
 }
 
-/* Bascule de thème (data-theme) fluide : on anime les propriétés qui consomment
-   les jetons du chrome. Neutralisé par le bloc prefers-reduced-motion plus bas. */
+/* ? Bascule de thème (data-theme) fluide : on anime les propriétés qui consomment
+   ? les jetons du chrome. Neutralisé par le bloc prefers-reduced-motion plus bas. */
 body,
 header,
 footer,
@@ -88,13 +86,37 @@ a {
 	color: inherit;
 }
 
-/* Cible de focus visible et nette (a11y). */
 :focus-visible {
 	outline: 3px solid var(--acc-text, var(--acc));
 	outline-offset: 2px;
 }
 
-/* Lien d'évitement. */
+/* ? Réservé aux lecteurs d'écran : retiré visuellement, conservé dans l'arbre a11y
+   ? (une région aria-live ne doit surtout pas être `display:none`, sinon elle est muette). */
+.visually-hidden {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+	border: 0;
+}
+
+/**
+ * ? Bascule d'agencement de la galerie (action.md §Phase 7). Les DEUX vues sont rendues au build ; `data-view` sur <html> n'en laisse qu'une visible.
+ * ! Sans `data-view` (JS coupé, ou avant l'anti-flash), c'est la vue par rubrique qui s'affiche — d'où
+ * ! le `:not([data-view='date'])` plutôt qu'un `[data-view='theme']`.
+ * ! `display:none` (et non `visibility`/`hidden`) : la vue masquée sort de l'ordre de tabulation et de l'arbre a11y,
+ * ! si bien que le DOM de la vue active reste le seul parcouru au clavier — il suit donc l'ordre visuel.
+ */
+:root[data-view='date'] [data-view-panel='theme'],
+:root:not([data-view='date']) [data-view-panel='date'] {
+	display: none;
+}
+
 .skip-link {
 	position: absolute;
 	left: -9999px;

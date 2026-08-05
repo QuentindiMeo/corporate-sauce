@@ -1,0 +1,201 @@
+---
+import type { RailItem } from '@/ui/nav/rail';
+import type { GalleryView } from '@/ui/view/view-preference';
+
+interface Props {
+	items: RailItem[];
+	ariaLabel: string; // ? Nom accessible du repère de navigation.
+	view: GalleryView; // ? Vue à laquelle ce rail appartient : il n'est visible que dans celle-ci.
+
+	/**
+	 * ? Préfixe des `id` de section suivis par le scrollspy (« category- », « month- »).
+	 * ! Chaque rail n'observe QUE ses sections : les deux vues coexistent dans le DOM.
+	 */
+	prefix: string;
+}
+
+const { items, ariaLabel, view, prefix } = Astro.props;
+---
+
+{
+	items.length > 0 && (
+		<nav
+			class="anchor-rail"
+			aria-label={ariaLabel}
+			data-rail
+			data-rail-view={view}
+			data-rail-prefix={prefix}
+		>
+			<ul>
+				{items.map((item) => (
+					<li>
+						<a
+							class="anchor-rail__link"
+							href={`#${item.anchor}`}
+							data-rail-anchor={item.anchor}
+							aria-label={item.label}
+						>
+							<span class="anchor-rail__dot" aria-hidden="true" />
+							<span class="anchor-rail__code">{item.code}</span>
+							<span class="anchor-rail__full" aria-hidden="true">
+								{item.full}
+							</span>
+						</a>
+					</li>
+				))}
+			</ul>
+		</nav>
+	)
+}
+
+<script>
+	// ? Scrollspy (amélioration progressive) : met en avant le repère visible.
+	// ? Un seul script pour TOUS les rails de la page — il itère sur [data-rail] et cloisonne chacun à ses propres liens et à ses propres sections.
+	for (const rail of document.querySelectorAll<HTMLElement>('[data-rail]')) {
+		const prefix = rail.dataset.railPrefix ?? '';
+
+		// ! Annotation, et non `new Map<string, Element>()` : le parser ESLint des blocs
+		// ! <script> d'Astro rejette les arguments de type sur une expression `new`.
+		const links: Map<string, Element> = new Map();
+		for (const link of rail.querySelectorAll('[data-rail-anchor]')) {
+			links.set(link.getAttribute('data-rail-anchor') ?? '', link);
+		}
+
+		// On observe les SECTIONS (elles pavent la page en continu → il y en a toujours
+		// une dans la bande), pas les titres fins. Elles portent aria-labelledby="<prefix>…".
+		const sections = document.querySelectorAll(`[aria-labelledby^="${prefix}"]`);
+
+		if (!prefix || links.size === 0 || sections.length === 0) continue;
+
+		const setActive = (anchor: string) => {
+			for (const [key, link] of links) {
+				link.setAttribute('aria-current', key === anchor ? 'true' : 'false');
+			}
+		};
+
+		const anchorOf = (section: Element) => section.getAttribute('aria-labelledby') ?? '';
+
+		// ? Par défaut : le premier repère est actif (haut de page), avant tout scroll.
+		setActive(anchorOf(sections[0]));
+
+		const observer = new IntersectionObserver(
+			(entries) => {
+				for (const entry of entries) {
+					if (entry.isIntersecting) setActive(anchorOf(entry.target));
+				}
+			},
+			// Bande active proche du haut du viewport : la section qui occupe le haut est « courante » (au tout début, c'est bien la première).
+			{ rootMargin: '-10% 0px -80% 0px', threshold: 0 },
+		);
+		for (const section of sections) observer.observe(section);
+	}
+</script>
+
+<style>
+	/* Rail vertical logé dans la gouttière gauche, sous la largeur max du contenu.
+	   Masqué quand l'espace latéral est insuffisant (pour ne pas chevaucher). */
+	.anchor-rail {
+		position: fixed;
+		top: 50%;
+		transform: translateY(-50%);
+		left: max(1.5rem, calc(50vw - 50rem));
+		z-index: 10;
+		display: none;
+	}
+	@media (min-width: 32rem) and (min-height: 16rem) {
+		.anchor-rail {
+			display: block;
+		}
+	}
+	/* //? Un rail par vue : celui de la vue inactive sort du flux. Les sélecteurs sont
+		? plus spécifiques que la media-query ci-dessus, qui reste donc sans effet sur lui.
+		? Sans data-view (JS coupé), la vue par rubrique est celle qui s'affiche. */
+	:root[data-view='date'] .anchor-rail[data-rail-view='theme'],
+	:root:not([data-view='date']) .anchor-rail[data-rail-view='date'] {
+		display: none;
+	}
+
+	.anchor-rail ul {
+		list-style: none;
+		margin: 0;
+		padding: 0.25rem 0 0.25rem 0.25rem;
+		display: flex;
+		flex-direction: column;
+		gap: 0.1rem;
+		/* Fil vertical façon timeline. */
+		border-left: 1px solid var(--border);
+	}
+	.anchor-rail__link {
+		display: flex;
+		align-items: center;
+		padding: 0.3rem 0.5rem;
+		border-radius: 6px;
+		font-family: var(--font-mono, monospace);
+		font-size: 0.72rem;
+		font-weight: 700;
+		letter-spacing: 0.12em;
+		text-decoration: none;
+		color: var(--muted);
+		transition:
+			color 0.2s ease,
+			background-color 0.2s ease,
+			box-shadow 0.2s ease;
+	}
+	.anchor-rail__dot {
+		width: 6px;
+		height: 6px;
+		margin-right: 0.5rem;
+		border-radius: 50%;
+		background: currentColor;
+		opacity: 0.55;
+		flex: none;
+		transition:
+			transform 0.2s ease,
+			opacity 0.2s ease,
+			background-color 0.2s ease;
+	}
+	/* //? Libellé complet : replié par défaut, révélé en douceur au survol/focus. */
+	.anchor-rail__full {
+		max-width: 0;
+		margin-left: 0;
+		opacity: 0;
+		overflow: hidden;
+		white-space: nowrap;
+		transition:
+			max-width 0.3s ease,
+			margin-left 0.3s ease,
+			opacity 0.25s ease;
+	}
+	.anchor-rail__link:hover .anchor-rail__full,
+	.anchor-rail__link:focus-visible .anchor-rail__full {
+		max-width: 16rem;
+		margin-left: 0.5rem;
+		opacity: 1;
+	}
+	/* //? Déplié, le libellé complet déborde du rail et passe AU-DESSUS des vignettes (le contenu fait 80vw centré, le
+		? rail vit dans la gouttière). Le fond doit donc être franchement opaque : un voile laissait lire l'image à
+		? travers le texte. `--bg` plutôt que `--panel`, qui n'est pas défini dans le chrome (seulement dans les modes
+		? de post) et retombait sur un gris à 8 %. Le halo + l'ombre détachent la pastille du fond quand elle est posée
+		? sur la page, de même couleur. */
+	.anchor-rail__link:hover,
+	.anchor-rail__link:focus-visible {
+		color: var(--fg);
+		background: var(--bg);
+		/* Halo en --muted, pas en --border : une vignette en mode sombre a EXACTEMENT le
+		   même fond que le chrome sombre (#120A07), donc un filet discret y disparaît,
+		   ombre portée comprise. --muted tient 7,3:1 (sombre) et 6,1:1 (clair). */
+		box-shadow:
+			0 0 0 1px var(--muted),
+			0 6px 18px rgb(0 0 0 / 0.28);
+	}
+	/* Le repère courant garde son accent au survol (la règle suit celle du hover,
+	   à spécificité égale) : c'est --acc-text sur --bg, vérifié ≥ 4,5:1 dans les deux thèmes. */
+	.anchor-rail__link[aria-current='true'] {
+		color: var(--acc-text, var(--acc));
+	}
+	.anchor-rail__link[aria-current='true'] .anchor-rail__dot {
+		opacity: 1;
+		background: var(--acc);
+		transform: scale(1.5);
+	}
+</style>

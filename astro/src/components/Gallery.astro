@@ -1,0 +1,26 @@
+---
+import type { MonthRow, ThemeRow } from '@domain/post-collection';
+import MonthGrid from './MonthGrid.astro';
+import PostGrid from './PostGrid.astro';
+
+interface Props {
+	themeRows: ThemeRow[];
+	monthRows: MonthRow[];
+}
+
+const { themeRows, monthRows } = Astro.props;
+---
+<!--
+	? Les DEUX vues sont rendues au build (site statique) ; `data-view` sur <html> décide laquelle s'affiche.
+	? Aucun rendu client, HTML complet pour le SEO et fonctionnel sans JS (le panneau par rubrique reste visible par défaut).
+	* Coût : le DOM des vignettes est présent deux fois. Les visuels du panneau masqué sont en `loading="lazy"` dans
+	* un `display:none` → le navigateur ne les télécharge pas ; le surcoût est donc en octets de HTML, pas en images.
+-->
+<div class="gallery">
+	<div class="gallery__panel" data-view-panel="theme">
+		<PostGrid rows={themeRows} priority={true} />
+	</div>
+	<div class="gallery__panel" data-view-panel="date">
+		<MonthGrid rows={monthRows} priority={false} />
+	</div>
+</div>

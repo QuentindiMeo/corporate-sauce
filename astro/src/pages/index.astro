@@ -1,18 +1,22 @@
 ---
+import { listPostsByMonth } from '@application/list-posts-by-month';
 import { listPostsByTheme } from '@application/list-posts-by-theme';
 import { isScheduled } from '@domain/post';
 import { astroPostRepository } from '@infrastructure/content/astro-post-repository';
 import BaseHead from '../components/BaseHead.astro';
 import CategoryNav from '../components/CategoryNav.astro';
 import Footer from '../components/Footer.astro';
+import Gallery from '../components/Gallery.astro';
 import Header from '../components/Header.astro';
-import PostGrid from '../components/PostGrid.astro';
+import MonthNav from '../components/MonthNav.astro';
 import PostModal from '../components/PostModal.astro';
 import { galleryJsonLd } from '@/ui/seo/structured-data';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 
-// ? Hexagone : adaptateur infra → cas d'usage → domaine → grille.
+// ? Hexagone : adaptateur infra → cas d'usage → domaine → grilles.
+// ? Deux agencements du MÊME contenu, tous deux rendus au build (cf. Gallery).
 const rows = await listPostsByTheme(astroPostRepository);
+const monthRows = await listPostsByMonth(astroPostRepository);
 const categories = rows.map((row) => row.category);
 const posts = rows.flatMap((row) => row.posts);
 const total = posts.length;
@@ -39,18 +43,22 @@ const jsonLd = galleryJsonLd({
 		<a class="skip-link" href="#contenu">Aller au contenu</a>
 		<Header />
 		<CategoryNav categories={categories} />
+		<MonthNav rows={monthRows} />
 		<main id="contenu">
 			<header class="intro">
 				<h1>{SITE_TITLE}</h1>
 				<p class="intro__subtitle">
-					Secrets de fabrication logicielle et tuyaux en tout genre.<br/>Une conviction par visuel, sans détour.
+					Secrets de fabrication logicielle et tuyaux en tout genre.<br />
+					Une conviction par visuel, sans détour.
 				</p>
 				<p class="intro__meta">
-					{total} posts{scheduledCount > 0 && ` (${scheduledCount} à pourvoir)`} · {rows.length} rubriques
+					{`${total} posts${scheduledCount > 0 ? ` (${scheduledCount} à paraître)` : ''}
+					· ${rows.length} rubriques
+					· ${monthRows.length} mois`}
 				</p>
 			</header>
 
-			<PostGrid rows={rows} />
+			<Gallery themeRows={rows} monthRows={monthRows} />
 		</main>
 		<PostModal posts={posts} />
 		<Footer />
