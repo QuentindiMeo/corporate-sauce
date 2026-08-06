@@ -2,13 +2,13 @@
 import { listPostsByMonth } from '@application/list-posts-by-month';
 import { listPostsByTheme } from '@application/list-posts-by-theme';
 import { astroPostRepository } from '@infrastructure/content/astro-post-repository';
-import BaseHead from '@/pages/components/BaseHead.astro';
-import CategoryNav from '@/pages/components/CategoryNav.astro';
-import Footer from '@/pages/components/Footer.astro';
-import Gallery from '@/pages/components/Gallery.astro';
-import Header from '@/pages/components/Header.astro';
-import MonthNav from '@/pages/components/MonthNav.astro';
-import PostModal from '@/pages/components/PostModal.astro';
+import BaseHead from '@/components/BaseHead.astro';
+import CategoryNav from '@/components/CategoryNav.astro';
+import Footer from '@/components/Footer.astro';
+import Gallery from '@/components/Gallery.astro';
+import Header from '@/components/Header.astro';
+import MonthNav from '@/components/MonthNav.astro';
+import PostModal from '@/components/PostModal.astro';
 import { galleryJsonLd } from '@/ui/seo/structured-data';
 import {
 	isScheduledNow,
