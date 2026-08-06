@@ -1,11 +1,12 @@
+import type { ImageMetadata } from 'astro';
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { beforeAll, describe, expect, it } from 'vitest';
 
 import visual from '@/assets/posts/01-virtualisation.png';
 import Gallery from '@/components/Gallery.astro';
 import ViewToggle from '@/components/ViewToggle.astro';
-import type { MonthRow, ThemeRow } from '@domain/post-collection';
 import { aPost } from '../helpers/post-factory';
+import { aMonthRowVm, aThemeRowVm } from '../helpers/view-model-factory';
 
 let container: AstroContainer;
 
@@ -13,16 +14,15 @@ beforeAll(async () => {
 	container = await AstroContainer.create();
 });
 
-const themeRows: ThemeRow[] = [
-	{ category: 'PERF', posts: [aPost({ id: 'p1', category: 'PERF', image: visual })] },
-	{ category: 'UI', posts: [aPost({ id: 'u1', category: 'UI', image: visual })] },
+const themeRows = [
+	aThemeRowVm('PERF', [aPost<ImageMetadata>({ id: 'p1', category: 'PERF', image: visual })]),
+	aThemeRowVm('UI', [aPost<ImageMetadata>({ id: 'u1', category: 'UI', image: visual })]),
 ];
-const monthRows: MonthRow[] = [
-	{
-		monthKey: '2026-08',
-		month: new Date('2026-08-01T00:00:00.000Z'),
-		posts: [aPost({ id: 'p1', image: visual }), aPost({ id: 'u1', image: visual })],
-	},
+const monthRows = [
+	aMonthRowVm('2026-08', [
+		aPost<ImageMetadata>({ id: 'p1', image: visual }),
+		aPost<ImageMetadata>({ id: 'u1', image: visual }),
+	]),
 ];
 
 describe('Feature: ViewToggle component', () => {

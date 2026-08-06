@@ -1,9 +1,9 @@
 ---
-import type { Post } from '@domain/post';
+import type { PostViewModel } from '@/ui/view-model/post-view-model';
 import PostCard from './PostCard.astro';
 
 interface Props {
-	posts: readonly Post[];
+	posts: readonly PostViewModel[];
 	priority?: boolean; // ? `true` pour la première piste de la page : son 1er visuel est prioritaire (LCP).
 }
 
@@ -12,9 +12,9 @@ const { posts, priority = false } = Astro.props;
 
 <ul class="post-track">
 	{
-		posts.map((post, i) => (
+		posts.map((post: PostViewModel, idx: number) => (
 			<li class="post-track__item">
-				<PostCard post={post} priority={priority && i === 0} />
+				<PostCard post={post} priority={priority && idx === 0} />
 			</li>
 		))
 	}

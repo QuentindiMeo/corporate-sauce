@@ -1,12 +1,11 @@
 ---
-import type { ThemeRow } from '@domain/post-collection';
+import type { ThemeRowViewModel } from '@/ui/view-model/post-view-model';
 import PostTrack from './PostTrack.astro';
 import TagCategory from './TagCategory.astro';
 
 interface Props {
-	row: ThemeRow;
-	/** `true` pour la première ligne : ses visuels sont prioritaires (LCP). */
-	priority?: boolean;
+	row: ThemeRowViewModel;
+	priority?: boolean; // ? `true` pour la première ligne : ses visuels sont prioritaires (LCP).
 }
 
 const { row, priority = false } = Astro.props;

@@ -2,7 +2,7 @@ import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { beforeAll, describe, expect, it } from 'vitest';
 
 import MonthNav from '@/components/MonthNav.astro';
-import type { MonthRow } from '@domain/post-collection';
+import { aMonthRowVm } from '../helpers/view-model-factory';
 
 let container: AstroContainer;
 
@@ -10,11 +10,7 @@ beforeAll(async () => {
 	container = await AstroContainer.create();
 });
 
-const month = (monthKey: string): MonthRow => ({
-	monthKey,
-	month: new Date(`${monthKey}-01T00:00:00.000Z`),
-	posts: [],
-});
+const month = (monthKey: string) => aMonthRowVm(monthKey, []);
 
 describe('Feature: MonthNav component (date-view rail)', () => {
 	it('Given month rows, When the nav is rendered, Then it is a labelled navigation landmark', async () => {

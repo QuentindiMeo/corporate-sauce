@@ -1,10 +1,7 @@
-import type { Post } from '../post';
+import type { Post, PostImage } from '../post';
 
-/**
- * Port (entrant) : source de posts. Implémenté par l'infrastructure
- * (Content Collections Astro, JSON, API…). Le domaine ne connaît que ce contrat.
- */
-export interface PostRepository {
-	listPosts(): Promise<Post[]>;
-	findById(id: string): Promise<Post | null>;
+// ? Port (entrant) : source de posts. Implémenté par l'infrastructure (Content Collections Astro, JSON, API...)
+export interface PostRepository<TImage extends PostImage = PostImage> {
+	listPosts(): Promise<Post<TImage>[]>;
+	findById(id: string): Promise<Post<TImage> | null>;
 }

@@ -4,7 +4,7 @@ import { beforeAll, describe, expect, it } from 'vitest';
 import visual from '@/assets/posts/01-virtualisation.png';
 import PostModalContent from '@/components/PostModalContent.astro';
 import { publicationInstant } from '@domain/publication-time';
-import { aPost } from '../helpers/post-factory';
+import { aPostVm } from '../helpers/view-model-factory';
 
 let container: AstroContainer;
 
@@ -13,7 +13,7 @@ beforeAll(async () => {
 });
 
 function modal(overrides = {}, extraProps: Record<string, unknown> = {}) {
-	const post = aPost({
+	const post = aPostVm({
 		id: 'demo-modal',
 		category: 'PERF',
 		mode: 'clair',

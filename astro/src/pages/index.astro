@@ -1,22 +1,32 @@
 ---
 import { listPostsByMonth } from '@application/list-posts-by-month';
 import { listPostsByTheme } from '@application/list-posts-by-theme';
-import { isScheduled } from '@domain/post';
 import { astroPostRepository } from '@infrastructure/content/astro-post-repository';
-import BaseHead from '../components/BaseHead.astro';
-import CategoryNav from '../components/CategoryNav.astro';
-import Footer from '../components/Footer.astro';
-import Gallery from '../components/Gallery.astro';
-import Header from '../components/Header.astro';
-import MonthNav from '../components/MonthNav.astro';
-import PostModal from '../components/PostModal.astro';
+import BaseHead from '@/pages/components/BaseHead.astro';
+import CategoryNav from '@/pages/components/CategoryNav.astro';
+import Footer from '@/pages/components/Footer.astro';
+import Gallery from '@/pages/components/Gallery.astro';
+import Header from '@/pages/components/Header.astro';
+import MonthNav from '@/pages/components/MonthNav.astro';
+import PostModal from '@/pages/components/PostModal.astro';
 import { galleryJsonLd } from '@/ui/seo/structured-data';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import {
+	isScheduledNow,
+	toMonthRowViewModels,
+	toThemeRowViewModels,
+} from '@/ui/view-model/post-view-model';
+import { SITE_DESCRIPTION, SITE_TITLE } from '@/consts';
 
-// ? Hexagone : adaptateur infra → cas d'usage → domaine → grilles.
+// ? Hexagone : adaptateur infra → cas d'usage → domaine.
 // ? Deux agencements du MÊME contenu, tous deux rendus au build (cf. Gallery).
-const rows = await listPostsByTheme(astroPostRepository);
-const monthRows = await listPostsByMonth(astroPostRepository);
+const themeEntities = await listPostsByTheme(astroPostRepository);
+const monthEntities = await listPostsByMonth(astroPostRepository);
+
+// ? **La frontière** : c'est le seul endroit où les entités deviennent des view models.
+// ? En dessous de cette ligne, plus aucun composant ne voit le domaine (Ports & Adapters :
+// ? la présentation est l'adaptateur, c'est donc à elle de projeter — cf. action.md §3).
+const rows = toThemeRowViewModels(themeEntities);
+const monthRows = toMonthRowViewModels(monthEntities);
 const categories = rows.map((row) => row.category);
 const posts = rows.flatMap((row) => row.posts);
 const total = posts.length;
@@ -24,7 +34,7 @@ const total = posts.length;
 // ? Posts encore à paraître. Compté à l'instant du BUILD comme REPLI (sans JS) ; `initSchedule`
 // ? le recalcule ensuite à l'heure du navigateur, ce qui affranchit le compteur du déploiement.
 const now = new Date();
-const scheduledCount = posts.filter((post) => isScheduled(post, now)).length;
+const scheduledCount = posts.filter((post) => isScheduledNow(post, now)).length;
 
 const jsonLd = galleryJsonLd({
 	siteUrl: Astro.site?.href ?? Astro.url.origin,

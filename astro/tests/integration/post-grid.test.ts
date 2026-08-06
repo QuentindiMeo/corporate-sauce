@@ -1,11 +1,13 @@
+import type { ImageMetadata } from 'astro';
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { beforeAll, describe, expect, it } from 'vitest';
 
 import visual from '@/assets/posts/01-virtualisation.png';
 import PostGrid from '@/components/PostGrid.astro';
 import PostRow from '@/components/PostRow.astro';
-import type { ThemeRow } from '@domain/post-collection';
+import type { Category } from '@domain/category';
 import { aPost } from '../helpers/post-factory';
+import { aThemeRowVm } from '../helpers/view-model-factory';
 
 let container: AstroContainer;
 
@@ -13,13 +15,13 @@ beforeAll(async () => {
 	container = await AstroContainer.create();
 });
 
-function row(category: ThemeRow['category'], n: number): ThemeRow {
-	return {
+function row(category: Category, n: number) {
+	return aThemeRowVm(
 		category,
-		posts: Array.from({ length: n }, (_, i) =>
-			aPost({ id: `${category}-${i}`, category, image: visual }),
+		Array.from({ length: n }, (_, i) =>
+			aPost<ImageMetadata>({ id: `${category}-${i}`, category, image: visual }),
 		),
-	};
+	);
 }
 
 describe('Feature: PostRow component', () => {

@@ -1,10 +1,10 @@
 import { CATEGORIES, type Category } from './category';
-import type { Post } from './post';
+import type { Post, PostImage } from './post';
 
 // ? Une ligne de la grille : une rubrique et ses posts, triés.
-export interface ThemeRow {
+export interface ThemeRow<TImage extends PostImage = PostImage> {
 	readonly category: Category;
-	readonly posts: readonly Post[];
+	readonly posts: readonly Post<TImage>[];
 }
 
 /**
@@ -12,8 +12,10 @@ export interface ThemeRow {
  * ? ({@link CATEGORIES}). Chaque ligne est triée par `order` puis `id`.
  * * Les rubriques sans post sont omises (la grille reste extensible).
  */
-export function groupByTheme(posts: readonly Post[]): ThemeRow[] {
-	const rows: ThemeRow[] = [];
+export function groupByTheme<TImage extends PostImage>(
+	posts: readonly Post<TImage>[],
+): ThemeRow<TImage>[] {
+	const rows: ThemeRow<TImage>[] = [];
 
 	for (const category of CATEGORIES) {
 		const inCategory = posts
@@ -29,10 +31,10 @@ export function groupByTheme(posts: readonly Post[]): ThemeRow[] {
 }
 
 // ? Un groupe du flux chronologique : un mois calendaire et ses posts, du plus récent au plus ancien.
-export interface MonthRow {
+export interface MonthRow<TImage extends PostImage = PostImage> {
 	readonly monthKey: string; // ? Clé `AAAA-MM` en UTC
 	readonly month: Date;	// ? 1er du mois à minuit UTC
-	readonly posts: readonly Post[];
+	readonly posts: readonly Post<TImage>[];
 }
 
 /**
@@ -48,8 +50,10 @@ function monthKeyOf(date: Date): string {
  * ? au plus ancien. Le tri intra-mois est décroissant par date, les ex æquo départagés par `id` (déterminisme).
  * * Aucun mois vide n'instancie de ligne. `order` n'intervient pas.
  */
-export function groupByMonth(posts: readonly Post[]): MonthRow[] {
-	const buckets = new Map<string, Post[]>();
+export function groupByMonth<TImage extends PostImage>(
+	posts: readonly Post<TImage>[],
+): MonthRow<TImage>[] {
+	const buckets = new Map<string, Post<TImage>[]>();
 
 	for (const post of posts) {
 		const key = monthKeyOf(post.publishedAt);

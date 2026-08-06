@@ -1,12 +1,14 @@
-import type { Post } from '@domain/post';
-
-import { toIsoDate } from '@/ui/format/date';
+import type { PostViewModel } from '@/ui/view-model/post-view-model';
 
 interface GalleryInput {
 	siteUrl: string;
 	name: string;
 	description: string;
-	posts: readonly Post[];
+	/**
+	 * ? Consomme les **view models**, pas les entités : le jour de parution y est déjà projeté (`publishedDayIso`),
+	 * ? donc une seule projection sert la vue ET le JSON-LD.
+	 */
+	posts: readonly PostViewModel[];
 }
 
 // ? Rend une URL absolue à partir du site (laisse intactes les URLs déjà absolues)
@@ -38,7 +40,7 @@ export function galleryJsonLd({ siteUrl, name, description, posts }: GalleryInpu
 				abstract: post.subtitle,
 				url: post.linkedInUrl,
 				image: absoluteUrl(siteUrl, post.image.src),
-				datePublished: toIsoDate(post.publishedAt),
+				datePublished: post.publishedDayIso,
 				inLanguage: 'fr',
 			},
 		})),

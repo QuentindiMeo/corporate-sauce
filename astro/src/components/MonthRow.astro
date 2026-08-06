@@ -1,23 +1,21 @@
 ---
-import type { MonthRow } from '@domain/post-collection';
-import { formatMonth } from '@/ui/format/date';
+import type { MonthRowViewModel } from '@/ui/view-model/post-view-model';
 import PostTrack from './PostTrack.astro';
 
 interface Props {
-	row: MonthRow;
+	row: MonthRowViewModel;
 	priority?: boolean;	// ? `true` pour le premier mois du flux : ses visuels sont prioritaires (LCP).
 }
 
 const { row, priority = false } = Astro.props;
 const titleId = `month-${row.monthKey}`;
-const count = row.posts.length;
 ---
 
 <section class="month-row" aria-labelledby={titleId}>
 	<h2 id={titleId} class="month-row__title">
 		<!-- ? `datetime` porte la clé UTC AAAA-MM : le mois reste lisible par la machine même si le libellé, lui, est localisé en français. -->
-		<time class="month-row__label" datetime={row.monthKey}>{formatMonth(row.month)}</time>
-		<span class="month-row__count">{count} post{count > 1 ? 's' : ''}</span>
+		<time class="month-row__label" datetime={row.monthKey}>{row.label}</time>
+		<span class="month-row__count">{row.count} post{row.count > 1 ? 's' : ''}</span>
 	</h2>
 	<PostTrack posts={row.posts} priority={priority} />
 </section>
@@ -33,7 +31,7 @@ const count = row.posts.length;
 		margin-bottom: 0.5rem;
 		scroll-margin-top: 4rem;
 	}
-	/* //? Même pose que TagCategory (charte §5) : mono 800, MAJUSCULES, filet 2px, radius 7px — le flux chronologique et la vue thématique se répondent. */
+	/*// ? Même pose que TagCategory (charte §5) : mono 800, MAJUSCULES, filet 2px, radius 7px — le flux chronologique et la vue thématique se répondent. */
 	.month-row__label {
 		font-family: var(--font-mono, monospace);
 		font-weight: 800;

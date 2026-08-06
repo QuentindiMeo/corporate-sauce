@@ -1,11 +1,11 @@
 ---
-import type { MonthRow, ThemeRow } from '@domain/post-collection';
+import type { MonthRowViewModel, ThemeRowViewModel } from '@/ui/view-model/post-view-model';
 import MonthGrid from './MonthGrid.astro';
 import PostGrid from './PostGrid.astro';
 
 interface Props {
-	themeRows: ThemeRow[];
-	monthRows: MonthRow[];
+	themeRows: readonly ThemeRowViewModel[];
+	monthRows: readonly MonthRowViewModel[];
 }
 
 const { themeRows, monthRows } = Astro.props;

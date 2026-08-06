@@ -1,59 +1,37 @@
 ---
 import { Image } from 'astro:assets';
-import type { ImageMetadata } from 'astro';
-import { isDarkMode } from '@domain/mode';
-import { isCarousel, isScheduled, type Post } from '@domain/post';
-import { styleFromMode } from '@/ui/theme/modes';
+import { isScheduledNow, PostPageViewModel, type PostViewModel } from '@/ui/view-model/post-view-model';
 
+/*
+ * ? Composant « bête » : il ne consomme qu'un view model (aucun import du domaine, aucune
+ * ? règle métier appelée, aucun cast). Tout est préparé par `toPostViewModel`.
+ */
 interface Props {
-	post: Post;
+	post: PostViewModel;
 	priority?: boolean; // ? `true` pour le 1er écran (désactive le lazy-load, améliore le LCP).
 	now?: Date; // ? Instant de référence pour « posté / à venir ». Injectable pour les tests ; sinon le build.
 }
 
-const inferAriaDescription = (post: Post): string | undefined => {
-	const pageCount = post.pages?.length ?? 0;
-	return `Contient ${pageCount} page${pageCount > 1 ? 's' : ''}.`;
-};
-
-// ? Intitulé STABLE du lien, sans mention d'état : le contrôleur client y ajoute
-// ? « (à venir) » ou « (posté) » selon l'heure du visiteur, via `cardAriaLabel`.
-const inferAriaBase = (post: Post): string =>
-	`Ouvrir le ${isCarousel(post) ? 'carrousel' : 'post'} « ${post.title} »`;
-
 const { post, priority = false, now = new Date() } = Astro.props;
-const ariaBase = inferAriaBase(post);
-const postAria = { description: isCarousel(post) ? inferAriaDescription(post) : undefined };
 
 // ? Post encore à paraître : signalé par une pastille ET par le nom accessible du lien
 // ? (charte §2 : le sens ne repose jamais sur la couleur seule).
-// ! Cet état est le REPLI du rendu statique (juste jusqu'au prochain déploiement) ; le
-// ! contrôleur `initSchedule` le recalcule à l'heure du navigateur au chargement.
-const scheduled = isScheduled(post, now);
-const publishedAtIso = post.publishedAt.toISOString();
-const headerMode = post.mode === 'clair' ? 'sombre' : 'clair';
+// ! Cet état est le REPLI du rendu statique ; `initSchedule` le recalcule à l'heure du navigateur.
+// ! Il est calculé ICI, et non porté par le view model, précisément parce qu'il dépend du temps.
+const scheduled = isScheduledNow(post, now);
 
-// L'entité expose `image` en `PostImage` ; à l'exécution c'est l'`ImageMetadata`
-// d'Astro (voir infrastructure). On restaure le type pour le composant <Image>.
-const image = post.image as unknown as ImageMetadata;
-
-// Carrousel : on empile jusqu'à 3 pages (le « fard »). La page 0 est de face.
-const postIsACarousel = isCarousel(post);
-const fardPages = (postIsACarousel && post.pages ? post.pages.slice(0, 3) : []).map((page) => ({
-	src: page.image as unknown as ImageMetadata,
-	alt: page.alt,
-}));
-const pageCount = post.pages?.length ?? 0;
+// ? Folder card (la « fard ») pour les carrousels : on empile jusqu'à 3 pages. La page 0 est de face.
+const fardPages = post.pages.slice(0, 3);
 ---
 
 <article
 	class="post-card"
 	data-mode={post.mode}
-	data-dark={isDarkMode(post.mode) ? '' : undefined}
-	data-fard={postIsACarousel ? '' : undefined}
+	data-dark={post.isDarkMode ? '' : undefined}
+	data-fard={post.isCarousel ? '' : undefined}
 	data-scheduled={scheduled ? '' : undefined}
-	data-published-at={publishedAtIso}
-	style={styleFromMode(headerMode)}
+	data-published-at={post.publishedAtIso}
+	style={post.headerStyle}
 >
 	<a
 		class="post-card__link"
@@ -61,22 +39,22 @@ const pageCount = post.pages?.length ?? 0;
 		target="_blank"
 		rel="noopener noreferrer"
 		data-post-id={post.id}
-		data-aria-base={ariaBase}
-		aria-label={`${ariaBase} (${scheduled ? 'à venir' : 'posté'})`}
-		aria-description={postAria.description}
+		data-aria-base={post.ariaBase}
+		aria-label={`${post.ariaBase} (${scheduled ? 'à venir' : 'posté'})`}
+		aria-description={post.ariaDescription}
 	>
 		<p class="post-card__title"><span>{post.title}</span></p>
-		{/* ? Toujours rendue : c'est CSS (via data-scheduled) qui l'affiche ou non, pour que
-		    ? le contrôleur client n'ait qu'un attribut à basculer — sans insertion de DOM. */}
+		{/* //? Toujours rendue : c'est CSS (via data-scheduled) qui l'affiche ou non, pour que
+		      ? le contrôleur client n'ait qu'un attribut à basculer — sans insertion de DOM. */}
 		<span class="post-card__scheduled">À venir</span>
 		<div class="post-card__media">
 			{
-				postIsACarousel ? (
+				post.isCarousel ? (
 					<div class="fard">
-						{fardPages.map((page, i) => (
+						{fardPages.map((page: PostPageViewModel, i: number) => (
 							<Image
 								class={`fard__page fard__page--${i}`}
-								src={page.src}
+								src={page.image}
 								alt={i === 0 ? page.alt : ''}
 								widths={[280, 420, 560]}
 								sizes="(max-width: 640px) 70vw, 220px"
@@ -84,13 +62,13 @@ const pageCount = post.pages?.length ?? 0;
 							/>
 						))}
 						<span class="fard__badge">
-							{pageCount} pages
+							{post.pageCount} pages
 						</span>
 					</div>
 				) : (
 					<Image
 						class="post-card__image"
-						src={image}
+						src={post.image}
 						alt={post.imageAlt}
 						widths={[360, 540, 720]}
 						sizes="(max-width: 640px) 80vw, 260px"

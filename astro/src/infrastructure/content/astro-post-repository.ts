@@ -1,11 +1,17 @@
+import type { ImageMetadata } from 'astro';
 import { getCollection, getEntry, type CollectionEntry } from 'astro:content';
 
+import { PostPageViewModel } from '@/ui/view-model/post-view-model';
 import { createLinkedInUrl } from '@domain/linkedin-url';
 import type { PostRepository } from '@domain/ports/post-repository';
 import type { Post } from '@domain/post';
 
-// ? Mappe une entrée de la collection Astro vers l'entité de domaine `Post`.
-function toPost(entry: CollectionEntry<'posts'>): Post {
+/**
+ * ? Mappe une entrée de la collection Astro vers l'entité de domaine `Post`.
+ * ! C'est ICI que le type de visuel est fixé : `Post<ImageMetadata>`. Le domaine ne connaît qu'une borne structurelle (`PostImage`) ;
+ * ! l'adaptateur, lui, sait que ce sont des `ImageMetadata` d'Astro. Le type circule ensuite intact jusqu'à la vue — plus aucun cast.
+ */
+function toPost(entry: CollectionEntry<'posts'>): Post<ImageMetadata> {
 	const data = entry.data;
 	return {
 		id: entry.id,
@@ -16,17 +22,17 @@ function toPost(entry: CollectionEntry<'posts'>): Post {
 		body: data.body,
 		takeaway: data.takeaway,
 		cta: data.cta,
-		image: data.image, // ? `ImageMetadata` d'Astro satisfait structurellement `PostImage`.
+		image: data.image,
 		imageAlt: data.imageAlt,
 		linkedInUrl: createLinkedInUrl(data.linkedInUrl),
 		publishedAt: data.publishedAt,
 		order: data.order,
-		pages: data.pages?.map((page) => ({ image: page.image, alt: page.alt })),
+		pages: data.pages?.map((page: PostPageViewModel) => ({ image: page.image, alt: page.alt })),
 		hashtags: data.hashtags,
 	};
 }
 
-export const astroPostRepository: PostRepository = {
+export const astroPostRepository: PostRepository<ImageMetadata> = {
 	async listPosts() {
 		const entries = await getCollection('posts');
 		return entries.map(toPost);
