@@ -21,7 +21,8 @@ const categories = rows.map((row) => row.category);
 const posts = rows.flatMap((row) => row.posts);
 const total = posts.length;
 
-// ? Posts encore à paraître, comptés à l'instant du BUILD (site statique) : le compteur se met à jour au prochain déploiement
+// ? Posts encore à paraître. Compté à l'instant du BUILD comme REPLI (sans JS) ; `initSchedule`
+// ? le recalcule ensuite à l'heure du navigateur, ce qui affranchit le compteur du déploiement.
 const now = new Date();
 const scheduledCount = posts.filter((post) => isScheduled(post, now)).length;
 
@@ -52,9 +53,9 @@ const jsonLd = galleryJsonLd({
 					Une conviction par visuel, sans détour.
 				</p>
 				<p class="intro__meta">
-					{`${total} posts${scheduledCount > 0 ? ` (${scheduledCount} à paraître)` : ''}
-					· ${rows.length} rubriques
-					· ${monthRows.length} mois`}
+					{total} posts<span data-scheduled-wrapper hidden={scheduledCount === 0}
+						> (<span data-scheduled-count>{scheduledCount}</span> à paraître)</span
+					> · {rows.length} rubriques · {monthRows.length} mois
 				</p>
 			</header>
 
@@ -64,6 +65,14 @@ const jsonLd = galleryJsonLd({
 		<Footer />
 	</body>
 </html>
+
+<script>
+	// ? Recale « à venir / posté » sur l'heure du VISITEUR : le rendu statique fige cet état au
+	// ? build, or il se périme dès que 11 h (heure de Paris) est franchie. Sans ce script, la page
+	// ? resterait fausse jusqu'au prochain déploiement.
+	import { initSchedule } from '@/ui/schedule/schedule-controller';
+	initSchedule(document, new Date());
+</script>
 
 <style>
 	main {

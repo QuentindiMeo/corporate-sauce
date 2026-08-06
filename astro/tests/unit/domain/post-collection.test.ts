@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { groupByMonth, groupByTheme } from '@domain/post-collection';
+import { publicationInstant } from '@domain/publication-time';
 import { aPost } from '../../helpers/post-factory';
 
 describe('Feature: grouping posts by theme', () => {
@@ -103,6 +104,20 @@ describe('Feature: grouping posts by month', () => {
 		const copy = [...source];
 		groupByMonth(source);
 		expect(source).toEqual(copy);
+	});
+
+	it('Given a post published on the 1st at 11 h Paris, When it is grouped, Then it stays in its own month', () => {
+		// ! Invariant à protéger : `monthKey` est le mois UTC de l'instant. Il coïncide avec le
+		// ! mois parisien PARCE QUE 11 h Paris tombe à 09:00Z ou 10:00Z — jamais la veille.
+		// ! Une parution à 00 h 30 Paris (= 22:30Z la veille) casserait cet alignement.
+		const premier = groupByMonth([aPost({ id: 'a', publishedAt: publicationInstant('2026-08-01') })]);
+		expect(premier[0].monthKey).toBe('2026-08');
+
+		const dernier = groupByMonth([aPost({ id: 'b', publishedAt: publicationInstant('2026-08-31') })]);
+		expect(dernier[0].monthKey).toBe('2026-08');
+
+		const hiver = groupByMonth([aPost({ id: 'c', publishedAt: publicationInstant('2026-01-01') })]);
+		expect(hiver[0].monthKey).toBe('2026-01');
 	});
 
 	it('Given posts of every category, When they are grouped by month, Then the flow ignores categories', () => {

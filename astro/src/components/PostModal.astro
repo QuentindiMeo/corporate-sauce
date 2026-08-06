@@ -9,11 +9,16 @@ interface Props {
 const { posts } = Astro.props;
 ---
 
-{/* Contenu pré-rendu de chaque post, injecté dans le dialog au clic (amélioration progressive). */}
+{/*
+	Contenu pré-rendu de chaque post, injecté dans le dialog au clic (amélioration progressive).
+	? `data-post-at` fait de cette liste la LISTE CANONIQUE des posts — un template par post. Le
+	? compteur « à paraître » de l'intro s'en sert, car les vignettes, elles, sont rendues DEUX
+	? fois (une par panneau de vue) et fausseraient le décompte.
+*/}
 <div hidden data-modal-templates>
 	{
 		posts.map((post) => (
-			<template data-post-template={post.id}>
+			<template data-post-template={post.id} data-post-at={post.publishedAt.toISOString()}>
 				<PostModalContent post={post} />
 			</template>
 		))

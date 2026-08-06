@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
+import { publicationInstant } from '@domain/publication-time';
 import {
 	formatMonth,
 	formatMonthCode,
@@ -25,6 +26,22 @@ describe('Feature: publication date formatting', () => {
 
 	it('Given a date, When the machine form is built, Then it is a bare ISO day', () => {
 		expect(toIsoDate(new Date('2026-09-02T00:00:00Z'))).toBe('2026-09-02');
+	});
+
+	it('Given a real publication instant, When it is formatted, Then it reads the Paris publication day', () => {
+		// ? `publishedAt` n'est plus minuit UTC mais 11 h Paris (= 09:00Z l'été).
+		expect(formatPublicationDate(publicationInstant('2026-07-21'))).toBe('21 juillet 2026');
+		expect(toIsoDate(publicationInstant('2026-07-21'))).toBe('2026-07-21');
+		expect(formatPublicationDate(publicationInstant('2026-01-15'))).toBe('15 janvier 2026');
+		expect(toIsoDate(publicationInstant('2026-01-15'))).toBe('2026-01-15');
+	});
+
+	it('Given an instant whose UTC day differs from its Paris day, Then the Paris day wins', () => {
+		// ! Régression : 23 h 30 UTC le 20 juillet, c'est déjà le 21 à Paris (01 h 30).
+		// ! En `timeZone: 'UTC'`, ce jour-là s'affichait « 20 juillet » — un jour trop tôt.
+		const veille = new Date('2026-07-20T23:30:00Z');
+		expect(formatPublicationDate(veille)).toBe('21 juillet 2026');
+		expect(toIsoDate(veille)).toBe('2026-07-21');
 	});
 });
 

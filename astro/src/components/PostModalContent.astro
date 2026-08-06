@@ -27,6 +27,8 @@ const carouselPages = (post.pages ?? []).map((page) => ({
 <article
 	class="modal-post"
 	data-mode={post.mode}
+	data-scheduled={scheduled ? '' : undefined}
+	data-published-at={post.publishedAt.toISOString()}
 	style={styleFromMode(post.mode)}
 	aria-labelledby={titleId}
 >
@@ -102,8 +104,13 @@ const carouselPages = (post.pages ?? []).map((page) => ({
 	<div class="modal-post__text">
 		<div class="modal-post__meta">
 			<TagCategory category={post.category} />
+			{/* ? Les DEUX mentions sont rendues ; CSS n'en montre qu'une selon `data-scheduled`,
+			    ? que le contrôleur client repositionne à l'heure du navigateur. */}
 			<time class="modal-post__date" datetime={toIsoDate(post.publishedAt)}>
-				{scheduled ? 'À venir — ' : 'Posté le '}{formatPublicationDate(post.publishedAt)}
+				<span class="modal-post__when" data-when="scheduled">À venir — </span><span
+					class="modal-post__when"
+					data-when="published">Posté le </span
+				>{formatPublicationDate(post.publishedAt)}
 			</time>
 		</div>
 		<h2 id={titleId} class="modal-post__title">{post.title}</h2>
@@ -176,6 +183,17 @@ const carouselPages = (post.pages ?? []).map((page) => ({
 		letter-spacing: 0.12em;
 		text-transform: uppercase;
 		color: var(--kicker, var(--muted));
+	}
+	/* //? Une seule mention visible à la fois. `display:none` (et non `visibility`) pour que la
+		? mention masquée sorte aussi du texte lu : le `<time>` ne doit pas s'énoncer
+		? « À venir — Posté le 21 juillet 2026 ». L'état vient de `data-scheduled`, posé au build
+		? puis corrigé à l'heure du navigateur par `initSchedule`. */
+	.modal-post__when {
+		display: none;
+	}
+	.modal-post[data-scheduled] .modal-post__when[data-when='scheduled'],
+	.modal-post:not([data-scheduled]) .modal-post__when[data-when='published'] {
+		display: inline;
 	}
 	.modal-post__title {
 		font-size: clamp(1.5rem, 3vw, 2.25rem);

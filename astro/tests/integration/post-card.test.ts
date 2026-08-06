@@ -3,6 +3,7 @@ import { beforeAll, describe, expect, it } from 'vitest';
 
 import visual from '@/assets/posts/01-virtualisation.png';
 import PostCard from '@/components/PostCard.astro';
+import { publicationInstant } from '@domain/publication-time';
 import { aPost } from '../helpers/post-factory';
 
 let container: AstroContainer;
@@ -84,10 +85,25 @@ describe('Feature: PostCard component', () => {
 		expect(html).toMatch(/aria-label="[^"]*\(à venir\)"/);
 	});
 
-	it('Given an already-published post, When the card is rendered, Then no « à venir » marker appears', async () => {
-		const html = await card({ publishedAt: new Date('2026-07-21T00:00:00Z') }, { now });
-		expect(html).not.toContain('data-scheduled');
-		expect(html).not.toContain('À venir');
+	it('Given an already-published post, When the card is rendered, Then it is not marked scheduled', async () => {
+		const html = await card({ publishedAt: publicationInstant('2026-07-21') }, { now });
+		// ! La pastille est TOUJOURS dans le DOM ; c'est `data-scheduled` (posé au build puis
+		// ! recalculé à l'heure du navigateur) qui la rend visible via CSS. On teste donc l'état.
+		expect(html).not.toMatch(/<article[^>]+data-scheduled/);
+		expect(html).toMatch(/class="[^"]*post-card__scheduled/);
+	});
+
+	it('Given a card, When it is rendered, Then it exposes the instant and a state-free label base', async () => {
+		const html = await card({ publishedAt: publicationInstant('2026-08-04') }, { now });
+		// ? Ce que le contrôleur client consomme pour recalculer sans reconstruire de chaîne.
+		expect(html).toMatch(/data-published-at="2026-08-04T09:00:00\.000Z"/);
+		expect(html).toMatch(/data-aria-base="Ouvrir le post « [^"]*»"/);
+	});
+
+	it('Given the morning before 11 h Paris, Then a post of the day is still marked scheduled', async () => {
+		const avant = new Date('2026-08-04T07:00:00Z'); // 09 h à Paris
+		const html = await card({ publishedAt: publicationInstant('2026-08-04') }, { now: avant });
+		expect(html).toMatch(/<article[^>]+data-scheduled/);
 	});
 
 	it('Given an already-published post, Then the accessible name states it is published', async () => {

@@ -1,14 +1,19 @@
+import { PUBLICATION_TIME_ZONE } from '@domain/publication-time';
+
 /**
  * ? Mise en forme des dates de publication (français, charte : langue intégrale FR).
- * ! `publishedAt` vient de `posts.json` en « AAAA-MM-JJ » : Zod le coerce en Date à
- * ! MINUIT UTC. Tout formatage doit donc rester en UTC — sinon, sur un fuseau derrière
- * ! Greenwich, le 21/07 s'afficherait « 20 juillet ».
+ *
+ * ! Deux natures d'entrée, deux fuseaux — ne pas les confondre :
+ * !  • `publishedAt` est un **instant réel** (11 h, heure de Paris) → on le lit dans le fuseau
+ * !    de publication. Le jour de parution est un fait PARISIEN, pas une propriété du lecteur :
+ * !    il ne doit donc ni glisser selon le fuseau du visiteur, ni selon celui du serveur.
+ * !  • `MonthRow.month` est un **repère construit** à minuit UTC par le domaine → il se lit en UTC.
  */
 const LONG_FR = new Intl.DateTimeFormat('fr-FR', {
 	day: 'numeric',
 	month: 'long',
 	year: 'numeric',
-	timeZone: 'UTC',
+	timeZone: PUBLICATION_TIME_ZONE,
 });
 
 // ? « 21 juillet 2026 » — libellé lisible, destiné à l'affichage.
@@ -16,6 +21,14 @@ export function formatPublicationDate(date: Date): string {
 	return LONG_FR.format(date);
 }
 
+const ISO_DAY_PARIS = new Intl.DateTimeFormat('en-CA', {
+	year: 'numeric',
+	month: '2-digit',
+	day: '2-digit',
+	timeZone: PUBLICATION_TIME_ZONE,
+});
+
+// ? Repère de mois construit à minuit UTC par `groupByMonth` → lecture en UTC (cf. en-tête).
 const MONTH_FR = new Intl.DateTimeFormat('fr-FR', {
 	month: 'long',
 	year: 'numeric',
@@ -46,7 +59,12 @@ export function formatMonthWithElision(date: Date): string {
 	return `${elides ? "d'" : 'de '}${label}`;
 }
 
-// ? « 2026-07-21 » — forme machine, pour `<time datetime>` et schema.org.
+/**
+ * ? « 2026-07-21 » — forme machine, pour `<time datetime>` et schema.org.
+ * ! Doit désigner le MÊME jour que `formatPublicationDate`, donc le jour parisien.
+ * ! `toISOString().slice(0,10)` donnait le jour UTC : faux pour tout instant du soir.
+ * * `en-CA` produit nativement « AAAA-MM-JJ ».
+ */
 export function toIsoDate(date: Date): string {
-	return date.toISOString().slice(0, 10);
+	return ISO_DAY_PARIS.format(date);
 }

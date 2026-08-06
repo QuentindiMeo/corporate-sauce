@@ -16,18 +16,21 @@ const inferAriaDescription = (post: Post): string | undefined => {
 	return `Contient ${pageCount} page${pageCount > 1 ? 's' : ''}.`;
 };
 
-const inferAriaLabel = (post: Post, now: Date): string => {
-	const postShape = isCarousel(post) ? 'carrousel' : 'post';
-	const scheduledMention = isScheduled(post, now) ? ' (à venir)' : ' (posté)';
-	return `Ouvrir le ${postShape} « ${post.title} »${scheduledMention}`;
-};
+// ? Intitulé STABLE du lien, sans mention d'état : le contrôleur client y ajoute
+// ? « (à venir) » ou « (posté) » selon l'heure du visiteur, via `cardAriaLabel`.
+const inferAriaBase = (post: Post): string =>
+	`Ouvrir le ${isCarousel(post) ? 'carrousel' : 'post'} « ${post.title} »`;
 
 const { post, priority = false, now = new Date() } = Astro.props;
-const postAria = { label: inferAriaLabel(post, now), description: isCarousel(post) ? inferAriaDescription(post) : undefined };
+const ariaBase = inferAriaBase(post);
+const postAria = { description: isCarousel(post) ? inferAriaDescription(post) : undefined };
 
 // ? Post encore à paraître : signalé par une pastille ET par le nom accessible du lien
 // ? (charte §2 : le sens ne repose jamais sur la couleur seule).
+// ! Cet état est le REPLI du rendu statique (juste jusqu'au prochain déploiement) ; le
+// ! contrôleur `initSchedule` le recalcule à l'heure du navigateur au chargement.
 const scheduled = isScheduled(post, now);
+const publishedAtIso = post.publishedAt.toISOString();
 const headerMode = post.mode === 'clair' ? 'sombre' : 'clair';
 
 // L'entité expose `image` en `PostImage` ; à l'exécution c'est l'`ImageMetadata`
@@ -49,6 +52,7 @@ const pageCount = post.pages?.length ?? 0;
 	data-dark={isDarkMode(post.mode) ? '' : undefined}
 	data-fard={postIsACarousel ? '' : undefined}
 	data-scheduled={scheduled ? '' : undefined}
+	data-published-at={publishedAtIso}
 	style={styleFromMode(headerMode)}
 >
 	<a
@@ -57,11 +61,14 @@ const pageCount = post.pages?.length ?? 0;
 		target="_blank"
 		rel="noopener noreferrer"
 		data-post-id={post.id}
-		aria-label={postAria.label}
+		data-aria-base={ariaBase}
+		aria-label={`${ariaBase} (${scheduled ? 'à venir' : 'posté'})`}
 		aria-description={postAria.description}
 	>
 		<p class="post-card__title"><span>{post.title}</span></p>
-		{scheduled && <span class="post-card__scheduled">À venir</span>}
+		{/* ? Toujours rendue : c'est CSS (via data-scheduled) qui l'affiche ou non, pour que
+		    ? le contrôleur client n'ait qu'un attribut à basculer — sans insertion de DOM. */}
+		<span class="post-card__scheduled">À venir</span>
 		<div class="post-card__media">
 			{
 				postIsACarousel ? (
@@ -262,6 +269,13 @@ const pageCount = post.pages?.length ?? 0;
 		font-weight: 700;
 		letter-spacing: 0.1em;
 		text-transform: uppercase;
+		/* //? Toujours dans le DOM, affichée seulement pour un post encore à paraître. C'est
+			? `initSchedule` qui pose `data-scheduled` à l'heure du NAVIGATEUR ; `display:none`
+			? l'exclut aussi de l'arbre a11y, donc le nom accessible du lien reste juste. */
+		display: none;
+	}
+	.post-card[data-scheduled] .post-card__scheduled {
+		display: block;
 	}
 	.fard__badge {
 		position: absolute;

@@ -74,8 +74,19 @@ l'icône et le libellé de la **vue affichée** (« Par rubrique » ou « Par da
 
 Le choix est mémorisé dans le cache du navigateur.
 
-> Le site étant **statique**, la chronologie et les pastilles « à venir » se figent à l'instant du build :
-> un post programmé ne devient « paru » qu'au prochain déploiement.
+## Parution : 11 h, heure de Paris
+
+Un post QDM paraît à **11 h `Europe/Paris`**. `posts.json` ne porte que le **jour** (`2026-08-05`) :
+l'heure est une règle métier, résolue par `src/domain/publication-time.ts`, **heure d'été/hiver incluse**
+(11 h Paris = 09:00 UTC l'été, 10:00 UTC l'hiver).
+
+La pastille « À venir » et la mention de la modale sont **recalculées dans le navigateur, à l'heure du
+visiteur** — pas figées à l'instant du build. Un post programmé devient donc « paru » de lui-même à
+11 h, **sans redéploiement ni build planifié**. Le rendu statique reste le repli si JavaScript est
+indisponible.
+
+Le _jour_ affiché, lui, est toujours le jour **parisien** : c'est un fait sur la publication, pas sur le
+lecteur, donc il ne glisse pas d'un fuseau à l'autre.
 
 ## Mettre à jour le contenu (sans redéployer de code)
 
