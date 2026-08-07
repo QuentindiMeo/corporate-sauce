@@ -10,7 +10,8 @@ interface Props {
 const { posts, priority = false } = Astro.props;
 ---
 
-<ul class="post-track">
+<!-- ? `data-post-track` : prise stable pour l'îlot du rail, qui met les posts dans le sens de lecture choisi (la classe, elle, reste un détail de style). -->
+<ul class="post-track" data-post-track>
   {
     posts.map((post: PostViewModel, idx: number) => (
       <li class="post-track__item">

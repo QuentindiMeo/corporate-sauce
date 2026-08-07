@@ -37,6 +37,15 @@ describe("Feature: PostRow component", () => {
     });
     expect(html).toMatch(/<section[^>]+aria-labelledby/);
   });
+
+  it("Given a row, When it is rendered, Then its track carries the hook the rail reorders posts by", async () => {
+    const html = await container.renderToString(PostRow, {
+      props: { row: row("PERF", 2) },
+    });
+
+    // ? Contrat inter-composants : l'îlot d'AnchorRail met les posts dans le sens de lecture via `[data-post-track]`.
+    expect(html).toMatch(/<ul[^>]+data-post-track/);
+  });
 });
 
 describe("Feature: PostGrid component", () => {

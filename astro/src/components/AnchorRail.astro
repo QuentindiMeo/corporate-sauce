@@ -20,6 +20,22 @@ const { items, ariaLabel, view, prefix } = Astro.props;
 {
   items.length > 0 && (
     <nav class="anchor-rail" aria-label={ariaLabel} data-rail data-rail-view={view} data-rail-prefix={prefix}>
+      {/**
+        * ? Bascule du sens de lecture de LA VUE : les repères du rail, les sections qu'il indexe et les posts de chacune.
+        * * Contrairement à `ViewToggle`, son nom accessible NE CHANGE PAS (l'icône seule dit l'état) : `aria-pressed`
+        * * est donc ici l'attribut correct au sens de l'ARIA APG.
+        * ! Une bascule n'a de sens qu'avec JS : rendu `hidden`, il n'est révélé qu'une fois câblé par l'îlot ci-dessous.
+        */}
+      <button
+        type="button"
+        class="anchor-rail__order"
+        data-rail-order-toggle
+        aria-pressed="false"
+        aria-label="Inverser l'ordre de lecture de la galerie"
+        hidden
+      >
+        <span class="anchor-rail__order-icon" aria-hidden="true" />
+      </button>
       <ul>
         {items.map((item: RailItem) => (
           <li>
@@ -38,11 +54,67 @@ const { items, ariaLabel, view, prefix } = Astro.props;
           </li>
         ))}
       </ul>
+      {/* ? Le réagencement est purement visuel : on l'annonce aux lecteurs d'écran. */}
+      <p class="visually-hidden" data-rail-order-status role="status" aria-live="polite" />
     </nav>
   )
 }
 
 <script>
+  import { inReadingOrder, readingOrderAnnouncement, toggleReadingOrder } from "@/ui/view/reading-order";
+
+  // ? Bascule du sens de lecture (amélioration progressive) : un rail = un bouton, qui ne réagence QUE sa propre vue.
+  for (const rail of document.querySelectorAll<HTMLElement>("[data-rail]")) {
+    const button = rail.querySelector<HTMLButtonElement>("[data-rail-order-toggle]");
+    const railList = rail.querySelector("ul");
+    const status = rail.querySelector<HTMLElement>("[data-rail-order-status]");
+    if (!button || !railList) continue;
+
+    // ? Le panneau de galerie de CETTE vue : `data-rail-view` et `data-view-panel` portent la même clé (« theme » / « date »).
+    const panel = document.querySelector(`[data-view-panel="${rail.dataset.railView ?? ""}"]`);
+    const sections = Array.from(panel?.querySelectorAll(`[aria-labelledby^="${rail.dataset.railPrefix ?? ""}"]`) ?? []);
+
+    /**
+     * ? Le sens de lecture s'applique à TOUS les niveaux de la vue, sinon le rail contredirait la galerie :
+     * ?   1. les repères du rail ; 2. les sections du flux (rubriques ou mois) ; 3. les posts de chaque section.
+     * ! Chaque entrée retient l'ordre de RENDU : l'inversion se recalcule toujours depuis lui, jamais depuis le DOM courant.
+     */
+    const levels: { parent: Element; children: Element[] }[] = [
+      { parent: railList, children: Array.from(railList.children) },
+    ];
+
+    const flow = sections[0]?.parentElement;
+    if (flow) {
+      levels.push({ parent: flow, children: sections });
+    }
+
+    for (const section of sections) {
+      const track = section.querySelector("[data-post-track]");
+      if (track) {
+        levels.push({ parent: track, children: Array.from(track.children) });
+      }
+    }
+
+    // ? Le bouton n'a de sens qu'avec JS : il n'apparaît qu'une fois câblé.
+    button.hidden = false;
+
+    button.addEventListener("click", () => {
+      const next = toggleReadingOrder(button.getAttribute("aria-pressed") === "true" ? "reversed" : "natural");
+      button.setAttribute("aria-pressed", next === "reversed" ? "true" : "false");
+
+      // ! On réordonne le DOM (et non un `flex-direction: column-reverse` / `order`) : l'ordre de tabulation doit
+      // ! suivre l'ordre visuel (WCAG 2.4.3). `append` DÉPLACE les nœuds déjà en place, sans les recréer, donc
+      // ! l'`aria-current` du scrollspy, les visuels déjà chargés et le focus clavier en cours survivent à la bascule.
+      for (const { parent, children } of levels) {
+        parent.append(...inReadingOrder(children, next));
+      }
+
+      if (status) {
+        status.textContent = readingOrderAnnouncement(next);
+      }
+    });
+  }
+
   // ? Scrollspy (amélioration progressive) : met en avant le repère visible.
   // ? Un seul script pour TOUS les rails de la page — il itère sur [data-rail] et cloisonne chacun à ses propres liens et à ses propres sections.
   for (const rail of document.querySelectorAll<HTMLElement>("[data-rail]")) {
@@ -92,7 +164,7 @@ const { items, ariaLabel, view, prefix } = Astro.props;
     position: fixed;
     top: 50%;
     transform: translateY(-50%);
-    left: max(1.5rem, calc(50vw - 50rem));
+    left: 1.5rem;
     z-index: 10;
     display: none;
   }
@@ -107,6 +179,64 @@ const { items, ariaLabel, view, prefix } = Astro.props;
   :root[data-view="date"] .anchor-rail[data-rail-view="theme"],
   :root:not([data-view="date"]) .anchor-rail[data-rail-view="date"] {
     display: none;
+  }
+
+  /*//? Bascule du sens de lecture : posée au-dessus du fil, alignée sur la colonne des pastilles. */
+  .anchor-rail__order {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 0 0.15rem 0.25rem;
+    padding: 0.3rem 0.5rem;
+    min-width: 24px;
+    min-height: 24px; /*//? Cible d'au moins 24 × 24 px (WCAG 2.5.8) : l'icône seule serait trop menue. */
+    font-size: 0.72rem; /*//? Même échelle typographique que les repères : l'icône est dimensionnée en `em`. */
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition:
+      color 0.2s ease,
+      background-color 0.2s ease;
+  }
+  /* ! `display:flex` écrase la règle UA `[hidden] { display: none }` : sans ce rappel, le bouton
+	   ! resterait visible (et inerte) sans JS. `display:none` l'ôte aussi de l'ordre de tabulation. */
+  .anchor-rail__order[hidden] {
+    display: none;
+  }
+  .anchor-rail__order:hover,
+  .anchor-rail__order:focus-visible {
+    color: var(--fg);
+  }
+  .anchor-rail__order[aria-pressed="true"] {
+    color: var(--acc-text, var(--acc));
+  }
+
+  /* Icône tracée en CSS — ni emoji ni SVG externe (charte §9) : une flèche (hampe + pointe)
+	   qui pivote d'un demi-tour quand l'ordre est inversé, donc l'état ne tient pas qu'à la couleur. */
+  .anchor-rail__order-icon {
+    position: relative;
+    width: 6px;
+    height: 0.8em;
+    background-image: linear-gradient(currentColor, currentColor);
+    background-size: 2px 100%;
+    background-position: 50% 0;
+    background-repeat: no-repeat;
+    transition: transform 0.25s ease;
+  }
+  .anchor-rail__order-icon::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 3px solid transparent;
+    border-right: 3px solid transparent;
+    border-top: 4px solid currentColor;
+  }
+  .anchor-rail__order[aria-pressed="true"] .anchor-rail__order-icon {
+    transform: rotate(180deg);
   }
 
   .anchor-rail ul {
