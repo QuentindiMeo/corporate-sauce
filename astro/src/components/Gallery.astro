@@ -25,3 +25,40 @@ const { themeRows, monthRows } = Astro.props;
     <MonthGrid rows={monthRows} priority={false} />
   </div>
 </div>
+
+<!--
+	? Anti-flash du SENS DE LECTURE : rétablit le choix stocké (cf. `reading-order.ts`) avant la première peinture.
+	! Inline, sans import, et placé JUSTE APRÈS les panneaux : il lui faut le contenu déjà analysé (impossible depuis
+	! le <head>, où la galerie n'existe pas encore) et il doit s'exécuter avant que le navigateur peigne — un module
+	! hissé par Astro, lui, est différé, donc le visiteur verrait le flux se retourner sous ses yeux.
+	! La clé et les valeurs y sont littérales : elles doublent `reading-order.ts`, dont les tests unitaires figent
+	! justement ces constantes (même parti pris que l'anti-flash de `BaseHead`).
+	? Le sens rétabli est porté par `aria-pressed` — l'îlot d'AnchorRail s'y fie plutôt que de relire le stockage.
+-->
+<script is:inline>
+  (() => {
+    let orders = {};
+    try {
+      orders = JSON.parse(localStorage.getItem("qdm-order") ?? "{}") ?? {};
+    } catch {
+      /*//? stockage indisponible ou valeur illisible : on garde l'ordre de rendu */
+    }
+
+    for (const rail of document.querySelectorAll("[data-rail]")) {
+      const view = rail.dataset.railView;
+      if (orders[view] !== "reversed") continue;
+
+      rail.querySelector("[data-rail-order-toggle]")?.setAttribute("aria-pressed", "true");
+
+      const panel = document.querySelector(`[data-view-panel="${view}"]`);
+      const sections = panel ? [...panel.querySelectorAll(`[aria-labelledby^="${rail.dataset.railPrefix}"]`)] : [];
+      const levels = [rail.querySelector("ul"), sections[0]?.parentElement].concat(
+        sections.map((section) => section.querySelector("[data-post-track]"))
+      );
+
+      for (const parent of levels) {
+        if (parent) parent.append(...[...parent.children].reverse());
+      }
+    }
+  })();
+</script>

@@ -21,11 +21,11 @@ const { items, ariaLabel, view, prefix } = Astro.props;
   items.length > 0 && (
     <nav class="anchor-rail" aria-label={ariaLabel} data-rail data-rail-view={view} data-rail-prefix={prefix}>
       {/**
-        * ? Bascule du sens de lecture de LA VUE : les repères du rail, les sections qu'il indexe et les posts de chacune.
-        * * Contrairement à `ViewToggle`, son nom accessible NE CHANGE PAS (l'icône seule dit l'état) : `aria-pressed`
-        * * est donc ici l'attribut correct au sens de l'ARIA APG.
-        * ! Une bascule n'a de sens qu'avec JS : rendu `hidden`, il n'est révélé qu'une fois câblé par l'îlot ci-dessous.
-        */}
+         * ? Bascule du sens de lecture de LA VUE : les repères du rail, les sections qu'il indexe et les posts de chacune.
+         * * Contrairement à `ViewToggle`, son nom accessible NE CHANGE PAS (l'icône seule dit l'état) : `aria-pressed`
+         * * est donc ici l'attribut correct au sens de l'ARIA APG.
+         * ! Une bascule n'a de sens qu'avec JS : rendu `hidden`, il n'est révélé qu'une fois câblé par l'îlot ci-dessous.
+         */}
       <button
         type="button"
         class="anchor-rail__order"
@@ -35,6 +35,9 @@ const { items, ariaLabel, view, prefix } = Astro.props;
         hidden
       >
         <span class="anchor-rail__order-icon" aria-hidden="true" />
+        <span class="anchor-rail__order-hint" aria-hidden="true">
+          inverser l'ordre
+        </span>
       </button>
       <ul>
         {items.map((item: RailItem) => (
@@ -61,7 +64,36 @@ const { items, ariaLabel, view, prefix } = Astro.props;
 }
 
 <script>
-  import { inReadingOrder, readingOrderAnnouncement, toggleReadingOrder } from "@/ui/view/reading-order";
+  import {
+    READING_ORDER_STORAGE_KEY,
+    mirrored,
+    readingOrderAnnouncement,
+    readingOrdersStorageValue,
+    toggleReadingOrder,
+    type ReadingOrder,
+    type ReadingOrders,
+  } from "@/ui/view/reading-order";
+
+  // ? État d'une bascule : `aria-pressed` EST la source de vérité — le script pré-peinture de Gallery l'a déjà posé si un choix était stocké.
+  function currentOrder(toggle: Element | null | undefined): ReadingOrder {
+    return toggle?.getAttribute("aria-pressed") === "true" ? "reversed" : "natural";
+  }
+
+  // ? Persistance des DEUX vues d'un coup, relue depuis le DOM : aucun état à tenir en double côté script.
+  function persistOrders(): void {
+    const orders: ReadingOrders = { theme: "natural", date: "natural" };
+    for (const rail of document.querySelectorAll<HTMLElement>("[data-rail]")) {
+      const view = rail.dataset.railView;
+      if (view === "theme" || view === "date") {
+        orders[view] = currentOrder(rail.querySelector("[data-rail-order-toggle]"));
+      }
+    }
+    try {
+      localStorage.setItem(READING_ORDER_STORAGE_KEY, readingOrdersStorageValue(orders));
+    } catch {
+      /* //? stockage indisponible : la bascule reste effective pour la session */
+    }
+  }
 
   // ? Bascule du sens de lecture (amélioration progressive) : un rail = un bouton, qui ne réagence QUE sa propre vue.
   for (const rail of document.querySelectorAll<HTMLElement>("[data-rail]")) {
@@ -77,41 +109,76 @@ const { items, ariaLabel, view, prefix } = Astro.props;
     /**
      * ? Le sens de lecture s'applique à TOUS les niveaux de la vue, sinon le rail contredirait la galerie :
      * ?   1. les repères du rail ; 2. les sections du flux (rubriques ou mois) ; 3. les posts de chaque section.
-     * ! Chaque entrée retient l'ordre de RENDU : l'inversion se recalcule toujours depuis lui, jamais depuis le DOM courant.
+     * ? Seuls les PARENTS sont retenus : chaque bascule miroite leurs enfants du moment, l'inversion étant une involution
+     * ? (cf. `mirrored`). Le DOM est donc l'unique état — y compris quand le script pré-peinture l'a déjà inversé au chargement.
      */
-    const levels: { parent: Element; children: Element[] }[] = [
-      { parent: railList, children: Array.from(railList.children) },
-    ];
+    const levels: Element[] = [railList];
 
     const flow = sections[0]?.parentElement;
     if (flow) {
-      levels.push({ parent: flow, children: sections });
+      levels.push(flow);
     }
 
     for (const section of sections) {
       const track = section.querySelector("[data-post-track]");
       if (track) {
-        levels.push({ parent: track, children: Array.from(track.children) });
+        levels.push(track);
       }
     }
+
+    // ? Le repère imposé par la bascule ne tient que jusqu'au prochain geste du lecteur : molette, doigt,
+    // ? clavier ou clic sur un repère rendent la main au scrollspy, qui redevient seul juge du repère courant.
+    const releaseForced = () => {
+      delete rail.dataset.railForced;
+    };
+    for (const gesture of ["wheel", "touchmove", "keydown"]) {
+      window.addEventListener(gesture, releaseForced, { passive: true });
+    }
+    railList.addEventListener("click", releaseForced);
 
     // ? Le bouton n'a de sens qu'avec JS : il n'apparaît qu'une fois câblé.
     button.hidden = false;
 
     button.addEventListener("click", () => {
-      const next = toggleReadingOrder(button.getAttribute("aria-pressed") === "true" ? "reversed" : "natural");
+      const next = toggleReadingOrder(currentOrder(button));
+
+      // ? On retient la PLACE du repère courant (son index), pas la section qu'il désigne : après inversion,
+      // ? c'est le repère qui occupe cette même place — donc son symétrique — qui prend la main.
+      const activeIndex = Array.from(rail.querySelectorAll("[data-rail-anchor]")).findIndex(
+        (marker) => marker.getAttribute("aria-current") === "true"
+      );
+
       button.setAttribute("aria-pressed", next === "reversed" ? "true" : "false");
 
       // ! On réordonne le DOM (et non un `flex-direction: column-reverse` / `order`) : l'ordre de tabulation doit
       // ! suivre l'ordre visuel (WCAG 2.4.3). `append` DÉPLACE les nœuds déjà en place, sans les recréer, donc
-      // ! l'`aria-current` du scrollspy, les visuels déjà chargés et le focus clavier en cours survivent à la bascule.
-      for (const { parent, children } of levels) {
-        parent.append(...inReadingOrder(children, next));
+      // ! l'`aria-current` du scrollspy, les visuels déjà chargés, les écouteurs de la modale et le focus clavier
+      // ! en cours survivent à la bascule.
+      for (const parent of levels) {
+        parent.append(...mirrored(Array.from(parent.children)));
+      }
+
+      /**
+       * ? Le repère de MÊME INDEX est IMPOSÉ, puis sa section amenée en position de lecture.
+       * ! `dataset.railForced` fait taire le scrollspy jusqu'au prochain geste du lecteur : en bas du document,
+       * ! plus aucun défilement ne peut amener la section visée dans la bande active (le défilement est borné),
+       * ! et l'observateur, laissé libre, désignerait alors une autre section — l'index forcé sauterait.
+       */
+      const markersAfter = Array.from(rail.querySelectorAll("[data-rail-anchor]"));
+      const target = activeIndex >= 0 ? markersAfter[activeIndex] : undefined;
+      const targetHeading = document.getElementById(target?.getAttribute("data-rail-anchor") ?? "");
+      if (target && targetHeading) {
+        rail.dataset.railForced = "true";
+        for (const marker of markersAfter) {
+          marker.setAttribute("aria-current", marker === target ? "true" : "false");
+        }
+        targetHeading.scrollIntoView({ block: "start", behavior: "instant" });
       }
 
       if (status) {
         status.textContent = readingOrderAnnouncement(next);
       }
+      persistOrders();
     });
   }
 
@@ -146,6 +213,8 @@ const { items, ariaLabel, view, prefix } = Astro.props;
 
     const observer = new IntersectionObserver(
       (entries) => {
+        // ! Une bascule d'ordre a pu IMPOSER un repère (cf. `data-rail-forced`) : on ne le contredit pas.
+        if (rail.dataset.railForced) return;
         for (const entry of entries) {
           if (entry.isIntersecting) setActive(anchorOf(entry.target));
         }
@@ -185,7 +254,9 @@ const { items, ariaLabel, view, prefix } = Astro.props;
   .anchor-rail__order {
     display: flex;
     align-items: center;
-    justify-content: center;
+    /*//? `flex-start` et non `center` : quand la consigne se déplie, la pastille grandit vers la DROITE
+			? et l'icône ne bouge donc pas — elle reste dans l'axe des pastilles des repères. */
+    justify-content: flex-start;
     margin: 0 0 0.15rem 0.25rem;
     padding: 0.3rem 0.5rem;
     min-width: 24px;
@@ -200,17 +271,46 @@ const { items, ariaLabel, view, prefix } = Astro.props;
       color 0.2s ease,
       background-color 0.2s ease;
   }
-  /* ! `display:flex` écrase la règle UA `[hidden] { display: none }` : sans ce rappel, le bouton
-	   ! resterait visible (et inerte) sans JS. `display:none` l'ôte aussi de l'ordre de tabulation. */
+  /*//! `display:flex` écrase la règle UA `[hidden] { display: none }` : sans ce rappel, le bouton
+	    ! resterait visible (et inerte) sans JS. `display:none` l'ôte aussi de l'ordre de tabulation. */
   .anchor-rail__order[hidden] {
     display: none;
   }
+  /*//? Déplié, la consigne déborde du rail et passe AU-DESSUS des vignettes : même pastille franchement
+		  ? opaque que le libellé complet d'un repère (voir plus bas), pour la même raison — un voile laisserait
+		  ? lire l'image à travers le texte, et le halo en --muted détache la pastille d'une vignette de même fond. */
   .anchor-rail__order:hover,
   .anchor-rail__order:focus-visible {
     color: var(--fg);
+    background: var(--bg);
   }
   .anchor-rail__order[aria-pressed="true"] {
     color: var(--acc-text, var(--acc));
+  }
+
+  /*//? Consigne repliée par défaut, révélée en douceur au survol/focus — même mécanique que `.anchor-rail__full`.
+		  ? Volontairement ATTÉNUÉE (--muted, qui tient 7,3:1 en sombre et 6,1:1 en clair) :
+		  ? elle explique l'icône sans prétendre au même poids qu'un repère de navigation. */
+  .anchor-rail__order-hint {
+    max-width: 0;
+    margin-left: 0;
+    opacity: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    font-family: var(--font-mono, monospace);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    transition:
+      max-width 0.3s ease,
+      margin-left 0.3s ease,
+      opacity 0.25s ease;
+  }
+  .anchor-rail__order:hover .anchor-rail__order-hint,
+  .anchor-rail__order:focus-visible .anchor-rail__order-hint {
+    max-width: 12rem;
+    margin-left: 0.5rem;
+    opacity: 1;
   }
 
   /* Icône tracée en CSS — ni emoji ni SVG externe (charte §9) : une flèche (hampe + pointe)

@@ -94,6 +94,17 @@ describe("Feature: Gallery component (both views built statically)", () => {
     expect(html).toContain('id="month-2026-08"');
   });
 
+  it("Given a stored reading order, When the gallery is rendered, Then a pre-paint script restores it after the panels", async () => {
+    const html = await container.renderToString(Gallery, { props: { themeRows, monthRows } });
+
+    // ! Le script doit être INLINE (un module hissé serait différé → le flux se retournerait sous les yeux du visiteur)
+    // ! et venir APRÈS les panneaux, sinon il ne trouverait rien à réagencer.
+    expect(html).toMatch(/data-view-panel="date"[\s\S]*<script>/);
+    expect(html).not.toMatch(/<script[^>]+type="module"/);
+    // ? La clé est répétée en littéral faute d'import possible : `reading-order.test.ts` la fige.
+    expect(html).toContain("qdm-order");
+  });
+
   it("Given the theme view is the default, When the gallery is rendered, Then exactly one image is eager (single LCP candidate)", async () => {
     const html = await container.renderToString(Gallery, { props: { themeRows, monthRows } });
 

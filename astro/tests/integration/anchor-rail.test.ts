@@ -55,6 +55,23 @@ describe("Feature: AnchorRail order toggle", () => {
     expect(html).not.toMatch(/data-rail-order-toggle[\s\S]*?<(svg|img)/);
   });
 
+  it("Given the toggle, When it is rendered, Then it carries the instruction revealed on hover", async () => {
+    const html = await render();
+    expect(html).toMatch(/data-rail-order-toggle[\s\S]*?anchor-rail__order-hint[\s\S]*?inverser l'ordre/);
+  });
+
+  it("Given the instruction, When it is rendered, Then the accessible name contains its visible text (label-in-name)", async () => {
+    const html = await render();
+
+    // ! WCAG 2.5.3 : « inverser l'ordre » doit se retrouver dans le nom accessible, sans quoi la commande vocale échoue.
+    const label = /data-rail-order-toggle[^>]*aria-label="([^"]*)"/.exec(html)?.[1] ?? "";
+    expect(label.toLowerCase()).toContain("inverser l'ordre");
+    // ? Le texte visible ne double PAS le nom accessible : c'est l'aria-label qui nomme, la consigne est décorative.
+    expect(html).toMatch(
+      /anchor-rail__order-hint[^>]*aria-hidden="true"|aria-hidden="true"[^>]*anchor-rail__order-hint/
+    );
+  });
+
   it("Given no JavaScript, When the rail is rendered, Then the toggle stays hidden", async () => {
     const html = await render();
 
