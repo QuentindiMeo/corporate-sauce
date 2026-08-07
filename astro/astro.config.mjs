@@ -21,7 +21,7 @@ const usePolling = process.env.CHOKIDAR_USEPOLLING === "true" || (surWsl() && pr
 // https://astro.build/config
 export default defineConfig({
   // Galerie statique déployée sur Cloudflare Pages (repli GitHub Pages).
-  site: "https://example.com",
+  site: "https://blog.qdimeo.fr",
   output: "static",
   integrations: [mdx(), sitemap()],
   vite: {

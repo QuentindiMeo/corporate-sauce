@@ -2,18 +2,38 @@
 // Design tokens + reset, inclus sur toutes les pages via <BaseHead />.
 import "../styles/tokens.css";
 import type { ImageMetadata } from "astro";
-import FallbackImage from "../assets/posts/01-virtualisation.png";
+// ? Visuel d'aperçu DÉDIÉ (1200×630, ratio 1,91:1 attendu par `summary_large_image`) — og.md, lot B.
+// ! Auparavant : le premier visuel de post, en 1080×1350, dont les plateformes recadraient 58 %.
+import DefaultOgImage from "../assets/og/qdm-og.png";
+import { ogImageMeta } from "@/ui/seo/open-graph";
+import { SITE_OG_IMAGE_ALT } from "@/consts";
 import { Font } from "astro:assets";
 
 interface Props {
   title: string;
   description: string;
   image?: ImageMetadata;
+  imageAlt?: string;
 }
 
-const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const { title, description, image = DefaultOgImage, imageAlt = SITE_OG_IMAGE_ALT } = Astro.props;
 
-const { title, description, image = FallbackImage } = Astro.props;
+// ? Base des URLs absolues : `Astro.site` fait foi, avec le MÊME repli que le JSON-LD d'`index.astro`.
+// ! Les balises d'image se calaient auparavant sur `Astro.url` (l'URL de PAGE) alors que le canonical
+// ! utilisait `Astro.site` : deux bases pour un même document, et une URL `localhost` publiée si
+// ! `site` venait à manquer de la config.
+const siteUrl = Astro.site?.href ?? Astro.url.origin;
+const canonicalURL = new URL(Astro.url.pathname, siteUrl);
+
+// ? Dimensions et type reprises du fichier via `ImageMetadata` — impossible de les désynchroniser du visuel.
+const ogImage = ogImageMeta({
+  siteUrl,
+  src: image.src,
+  width: image.width,
+  height: image.height,
+  format: image.format,
+  alt: imageAlt,
+});
 ---
 
 <!--
@@ -72,13 +92,23 @@ const { title, description, image = FallbackImage } = Astro.props;
 <meta property="og:type" content="website" />
 <meta property="og:locale" content="fr_FR" />
 <meta property="og:site_name" content="QDM" />
-<meta property="og:url" content={Astro.url} />
+<meta property="og:url" content={canonicalURL} />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
-<meta property="og:image" content={new URL(image.src, Astro.url)} />
+<!--
+	? Dimensions déclarées : la plateforme compose la carte SANS télécharger l'image — ce qui compte au
+	? tout premier partage, quand elle n'a encore rien en cache.
+	* `og:image:type` est omis si le format n'a pas de type MIME connu : ne rien déclarer vaut mieux que déclarer faux.
+-->
+<meta property="og:image" content={ogImage.url} />
+<meta property="og:image:width" content={String(ogImage.width)} />
+<meta property="og:image:height" content={String(ogImage.height)} />
+{ogImage.type && <meta property="og:image:type" content={ogImage.type} />}
+<meta property="og:image:alt" content={ogImage.alt} />
 
 <!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content={title} />
 <meta name="twitter:description" content={description} />
-<meta name="twitter:image" content={new URL(image.src, Astro.url)} />
+<meta name="twitter:image" content={ogImage.url} />
+<meta name="twitter:image:alt" content={ogImage.alt} />

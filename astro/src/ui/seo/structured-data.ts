@@ -1,3 +1,4 @@
+import { absoluteUrl } from "@/ui/seo/absolute-url";
 import type { PostViewModel } from "@/ui/view-model/post-view-model";
 
 interface GalleryInput {
@@ -9,14 +10,6 @@ interface GalleryInput {
    * ? donc une seule projection sert la vue ET le JSON-LD.
    */
   posts: readonly PostViewModel[];
-}
-
-// ? Rend une URL absolue à partir du site (laisse intactes les URLs déjà absolues)
-function absoluteUrl(siteUrl: string, path: string): string {
-  if (/^https?:\/\//.test(path)) {
-    return path;
-  }
-  return new URL(path, siteUrl).href;
 }
 
 /**

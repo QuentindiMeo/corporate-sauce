@@ -113,7 +113,9 @@ Le cœur (domain/application) se teste sans framework ; l'UI via la Container AP
 
 ## À faire avant la mise en production
 
-1. Renseigner le **domaine réel** dans `astro/astro.config.mjs` (`site`) et `astro/public/robots.txt` (actuellement `example.com`).
+1. ~~Renseigner le **domaine réel** dans `astro/astro.config.mjs` (`site`) et `astro/public/robots.txt`.~~
+   ✅ **Fait** : `https://blog.qdimeo.fr`. Canonical, `og:*`, JSON-LD et sitemap en héritent automatiquement.
+   Reste à **vérifier les aperçus** une fois le site en ligne (LinkedIn Post Inspector — il force le re-scrape).
 2. Remplacer les **liens LinkedIn `…-PLACEHOLDER`** de `astro/src/data/posts.json` par les vraies URLs
    (actuellement **19 sur 19**).
 3. Choisir la cible de déploiement (`DEPLOY_TARGET`) et calibrer les seuils Lighthouse sur un premier run réel.
