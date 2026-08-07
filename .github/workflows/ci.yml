@@ -32,6 +32,11 @@ jobs:
       - name: Installer les dépendances
         run: pnpm install --frozen-lockfile
 
+      # Placé en premier : c'est l'étape la plus rapide et la plus mécanique, autant
+      # échouer tout de suite plutôt qu'après les tests.
+      - name: Format
+        run: pnpm format:check
+
       - name: Lint
         run: pnpm lint
 

@@ -1,22 +1,22 @@
 {
-	"extends": "astro/tsconfigs/strict",
-	"include": [".astro/types.d.ts", "**/*"],
-	"exclude": [
-		"dist",
-		"coverage",
-		"playwright-report",
-		"test-results",
-		"vitest.config.ts",
-		"playwright.config.ts",
-		"eslint.config.js"
-	],
-	"compilerOptions": {
-		"strictNullChecks": true,
-		"paths": {
-			"@domain/*": ["./src/domain/*"],
-			"@application/*": ["./src/application/*"],
-			"@infrastructure/*": ["./src/infrastructure/*"],
-			"@/*": ["./src/*"]
-		}
-	}
+  "extends": "astro/tsconfigs/strict",
+  "include": [".astro/types.d.ts", "**/*"],
+  "exclude": [
+    "dist",
+    "coverage",
+    "playwright-report",
+    "test-results",
+    "vitest.config.ts",
+    "playwright.config.ts",
+    "eslint.config.js"
+  ],
+  "compilerOptions": {
+    "strictNullChecks": true,
+    "paths": {
+      "@domain/*": ["./src/domain/*"],
+      "@application/*": ["./src/application/*"],
+      "@infrastructure/*": ["./src/infrastructure/*"],
+      "@/*": ["./src/*"]
+    }
+  }
 }

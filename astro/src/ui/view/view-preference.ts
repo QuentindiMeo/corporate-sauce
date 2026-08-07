@@ -4,15 +4,15 @@
  *
  * ? `theme` = 7 lignes thématiques (curation par `order`) · `date` = flux chronologique groupé par mois, décroissant.
  */
-export type GalleryView = 'theme' | 'date';
+export type GalleryView = "theme" | "date";
 
-export const VIEW_STORAGE_KEY = 'qdm-view';
+export const VIEW_STORAGE_KEY = "qdm-view";
 
 // ? Agencement d'entrée : la vue thématique, qui porte la curation éditoriale.
-export const DEFAULT_VIEW: GalleryView = 'theme';
+export const DEFAULT_VIEW: GalleryView = "theme";
 
 function isView(value: string | null): value is GalleryView {
-	return value === 'theme' || value === 'date';
+  return value === "theme" || value === "date";
 }
 
 /**
@@ -21,17 +21,15 @@ function isView(value: string | null): value is GalleryView {
  * @param stored  valeur lue dans `localStorage` (ou `null`)
  */
 export function resolveInitialView(stored: string | null): GalleryView {
-	return isView(stored) ? stored : DEFAULT_VIEW;
+  return isView(stored) ? stored : DEFAULT_VIEW;
 }
 
 // ? Renvoie l'autre agencement (pour la bascule).
 export function toggleView(view: GalleryView): GalleryView {
-	return view === 'theme' ? 'date' : 'theme';
+  return view === "theme" ? "date" : "theme";
 }
 
 // ? Message poussé dans la région `aria-live` après une bascule : le changement d'agencement est purement visuel, il doit donc être annoncé.
 export function viewAnnouncement(view: GalleryView): string {
-	return view === 'date'
-		? 'Galerie par date, du plus récent au plus ancien'
-		: 'Galerie par rubrique';
+  return view === "date" ? "Galerie par date, du plus récent au plus ancien" : "Galerie par rubrique";
 }

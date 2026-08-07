@@ -1,17 +1,13 @@
 ---
-import { Image } from 'astro:assets';
-import {
-	isScheduledNow,
-	type PostPageViewModel,
-	type PostViewModel,
-} from '@/ui/view-model/post-view-model';
-import QdmBadge from './QdmBadge.astro';
-import TagCategory from './TagCategory.astro';
+import { Image } from "astro:assets";
+import { isScheduledNow, type PostPageViewModel, type PostViewModel } from "@/ui/view-model/post-view-model";
+import QdmBadge from "./QdmBadge.astro";
+import TagCategory from "./TagCategory.astro";
 
 // ? Composant « bête » : uniquement un view model. Ni domaine, ni formatage, ni cast.
 interface Props {
-	post: PostViewModel;
-	now?: Date;	// ? Instant de référence pour « posté / à venir ». Injectable pour les tests ; sinon généré au build.
+  post: PostViewModel;
+  now?: Date; // ? Instant de référence pour « posté / à venir ». Injectable pour les tests ; sinon généré au build.
 }
 
 const { post, now = new Date() } = Astro.props;
@@ -23,298 +19,288 @@ const carouselPages = post.pages;
 ---
 
 <article
-	class="modal-post"
-	data-mode={post.mode}
-	data-scheduled={scheduled ? '' : undefined}
-	data-published-at={post.publishedAtIso}
-	style={post.modeStyle}
-	aria-labelledby={titleId}
+  class="modal-post"
+  data-mode={post.mode}
+  data-scheduled={scheduled ? "" : undefined}
+  data-published-at={post.publishedAtIso}
+  style={post.modeStyle}
+  aria-labelledby={titleId}
 >
-	<div class="modal-post__visual">
-		{
-			post.isCarousel ? (
-				<div class="carousel" data-carousel>
-					<div
-						class="carousel__track"
-						data-carousel-track
-						tabindex="0"
-						aria-label="Pages du carrousel (flèches gauche/droite)"
-					>
-						{carouselPages.map((page: PostPageViewModel, index: number) => (
-							<div
-								class="carousel__slide"
-								role="group"
-								aria-roledescription="diapositive"
-								aria-label={`Page ${index + 1} sur ${carouselPages.length}`}
-							>
-								<Image
-									src={page.image}
-									alt={page.alt}
-									widths={[540, 720, 1080]}
-									sizes="(max-width: 900px) 90vw, 480px"
-								/>
-							</div>
-						))}
-					</div>
+  <div class="modal-post__visual">
+    {
+      post.isCarousel ? (
+        <div class="carousel" data-carousel>
+          <div
+            class="carousel__track"
+            data-carousel-track
+            tabindex="0"
+            aria-label="Pages du carrousel (flèches gauche/droite)"
+          >
+            {carouselPages.map((page: PostPageViewModel, index: number) => (
+              <div
+                class="carousel__slide"
+                role="group"
+                aria-roledescription="diapositive"
+                aria-label={`Page ${index + 1} sur ${carouselPages.length}`}
+              >
+                <Image
+                  src={page.image}
+                  alt={page.alt}
+                  widths={[540, 720, 1080]}
+                  sizes="(max-width: 900px) 90vw, 480px"
+                />
+              </div>
+            ))}
+          </div>
 
-					<button
-						type="button"
-						class="carousel__nav carousel__nav--prev"
-						data-carousel-prev
-						aria-label="Page précédente"
-					>
-						<span aria-hidden="true">‹</span>
-					</button>
-					<button
-						type="button"
-						class="carousel__nav carousel__nav--next"
-						data-carousel-next
-						aria-label="Page suivante"
-					>
-						<span aria-hidden="true">›</span>
-					</button>
+          <button
+            type="button"
+            class="carousel__nav carousel__nav--prev"
+            data-carousel-prev
+            aria-label="Page précédente"
+          >
+            <span aria-hidden="true">‹</span>
+          </button>
+          <button type="button" class="carousel__nav carousel__nav--next" data-carousel-next aria-label="Page suivante">
+            <span aria-hidden="true">›</span>
+          </button>
 
-					<div class="carousel__dots">
-						{carouselPages.map((_: unknown, idx: number) => (
-							<button
-								type="button"
-								class="carousel__dot"
-								data-carousel-dot={idx}
-								aria-label={`Aller à la page ${idx + 1}`}
-							/>
-						))}
-					</div>
-					<p class="carousel__counter" data-carousel-counter aria-live="polite">
-						1 / {carouselPages.length}
-					</p>
-				</div>
-			) : (
-				<Image
-					src={post.image}
-					alt={post.imageAlt}
-					widths={[540, 720, 1080]}
-					sizes="(max-width: 900px) 90vw, 480px"
-				/>
-			)
-		}
-	</div>
+          <div class="carousel__dots">
+            {carouselPages.map((_: unknown, idx: number) => (
+              <button
+                type="button"
+                class="carousel__dot"
+                data-carousel-dot={idx}
+                aria-label={`Aller à la page ${idx + 1}`}
+              />
+            ))}
+          </div>
+          <p class="carousel__counter" data-carousel-counter aria-live="polite">
+            1 / {carouselPages.length}
+          </p>
+        </div>
+      ) : (
+        <Image src={post.image} alt={post.imageAlt} widths={[540, 720, 1080]} sizes="(max-width: 900px) 90vw, 480px" />
+      )
+    }
+  </div>
 
-	<div class="modal-post__text">
-		<div class="modal-post__meta">
-			<TagCategory category={post.category} />
-			{/* ? Les DEUX mentions sont rendues ; CSS n'en montre qu'une selon `data-scheduled`,
-			    ? que le contrôleur client repositionne à l'heure du navigateur. */}
-			<time class="modal-post__date" datetime={post.publishedDayIso}>
-				<span class="modal-post__when" data-when="scheduled">À venir — </span><span
-					class="modal-post__when"
-					data-when="published">Posté le </span
-				>{post.publishedLabel}
-			</time>
-		</div>
-		<h2 id={titleId} class="modal-post__title">{post.title}</h2>
-		{post.subtitle && <p class="modal-post__subtitle">{post.subtitle}</p>}
-		<p class="modal-post__body">{post.body}</p>
+  <div class="modal-post__text">
+    <div class="modal-post__meta">
+      <TagCategory category={post.category} />
+      {
+        /* ? Les DEUX mentions sont rendues ; CSS n'en montre qu'une selon `data-scheduled`,
+			    ? que le contrôleur client repositionne à l'heure du navigateur.
+			    ! Chaque état porte sa PHRASE COMPLÈTE, date incluse. La version précédente juxtaposait
+			    ! les mentions et un nœud de texte nu (`…>Posté le </span>{date}`), en faisant reposer un
+			    ! espace significatif sur le texte de fin du span : le formateur l'a rogné, et la modale
+			    ! affichait « Posté le5 août 2026 ». Ici, plus aucun nœud de texte nu dans le <time>,
+			    ! donc plus rien qui dépende du formatage. */
+      }
+      <time class="modal-post__date" datetime={post.publishedDayIso}>
+        <span class="modal-post__when" data-when="scheduled">À venir — {post.publishedLabel}</span>
+        <span class="modal-post__when" data-when="published">Posté le {post.publishedLabel}</span>
+      </time>
+    </div>
+    <h2 id={titleId} class="modal-post__title">{post.title}</h2>
+    {post.subtitle && <p class="modal-post__subtitle">{post.subtitle}</p>}
+    <p class="modal-post__body">{post.body}</p>
 
-		{post.takeaway && <p class="modal-post__takeaway">{post.takeaway}</p>}
-		{post.cta && <p class="modal-post__cta">→ {post.cta}</p>}
+    {post.takeaway && <p class="modal-post__takeaway">{post.takeaway}</p>}
+    {post.cta && <p class="modal-post__cta">→ {post.cta}</p>}
 
-		{
-			post.hashtags && post.hashtags.length > 0 && (
-				<ul class="modal-post__hashtags">
-					{post.hashtags.map((tag: string) => (
-						<li>#{tag}</li>
-					))}
-				</ul>
-			)
-		}
+    {
+      post.hashtags && post.hashtags.length > 0 && (
+        <ul class="modal-post__hashtags">
+          {post.hashtags.map((tag: string) => (
+            <li>#{tag}</li>
+          ))}
+        </ul>
+      )
+    }
 
-		<div class="modal-post__footer">
-			<QdmBadge />
-			<a
-				class="modal-post__link"
-				href={post.linkedInUrl}
-				target="_blank"
-				rel="noopener noreferrer"
-			>
-				Voir sur LinkedIn ↗
-			</a>
-		</div>
-	</div>
+    <div class="modal-post__footer">
+      <QdmBadge />
+      <a class="modal-post__link" href={post.linkedInUrl} target="_blank" rel="noopener noreferrer">
+        Voir sur LinkedIn ↗
+      </a>
+    </div>
+  </div>
 </article>
 
 <style>
-	.modal-post {
-		display: grid;
-		gap: 1.5rem;
-		background: var(--bg);
-		color: var(--fg);
-	}
-	@media (min-width: 900px) {
-		.modal-post {
-			grid-template-columns: minmax(0, 480px) 1fr;
-		}
-	}
-	.modal-post__visual {
-		margin: auto;
-	}
-	.modal-post__visual :global(img) {
-		width: 100%;
-		height: auto;
-		aspect-ratio: 1080 / 1360; /* //? Même ratio que la vignette : 3/4, recadrage centré. */
-		object-fit: cover;
-		border-radius: 8px;
-	}
-	/* //? Rubrique + date sur une même ligne ; la date se rejette à droite et repasse à la ligne si la place manque. */
-	.modal-post__meta {
-		margin-right: 1.5rem;
-		display: flex;
-		flex-wrap: wrap;
-		align-items: center;
-		justify-content: space-between;
-		gap: 0.5rem 1rem;
-	}
-	/* //? Légende (charte §3) : mono, majuscules, interlettrage large, couleur discrète. */
-	.modal-post__date {
-		font-family: var(--font-mono, monospace);
-		font-size: 0.8rem;
-		font-weight: 700;
-		letter-spacing: 0.12em;
-		text-transform: uppercase;
-		color: var(--kicker, var(--muted));
-	}
-	/* //? Une seule mention visible à la fois. `display:none` (et non `visibility`) pour que la
+  .modal-post {
+    display: grid;
+    gap: 1.5rem;
+    background: var(--bg);
+    color: var(--fg);
+  }
+  @media (min-width: 900px) {
+    .modal-post {
+      grid-template-columns: minmax(0, 480px) 1fr;
+    }
+  }
+  .modal-post__visual {
+    margin: auto;
+  }
+  .modal-post__visual :global(img) {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1080 / 1360; /* //? Même ratio que la vignette : 3/4, recadrage centré. */
+    object-fit: cover;
+    border-radius: 8px;
+  }
+  /* //? Rubrique + date sur une même ligne ; la date se rejette à droite et repasse à la ligne si la place manque. */
+  .modal-post__meta {
+    margin-right: 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem 1rem;
+  }
+  /* //? Légende (charte §3) : mono, majuscules, interlettrage large, couleur discrète. */
+  .modal-post__date {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--kicker, var(--muted));
+  }
+  /* //? Une seule mention visible à la fois. `display:none` (et non `visibility`) pour que la
 		? mention masquée sorte aussi du texte lu : le `<time>` ne doit pas s'énoncer
 		? « À venir — Posté le 21 juillet 2026 ». L'état vient de `data-scheduled`, posé au build
 		? puis corrigé à l'heure du navigateur par `initSchedule`. */
-	.modal-post__when {
-		display: none;
-	}
-	.modal-post[data-scheduled] .modal-post__when[data-when='scheduled'],
-	.modal-post:not([data-scheduled]) .modal-post__when[data-when='published'] {
-		display: inline;
-	}
-	.modal-post__title {
-		font-size: clamp(1.5rem, 3vw, 2.25rem);
-		margin: 0.75rem 0;
-	}
-	.modal-post__subtitle {
-		color: var(--muted);
-		font-size: 1.1rem;
-	}
-	.modal-post__body {
-		margin-top: 1rem;
-		white-space: pre-line; /* //? Légende LinkedIn multi-paragraphes : on préserve les retours à la ligne. */
-	}
-	.modal-post__hashtags {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.4rem 0.6rem;
-		list-style: none;
-		margin: 1.25rem 0 0;
-		padding: 0;
-		font-family: var(--font-mono, monospace);
-		font-size: 0.8rem;
-		color: var(--acc-text, var(--muted));
-	}
-	.modal-post__takeaway {
-		margin-top: 1.25rem;
-		padding: 0.75rem 1rem;
-		border: 1px solid var(--border);
-		border-radius: 8px;
-		background: var(--panel, transparent);
-		font-weight: 700;
-	}
-	.modal-post__cta {
-		margin-top: 1rem;
-		font-family: var(--font-mono, monospace);
-		color: var(--acc-text, var(--warm-text, inherit));
-	}
-	.modal-post__footer {
-		display: flex;
-		align-items: center;
-		gap: 1rem;
-		margin-top: 1.5rem;
-		padding-top: 1rem;
-		border-top: 1px solid var(--border);
-	}
-	.modal-post__link {
-		font-family: var(--font-mono, monospace);
-		font-weight: 700;
-		color: var(--acc-text, var(--cool-text, inherit));
-	}
+  .modal-post__when {
+    display: none;
+  }
+  .modal-post[data-scheduled] .modal-post__when[data-when="scheduled"],
+  .modal-post:not([data-scheduled]) .modal-post__when[data-when="published"] {
+    display: inline;
+  }
+  .modal-post__title {
+    font-size: clamp(1.5rem, 3vw, 2.25rem);
+    margin: 0.75rem 0;
+  }
+  .modal-post__subtitle {
+    color: var(--muted);
+    font-size: 1.1rem;
+  }
+  .modal-post__body {
+    margin-top: 1rem;
+    white-space: pre-line; /* //? Légende LinkedIn multi-paragraphes : on préserve les retours à la ligne. */
+  }
+  .modal-post__hashtags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 0.6rem;
+    list-style: none;
+    margin: 1.25rem 0 0;
+    padding: 0;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.8rem;
+    color: var(--acc-text, var(--muted));
+  }
+  .modal-post__takeaway {
+    margin-top: 1.25rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--panel, transparent);
+    font-weight: 700;
+  }
+  .modal-post__cta {
+    margin-top: 1rem;
+    font-family: var(--font-mono, monospace);
+    color: var(--acc-text, var(--warm-text, inherit));
+  }
+  .modal-post__footer {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+  }
+  .modal-post__link {
+    font-family: var(--font-mono, monospace);
+    font-weight: 700;
+    color: var(--acc-text, var(--cool-text, inherit));
+  }
 
-	.carousel {
-		position: relative;
-	}
-	.carousel__track {
-		display: flex;
-		gap: 0.75rem;
-		overflow-x: auto;
-		scroll-snap-type: x mandatory;
-		scroll-behavior: smooth;
-		border-radius: 8px;
-		-webkit-overflow-scrolling: touch;
-	}
-	.carousel__slide {
-		flex: 0 0 100%;
-		scroll-snap-align: start;
-	}
-	.carousel__nav {
-		position: absolute;
-		top: 50%;
-		transform: translateY(-50%);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 40px;
-		height: 40px;
-		border-radius: 50%;
-		border: 1px solid var(--border);
-		background: var(--bg);
-		color: var(--fg);
-		font-size: 1.4rem;
-		line-height: 1;
-		cursor: pointer;
-		z-index: 2;
-	}
-	.carousel__nav--prev {
-		left: 0.5rem;
-	}
-	.carousel__nav--next {
-		right: 0.5rem;
-	}
-	.carousel__nav:disabled {
-		opacity: 0.35;
-		cursor: default;
-	}
-	.carousel__dots {
-		display: flex;
-		justify-content: center;
-		gap: 0.4rem;
-		margin-top: 0.6rem;
-	}
-	.carousel__dot {
-		width: 8px;
-		height: 8px;
-		padding: 0;
-		border-radius: 50%;
-		border: 1px solid var(--acc);
-		background: transparent;
-		cursor: pointer;
-	}
-	.carousel__dot[aria-current='true'] {
-		background: var(--acc);
-	}
-	.carousel__counter {
-		margin-top: 0.4rem;
-		text-align: center;
-		font-family: var(--font-mono, monospace);
-		font-size: 0.8rem;
-		color: var(--muted);
-	}
-	@media (prefers-reduced-motion: reduce) {
-		.carousel__track {
-			scroll-behavior: auto;
-		}
-	}
+  .carousel {
+    position: relative;
+  }
+  .carousel__track {
+    display: flex;
+    gap: 0.75rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    border-radius: 8px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .carousel__slide {
+    flex: 0 0 100%;
+    scroll-snap-align: start;
+  }
+  .carousel__nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--fg);
+    font-size: 1.4rem;
+    line-height: 1;
+    cursor: pointer;
+    z-index: 2;
+  }
+  .carousel__nav--prev {
+    left: 0.5rem;
+  }
+  .carousel__nav--next {
+    right: 0.5rem;
+  }
+  .carousel__nav:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+  .carousel__dots {
+    display: flex;
+    justify-content: center;
+    gap: 0.4rem;
+    margin-top: 0.6rem;
+  }
+  .carousel__dot {
+    width: 8px;
+    height: 8px;
+    padding: 0;
+    border-radius: 50%;
+    border: 1px solid var(--acc);
+    background: transparent;
+    cursor: pointer;
+  }
+  .carousel__dot[aria-current="true"] {
+    background: var(--acc);
+  }
+  .carousel__counter {
+    margin-top: 0.4rem;
+    text-align: center;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .carousel__track {
+      scroll-behavior: auto;
+    }
+  }
 </style>

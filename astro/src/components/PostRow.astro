@@ -1,11 +1,11 @@
 ---
-import type { ThemeRowViewModel } from '@/ui/view-model/post-view-model';
-import PostTrack from './PostTrack.astro';
-import TagCategory from './TagCategory.astro';
+import type { ThemeRowViewModel } from "@/ui/view-model/post-view-model";
+import PostTrack from "./PostTrack.astro";
+import TagCategory from "./TagCategory.astro";
 
 interface Props {
-	row: ThemeRowViewModel;
-	priority?: boolean; // ? `true` pour la première ligne : ses visuels sont prioritaires (LCP).
+  row: ThemeRowViewModel;
+  priority?: boolean; // ? `true` pour la première ligne : ses visuels sont prioritaires (LCP).
 }
 
 const { row, priority = false } = Astro.props;
@@ -13,18 +13,18 @@ const titleId = `category-${row.category.toLowerCase()}`;
 ---
 
 <section class="post-row" aria-labelledby={titleId}>
-	<h2 id={titleId} class="post-row__title">
-		<TagCategory category={row.category} />
-	</h2>
-	<PostTrack posts={row.posts} priority={priority} />
+  <h2 id={titleId} class="post-row__title">
+    <TagCategory category={row.category} />
+  </h2>
+  <PostTrack posts={row.posts} priority={priority} />
 </section>
 
 <style>
-	.post-row {
-		margin-block: 1rem;
-	}
-	.post-row__title {
-		margin-bottom: 0.5rem;
-		scroll-margin-top: 4rem;
-	}
+  .post-row {
+    margin-block: 1rem;
+  }
+  .post-row__title {
+    margin-bottom: 0.5rem;
+    scroll-margin-top: 4rem;
+  }
 </style>

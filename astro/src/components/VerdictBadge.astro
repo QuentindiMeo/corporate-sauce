@@ -1,35 +1,35 @@
 ---
 interface Props {
-	type: 'ok' | 'bad';
+  type: "ok" | "bad";
 }
 
 const { type } = Astro.props;
-const glyph = type === 'ok' ? '✓' : '✕';
+const glyph = type === "ok" ? "✓" : "✕";
 // Libellé accessible destiné à l'utilisateur → français.
-const label = type === 'ok' ? 'Bonne pratique' : 'À éviter';
+const label = type === "ok" ? "Bonne pratique" : "À éviter";
 ---
 
 <span class={`verdict-badge verdict-badge--${type}`} role="img" aria-label={label}>
-	<span aria-hidden="true">{glyph}</span>
+  <span aria-hidden="true">{glyph}</span>
 </span>
 
 <style>
-	/* Charte §5 : cercle 44×44 px, glyphe 22 px blanc. Toujours ces dimensions. */
-	.verdict-badge {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		width: 44px;
-		height: 44px;
-		border-radius: 50%;
-		font-size: 22px;
-		line-height: 1;
-		color: #fff;
-	}
-	.verdict-badge--ok {
-		background: var(--ok, #2e6a46);
-	}
-	.verdict-badge--bad {
-		background: var(--bad, #b23415);
-	}
+  /* Charte §5 : cercle 44×44 px, glyphe 22 px blanc. Toujours ces dimensions. */
+  .verdict-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    font-size: 22px;
+    line-height: 1;
+    color: #fff;
+  }
+  .verdict-badge--ok {
+    background: var(--ok, #2e6a46);
+  }
+  .verdict-badge--bad {
+    background: var(--bad, #b23415);
+  }
 </style>

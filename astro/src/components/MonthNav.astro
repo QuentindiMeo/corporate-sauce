@@ -1,20 +1,20 @@
 ---
-import type { RailItem } from '@/ui/nav/rail';
-import type { MonthRowViewModel } from '@/ui/view-model/post-view-model';
-import AnchorRail from './AnchorRail.astro';
+import type { RailItem } from "@/ui/nav/rail";
+import type { MonthRowViewModel } from "@/ui/view-model/post-view-model";
+import AnchorRail from "./AnchorRail.astro";
 
 interface Props {
-	rows: readonly MonthRowViewModel[];
+  rows: readonly MonthRowViewModel[];
 }
 
 const { rows } = Astro.props;
 
 // ? Tous les libellés sont déjà préparés par le view model : ce composant n'assemble que la phrase.
 const items: RailItem[] = rows.map((row: MonthRowViewModel) => ({
-	anchor: `month-${row.monthKey}`,
-	code: row.code,
-	full: row.label,
-	label: `Aller au mois ${row.labelWithElision} (${row.code})`,
+  anchor: `month-${row.monthKey}`,
+  code: row.code,
+  full: row.label,
+  label: `Aller au mois ${row.labelWithElision} (${row.code})`,
 }));
 ---
 

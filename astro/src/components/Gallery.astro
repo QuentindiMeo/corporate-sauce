@@ -1,15 +1,16 @@
 ---
-import type { MonthRowViewModel, ThemeRowViewModel } from '@/ui/view-model/post-view-model';
-import MonthGrid from './MonthGrid.astro';
-import PostGrid from './PostGrid.astro';
+import type { MonthRowViewModel, ThemeRowViewModel } from "@/ui/view-model/post-view-model";
+import MonthGrid from "./MonthGrid.astro";
+import PostGrid from "./PostGrid.astro";
 
 interface Props {
-	themeRows: readonly ThemeRowViewModel[];
-	monthRows: readonly MonthRowViewModel[];
+  themeRows: readonly ThemeRowViewModel[];
+  monthRows: readonly MonthRowViewModel[];
 }
 
 const { themeRows, monthRows } = Astro.props;
 ---
+
 <!--
 	? Les DEUX vues sont rendues au build (site statique) ; `data-view` sur <html> décide laquelle s'affiche.
 	? Aucun rendu client, HTML complet pour le SEO et fonctionnel sans JS (le panneau par rubrique reste visible par défaut).
@@ -17,10 +18,10 @@ const { themeRows, monthRows } = Astro.props;
 	* un `display:none` → le navigateur ne les télécharge pas ; le surcoût est donc en octets de HTML, pas en images.
 -->
 <div class="gallery">
-	<div class="gallery__panel" data-view-panel="theme">
-		<PostGrid rows={themeRows} priority={true} />
-	</div>
-	<div class="gallery__panel" data-view-panel="date">
-		<MonthGrid rows={monthRows} priority={false} />
-	</div>
+  <div class="gallery__panel" data-view-panel="theme">
+    <PostGrid rows={themeRows} priority={true} />
+  </div>
+  <div class="gallery__panel" data-view-panel="date">
+    <MonthGrid rows={monthRows} priority={false} />
+  </div>
 </div>

@@ -1,21 +1,17 @@
 ---
-import { listPostsByMonth } from '@application/list-posts-by-month';
-import { listPostsByTheme } from '@application/list-posts-by-theme';
-import { astroPostRepository } from '@infrastructure/content/astro-post-repository';
-import BaseHead from '@/components/BaseHead.astro';
-import CategoryNav from '@/components/CategoryNav.astro';
-import Footer from '@/components/Footer.astro';
-import Gallery from '@/components/Gallery.astro';
-import Header from '@/components/Header.astro';
-import MonthNav from '@/components/MonthNav.astro';
-import PostModal from '@/components/PostModal.astro';
-import { galleryJsonLd } from '@/ui/seo/structured-data';
-import {
-	isScheduledNow,
-	toMonthRowViewModels,
-	toThemeRowViewModels,
-} from '@/ui/view-model/post-view-model';
-import { SITE_DESCRIPTION, SITE_TITLE } from '@/consts';
+import { listPostsByMonth } from "@application/list-posts-by-month";
+import { listPostsByTheme } from "@application/list-posts-by-theme";
+import { astroPostRepository } from "@infrastructure/content/astro-post-repository";
+import BaseHead from "@/components/BaseHead.astro";
+import CategoryNav from "@/components/CategoryNav.astro";
+import Footer from "@/components/Footer.astro";
+import Gallery from "@/components/Gallery.astro";
+import Header from "@/components/Header.astro";
+import MonthNav from "@/components/MonthNav.astro";
+import PostModal from "@/components/PostModal.astro";
+import { galleryJsonLd } from "@/ui/seo/structured-data";
+import { isScheduledNow, toMonthRowViewModels, toThemeRowViewModels } from "@/ui/view-model/post-view-model";
+import { SITE_DESCRIPTION, SITE_TITLE } from "@/consts";
 
 // ? Hexagone : adaptateur infra → cas d'usage → domaine.
 // ? Deux agencements du MÊME contenu, tous deux rendus au build (cf. Gallery).
@@ -37,80 +33,88 @@ const now = new Date();
 const scheduledCount = posts.filter((post) => isScheduledNow(post, now)).length;
 
 const jsonLd = galleryJsonLd({
-	siteUrl: Astro.site?.href ?? Astro.url.origin,
-	name: SITE_TITLE,
-	description: SITE_DESCRIPTION,
-	posts,
+  siteUrl: Astro.site?.href ?? Astro.url.origin,
+  name: SITE_TITLE,
+  description: SITE_DESCRIPTION,
+  posts,
 });
 ---
 
 <!doctype html>
 <html lang="fr">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-		<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} is:inline />
-	</head>
-	<body>
-		<a class="skip-link" href="#contenu">Aller au contenu</a>
-		<Header />
-		<CategoryNav categories={categories} />
-		<MonthNav rows={monthRows} />
-		<main id="contenu">
-			<header class="intro">
-				<h1>{SITE_TITLE}</h1>
-				<p class="intro__subtitle">
-					Secrets de fabrication logicielle et tuyaux en tout genre.<br />
-					Une conviction par visuel, sans détour.
-				</p>
-				<p class="intro__meta">
-					{total} posts<span data-scheduled-wrapper hidden={scheduledCount === 0}
-						> (<span data-scheduled-count>{scheduledCount}</span> à paraître)</span
-					> · {rows.length} rubriques · {monthRows.length} mois
-				</p>
-			</header>
+  <head>
+    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} is:inline />
+  </head>
+  <body>
+    <a class="skip-link" href="#contenu">Aller au contenu</a>
+    <Header />
+    <CategoryNav categories={categories} />
+    <MonthNav rows={monthRows} />
+    <main id="contenu">
+      <header class="intro">
+        <h1>{SITE_TITLE}</h1>
+        <p class="intro__subtitle">
+          Secrets de fabrication logicielle et tuyaux en tout genre.<br />
+          Une conviction par visuel, sans détour.
+        </p>
+        {
+          /* ! Espaces INSÉCABLES (`&#160;`) et non des espaces ordinaires : `compressHTML` (actif par
+             ! défaut dans Astro) supprime les blancs en frontière de balise. Un espace ordinaire y
+             ! disparaissait — d'où « 19 posts(10 à paraître)· 7 rubriques ». Un NBSP n'est pas un
+             ! blanc repliable HTML : il survit à la compression ET au reformatage.
+             ? Chaque NBSP est placé DANS l'élément qu'il précède, pour disparaître avec lui : quand
+             ? le compteur est `hidden`, on lit « 19 posts · 7 rubriques » sans double espace. */
+        }
+        <p class="intro__meta">
+          {total} posts<span data-scheduled-wrapper hidden={scheduledCount === 0}
+            >&#160;(<span data-scheduled-count>{scheduledCount}</span> à paraître)</span
+          >&#160;· {rows.length} rubriques · {monthRows.length} mois
+        </p>
+      </header>
 
-			<Gallery themeRows={rows} monthRows={monthRows} />
-		</main>
-		<PostModal posts={posts} />
-		<Footer />
-	</body>
+      <Gallery themeRows={rows} monthRows={monthRows} />
+    </main>
+    <PostModal posts={posts} />
+    <Footer />
+  </body>
 </html>
 
 <script>
-	// ? Recale « à venir / posté » sur l'heure du VISITEUR : le rendu statique fige cet état au
-	// ? build, or il se périme dès que 11 h (heure de Paris) est franchie. Sans ce script, la page
-	// ? resterait fausse jusqu'au prochain déploiement.
-	import { initSchedule } from '@/ui/schedule/schedule-controller';
-	initSchedule(document, new Date());
+  // ? Recale « à venir / posté » sur l'heure du VISITEUR : le rendu statique fige cet état au
+  // ? build, or il se périme dès que 11 h (heure de Paris) est franchie. Sans ce script, la page
+  // ? resterait fausse jusqu'au prochain déploiement.
+  import { initSchedule } from "@/ui/schedule/schedule-controller";
+  initSchedule(document, new Date());
 </script>
 
 <style>
-	main {
-		max-width: 80vw;
-		margin: 0 auto;
-		padding: 2rem 1.5rem 4rem;
-	}
-	.intro {
-		margin-block: 1rem 2rem;
-	}
-	h1 {
-		font-size: clamp(2rem, 5vw, 3.25rem);
-	}
-	.intro__subtitle {
-		margin-top: 0.75rem;
-		max-width: 60%;
-		font-family: var(--font-title, system-ui, sans-serif);
-		font-size: clamp(1.05rem, 2.2vw, 1.4rem);
-		font-weight: 500;
-		line-height: 1.25;
-		color: var(--fg);
-		text-wrap: balance;
-	}
-	.intro__meta {
-		margin-top: 0.75rem;
-		font-family: var(--font-mono, monospace);
-		font-size: 0.8rem;
-		letter-spacing: 0.1em;
-		color: var(--muted);
-	}
+  main {
+    max-width: 80vw;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+  .intro {
+    margin-block: 1rem 2rem;
+  }
+  h1 {
+    font-size: clamp(2rem, 5vw, 3.25rem);
+  }
+  .intro__subtitle {
+    margin-top: 0.75rem;
+    max-width: 60%;
+    font-family: var(--font-title, system-ui, sans-serif);
+    font-size: clamp(1.05rem, 2.2vw, 1.4rem);
+    font-weight: 500;
+    line-height: 1.25;
+    color: var(--fg);
+    text-wrap: balance;
+  }
+  .intro__meta {
+    margin-top: 0.75rem;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+  }
 </style>

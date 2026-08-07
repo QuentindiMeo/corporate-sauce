@@ -1,6 +1,6 @@
-import type { Category } from './category';
-import type { LinkedInUrl } from './linkedin-url';
-import type { Mode } from './mode';
+import type { Category } from "./category";
+import type { LinkedInUrl } from "./linkedin-url";
+import type { Mode } from "./mode";
 
 /**
  * ? Exigences du domaine sur un visuel : ce qu'il a besoin de savoir, rien de plus.
@@ -8,16 +8,16 @@ import type { Mode } from './mode';
  * ! de {@link Post} : l'infrastructure y injecte l'`ImageMetadata` d'Astro, qui la satisfait.
  */
 export interface PostImage {
-	src: string;
-	width: number;
-	height: number;
-	format: string;
+  src: string;
+  width: number;
+  height: number;
+  format: string;
 }
 
 // ? Une page d'un post carrousel (visuel + son texte alternatif).
 export interface PostPage<TImage extends PostImage = PostImage> {
-	readonly image: TImage;
-	readonly alt: string;
+  readonly image: TImage;
+  readonly alt: string;
 }
 
 /**
@@ -31,25 +31,25 @@ export interface PostPage<TImage extends PostImage = PostImage> {
  * * Le défaut `PostImage` garde le domaine et ses tests lisibles, sans paramètre explicite.
  */
 export interface Post<TImage extends PostImage = PostImage> {
-	readonly id: string;
-	readonly category: Category;
-	readonly mode: Mode;
-	readonly title: string; // ? Libellé court (punchline / sujet).
-	readonly subtitle?: string; // ? Sous-titre.
-	readonly body: string; // ? Légende LinkedIn complète (paragraphes).
-	readonly takeaway?: string; // ? Phrase-clé encadrée.
-	readonly cta?: string; // ? Micro-CTA d'engagement.
-	readonly image: TImage;
-	readonly imageAlt: string; // ? Texte alternatif descriptif (obligatoire, a11y).
-	readonly linkedInUrl: LinkedInUrl;
-	readonly publishedAt: Date;
-	readonly order: number; // ? Position au sein de sa ligne thématique.
-	readonly hashtags?: readonly string[]; // ? Hashtags de la légende (sans le « # »).
-	readonly pages?: readonly PostPage<TImage>[]; // ? Pages d'un carrousel (≥ 2). Absent pour un post à visuel unique.
+  readonly id: string;
+  readonly category: Category;
+  readonly mode: Mode;
+  readonly title: string; // ? Libellé court (punchline / sujet).
+  readonly subtitle?: string; // ? Sous-titre.
+  readonly body: string; // ? Légende LinkedIn complète (paragraphes).
+  readonly takeaway?: string; // ? Phrase-clé encadrée.
+  readonly cta?: string; // ? Micro-CTA d'engagement.
+  readonly image: TImage;
+  readonly imageAlt: string; // ? Texte alternatif descriptif (obligatoire, a11y).
+  readonly linkedInUrl: LinkedInUrl;
+  readonly publishedAt: Date;
+  readonly order: number; // ? Position au sein de sa ligne thématique.
+  readonly hashtags?: readonly string[]; // ? Hashtags de la légende (sans le « # »).
+  readonly pages?: readonly PostPage<TImage>[]; // ? Pages d'un carrousel (≥ 2). Absent pour un post à visuel unique.
 }
 
 export function isCarousel<TImage extends PostImage>(post: Post<TImage>): boolean {
-	return (post.pages?.length ?? 0) > 1;
+  return (post.pages?.length ?? 0) > 1;
 }
 
 /**
@@ -58,10 +58,10 @@ export function isCarousel<TImage extends PostImage>(post: Post<TImage>): boolea
  * * Exprimée sur l'INSTANT plutôt que sur l'entité, afin que la présentation puisse l'appliquer à l'heure du visiteur sans réencoder la comparaison.
  */
 export function isScheduledAt(publishedAt: Date, now: Date): boolean {
-	return publishedAt.getTime() > now.getTime();
+  return publishedAt.getTime() > now.getTime();
 }
 
 // ? Commodité au niveau de l'entité — même règle, appliquée à `publishedAt`.
 export function isScheduled<TImage extends PostImage>(post: Post<TImage>, now: Date): boolean {
-	return isScheduledAt(post.publishedAt, now);
+  return isScheduledAt(post.publishedAt, now);
 }

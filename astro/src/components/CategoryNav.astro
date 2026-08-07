@@ -1,30 +1,30 @@
 ---
-import type { Category } from '@domain/category';
-import type { RailItem } from '@/ui/nav/rail';
-import AnchorRail from './AnchorRail.astro';
+import type { Category } from "@domain/category";
+import type { RailItem } from "@/ui/nav/rail";
+import AnchorRail from "./AnchorRail.astro";
 
 interface Props {
-	categories: Category[];
+  categories: Category[];
 }
 
 const { categories } = Astro.props;
 
 // ? Libellés lisibles pour les lecteurs d'écran (le code court reste le texte visible).
 const CATEGORY_LABELS: Record<Category, string> = {
-	PERF: 'Performance',
-	A11Y: 'Accessibilité',
-	DX: 'Expérience développeur',
-	UI: 'Interface utilisateur',
-	ARCHI: 'Architecture',
-	HTML: 'HTML sémantique',
-	COLLAB: 'Collaboration',
+  PERF: "Performance",
+  A11Y: "Accessibilité",
+  DX: "Expérience développeur",
+  UI: "Interface utilisateur",
+  ARCHI: "Architecture",
+  HTML: "HTML sémantique",
+  COLLAB: "Collaboration",
 };
 
-const items: RailItem[] = categories.map((category) => ({
-	anchor: `category-${category.toLowerCase()}`,
-	code: category,
-	full: CATEGORY_LABELS[category],
-	label: `Aller à la rubrique ${CATEGORY_LABELS[category]} (${category})`,
+const items: RailItem[] = categories.map((category: Category) => ({
+  anchor: `category-${category.toLowerCase()}`,
+  code: category,
+  full: CATEGORY_LABELS[category],
+  label: `Aller à la rubrique ${CATEGORY_LABELS[category]} (${category})`,
 }));
 ---
 

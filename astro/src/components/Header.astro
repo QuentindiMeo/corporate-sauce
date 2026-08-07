@@ -1,70 +1,70 @@
 ---
-import { SITE_TITLE } from '../consts';
-import ThemeToggle from './ThemeToggle.astro';
-import ViewToggle from './ViewToggle.astro';
+import { SITE_TITLE } from "../consts";
+import ThemeToggle from "./ThemeToggle.astro";
+import ViewToggle from "./ViewToggle.astro";
 ---
 
 <header>
-	<nav>
-		<a class="brand" href="/">
-			<span class="chevron">›</span>{SITE_TITLE}<span class="cursor" aria-hidden="true"></span>
-		</a>
-		<div class="controls">
-			<ViewToggle />
-			<ThemeToggle />
-		</div>
-	</nav>
+  <nav>
+    <a class="brand" href="/">
+      <span class="chevron">›</span>{SITE_TITLE}<span class="cursor" aria-hidden="true"></span>
+    </a>
+    <div class="controls">
+      <ViewToggle />
+      <ThemeToggle />
+    </div>
+  </nav>
 </header>
 
 <style>
-	header {
-		position: sticky;
-		top: 0;
-		z-index: 20;
-		padding: 1rem 1.5rem;
-		background: var(--bg);
-		border-bottom: 1px solid var(--border, #331c14);
-	}
-	nav {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 1rem;
-	}
-	.controls {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-	}
-	.brand {
-		font-family: var(--font-mono, monospace);
-		font-weight: 800;
-		text-decoration: none;
-		color: inherit;
-	}
-	.chevron {
-		opacity: 0.6;
-		margin-right: 0.25em;
-	}
-	.cursor {
-		display: inline-block;
-		width: 0.5em;
-		height: 1.5em;
-		margin-left: 0.15em;
-		background: currentColor;
-		vertical-align: text-bottom;
-		animation: cursor-blink 1s step-end infinite; /* //? Clignotement type terminal : 1 s, net (pas de fondu). */
-	}
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    padding: 1rem 1.5rem;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border, #331c14);
+  }
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .brand {
+    font-family: var(--font-mono, monospace);
+    font-weight: 800;
+    text-decoration: none;
+    color: inherit;
+  }
+  .chevron {
+    opacity: 0.6;
+    margin-right: 0.25em;
+  }
+  .cursor {
+    display: inline-block;
+    width: 0.5em;
+    height: 1.5em;
+    margin-left: 0.15em;
+    background: currentColor;
+    vertical-align: text-bottom;
+    animation: cursor-blink 1s step-end infinite; /* //? Clignotement type terminal : 1 s, net (pas de fondu). */
+  }
 
-	@keyframes cursor-blink {
-		0% {
-			opacity: 1;
-		}
-		50% {
-			opacity: 0;
-		}
-		100% {
-			opacity: 1;
-		}
-	}
+  @keyframes cursor-blink {
+    0% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
 </style>

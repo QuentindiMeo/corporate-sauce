@@ -1,4 +1,4 @@
-import { initCarousel } from './carousel-controller';
+import { initCarousel } from "./carousel-controller";
 
 /**
  * ? Contrôleur de la modale de post (amélioration progressive).
@@ -8,72 +8,70 @@ import { initCarousel } from './carousel-controller';
  * * Si le contenu injecté est un carrousel, l'initialise (et le nettoie à la fermeture).
  */
 export function initModal(root: ParentNode = document): () => void {
-	const dialog = root.querySelector<HTMLDialogElement>('[data-post-modal]');
-	const body = dialog?.querySelector<HTMLElement>('[data-modal-body]');
-	if (!dialog || !body) {
-		return () => {};
-	}
+  const dialog = root.querySelector<HTMLDialogElement>("[data-post-modal]");
+  const body = dialog?.querySelector<HTMLElement>("[data-modal-body]");
+  if (!dialog || !body) {
+    return () => {};
+  }
 
-	const closeButton = dialog.querySelector<HTMLElement>('[data-modal-close]');
-	const triggers = Array.from(root.querySelectorAll<HTMLElement>('[data-post-id]'));
-	let lastTrigger: HTMLElement | null = null;
-	let disposeCarousel: () => void = () => {};
+  const closeButton = dialog.querySelector<HTMLElement>("[data-modal-close]");
+  const triggers = Array.from(root.querySelectorAll<HTMLElement>("[data-post-id]"));
+  let lastTrigger: HTMLElement | null = null;
+  let disposeCarousel: () => void = () => {};
 
-	function open(event: Event): void {
-		const target = event.currentTarget as HTMLElement;
-		const id = target.dataset.postId;
-		if (!id) return;
-		const template = root.querySelector<HTMLTemplateElement>(
-			`template[data-post-template="${id}"]`,
-		);
-		if (!template) return;
+  function open(event: Event): void {
+    const target = event.currentTarget as HTMLElement;
+    const id = target.dataset.postId;
+    if (!id) return;
+    const template = root.querySelector<HTMLTemplateElement>(`template[data-post-template="${id}"]`);
+    if (!template) return;
 
-		event.preventDefault();
-		body!.replaceChildren(template.content.cloneNode(true));
-		lastTrigger = target;
-		dialog!.showModal();
-		disposeCarousel = initCarousel(body!);
-	}
+    event.preventDefault();
+    body!.replaceChildren(template.content.cloneNode(true));
+    lastTrigger = target;
+    dialog!.showModal();
+    disposeCarousel = initCarousel(body!);
+  }
 
-	function close(): void {
-		dialog!.close();
-	}
+  function close(): void {
+    dialog!.close();
+  }
 
-	// ? Clic sur l'arrière-plan (::backdrop, hors de la boîte du dialog) → fermeture.
-	function onDialogClick(event: MouseEvent): void {
-		const rect = dialog!.getBoundingClientRect();
-		const outsideBox =
-			rect.width > 0 &&
-			(event.clientX < rect.left ||
-				event.clientX > rect.right ||
-				event.clientY < rect.top ||
-				event.clientY > rect.bottom);
-		if (outsideBox || event.target === dialog) {
-			close();
-		}
-	}
+  // ? Clic sur l'arrière-plan (::backdrop, hors de la boîte du dialog) → fermeture.
+  function onDialogClick(event: MouseEvent): void {
+    const rect = dialog!.getBoundingClientRect();
+    const outsideBox =
+      rect.width > 0 &&
+      (event.clientX < rect.left ||
+        event.clientX > rect.right ||
+        event.clientY < rect.top ||
+        event.clientY > rect.bottom);
+    if (outsideBox || event.target === dialog) {
+      close();
+    }
+  }
 
-	function onClose(): void {
-		disposeCarousel();
-		disposeCarousel = () => {};
-		body!.replaceChildren();
-		lastTrigger?.focus();
-		lastTrigger = null;
-	}
+  function onClose(): void {
+    disposeCarousel();
+    disposeCarousel = () => {};
+    body!.replaceChildren();
+    lastTrigger?.focus();
+    lastTrigger = null;
+  }
 
-	for (const trigger of triggers) {
-		trigger.addEventListener('click', open);
-	}
-	closeButton?.addEventListener('click', close);
-	dialog.addEventListener('click', onDialogClick);
-	dialog.addEventListener('close', onClose);
+  for (const trigger of triggers) {
+    trigger.addEventListener("click", open);
+  }
+  closeButton?.addEventListener("click", close);
+  dialog.addEventListener("click", onDialogClick);
+  dialog.addEventListener("close", onClose);
 
-	return () => {
-		for (const trigger of triggers) {
-			trigger.removeEventListener('click', open);
-		}
-		closeButton?.removeEventListener('click', close);
-		dialog.removeEventListener('click', onDialogClick);
-		dialog.removeEventListener('close', onClose);
-	};
+  return () => {
+    for (const trigger of triggers) {
+      trigger.removeEventListener("click", open);
+    }
+    closeButton?.removeEventListener("click", close);
+    dialog.removeEventListener("click", onDialogClick);
+    dialog.removeEventListener("close", onClose);
+  };
 }

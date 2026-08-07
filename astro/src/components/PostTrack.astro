@@ -1,50 +1,50 @@
 ---
-import type { PostViewModel } from '@/ui/view-model/post-view-model';
-import PostCard from './PostCard.astro';
+import type { PostViewModel } from "@/ui/view-model/post-view-model";
+import PostCard from "./PostCard.astro";
 
 interface Props {
-	posts: readonly PostViewModel[];
-	priority?: boolean; // ? `true` pour la première piste de la page : son 1er visuel est prioritaire (LCP).
+  posts: readonly PostViewModel[];
+  priority?: boolean; // ? `true` pour la première piste de la page : son 1er visuel est prioritaire (LCP).
 }
 
 const { posts, priority = false } = Astro.props;
 ---
 
 <ul class="post-track">
-	{
-		posts.map((post: PostViewModel, idx: number) => (
-			<li class="post-track__item">
-				<PostCard post={post} priority={priority && idx === 0} />
-			</li>
-		))
-	}
+  {
+    posts.map((post: PostViewModel, idx: number) => (
+      <li class="post-track__item">
+        <PostCard post={post} priority={priority && idx === 0} />
+      </li>
+    ))
+  }
 </ul>
 
 <style>
-	/*//? Mobile : piste défilable horizontalement. Desktop : grille de 4 (qui se poursuit sur plusieurs rangs quand un groupe
+  /*//? Mobile : piste défilable horizontalement. Desktop : grille de 4 (qui se poursuit sur plusieurs rangs quand un groupe
 		? dépasse 4 posts — cas de la vue par date, où un mois n'a pas de taille fixe). */
-	.post-track {
-		list-style: none;
-		margin: 0;
-		padding: 0 0 0.5rem;
-		display: grid;
-		grid-auto-flow: column;
-		grid-auto-columns: minmax(200px, 60vw);
-		align-items: start; /* //? Ratios natifs variables → on aligne en haut plutôt que d'étirer les cartes. */
-		gap: 1rem;
-		overflow-x: auto;
-		scroll-snap-type: x mandatory;
-		-webkit-overflow-scrolling: touch;
-	}
-	.post-track__item {
-		scroll-snap-align: start;
-	}
-	@media (min-width: 768px) {
-		.post-track {
-			grid-auto-flow: row;
-			grid-template-columns: repeat(4, 1fr);
-			grid-auto-columns: unset;
-			overflow-x: visible;
-		}
-	}
+  .post-track {
+    list-style: none;
+    margin: 0;
+    padding: 0 0 0.5rem;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(200px, 60vw);
+    align-items: start; /* //? Ratios natifs variables → on aligne en haut plutôt que d'étirer les cartes. */
+    gap: 1rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+  .post-track__item {
+    scroll-snap-align: start;
+  }
+  @media (min-width: 768px) {
+    .post-track {
+      grid-auto-flow: row;
+      grid-template-columns: repeat(4, 1fr);
+      grid-auto-columns: unset;
+      overflow-x: visible;
+    }
+  }
 </style>

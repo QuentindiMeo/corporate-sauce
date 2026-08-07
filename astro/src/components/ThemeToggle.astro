@@ -3,65 +3,59 @@
 // La résolution initiale (anti-flash) est faite par le script inline de BaseHead.
 ---
 
-<button
-	type="button"
-	class="theme-toggle"
-	data-theme-toggle
-	aria-pressed="false"
-	aria-label="Basculer le thème"
->
-	<span class="theme-toggle__icon" aria-hidden="true"></span>
-	<span class="theme-toggle__label">Thème</span>
+<button type="button" class="theme-toggle" data-theme-toggle aria-pressed="false" aria-label="Basculer le thème">
+  <span class="theme-toggle__icon" aria-hidden="true"></span>
+  <span class="theme-toggle__label">Thème</span>
 </button>
 
 <script>
-	import { toggleTheme, THEME_STORAGE_KEY, type Theme } from '@/ui/theme/theme-preference';
+  import { toggleTheme, THEME_STORAGE_KEY, type Theme } from "@/ui/theme/theme-preference";
 
-	// NB : `document.currentScript` est null dans un script de type module (Astro
-	// bundle et hisse ce <script>) — on cible donc le bouton par son attribut.
-	const button = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
-	const root = document.documentElement;
+  // NB : `document.currentScript` est null dans un script de type module (Astro
+  // bundle et hisse ce <script>) — on cible donc le bouton par son attribut.
+  const button = document.querySelector<HTMLButtonElement>("[data-theme-toggle]");
+  const root = document.documentElement;
 
-	function currentTheme(): Theme {
-		return root.dataset.theme === 'light' ? 'light' : 'dark';
-	}
+  function currentTheme(): Theme {
+    return root.dataset.theme === "light" ? "light" : "dark";
+  }
 
-	function sync(theme: Theme): void {
-		root.dataset.theme = theme;
-		button?.setAttribute('aria-pressed', String(theme === 'light'));
-	}
+  function sync(theme: Theme): void {
+    root.dataset.theme = theme;
+    button?.setAttribute("aria-pressed", String(theme === "light"));
+  }
 
-	sync(currentTheme());
+  sync(currentTheme());
 
-	button?.addEventListener('click', () => {
-		const next = toggleTheme(currentTheme());
-		sync(next);
-		try {
-			localStorage.setItem(THEME_STORAGE_KEY, next);
-		} catch {
-			/* stockage indisponible : la bascule reste effective pour la session */
-		}
-	});
+  button?.addEventListener("click", () => {
+    const next = toggleTheme(currentTheme());
+    sync(next);
+    try {
+      localStorage.setItem(THEME_STORAGE_KEY, next);
+    } catch {
+      /* stockage indisponible : la bascule reste effective pour la session */
+    }
+  });
 </script>
 
 <style>
-	.theme-toggle {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.5em;
-		font-family: var(--font-mono, monospace);
-		font-size: 0.85rem;
-		padding: 0.35em 0.7em;
-		border: 1px solid var(--border);
-		border-radius: 7px;
-		background: transparent;
-		color: inherit;
-		cursor: pointer;
-	}
-	.theme-toggle__icon {
-		width: 0.9em;
-		height: 0.9em;
-		border-radius: 50%;
-		background: var(--acc);
-	}
+  .theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.85rem;
+    padding: 0.35em 0.7em;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+  }
+  .theme-toggle__icon {
+    width: 0.9em;
+    height: 0.9em;
+    border-radius: 50%;
+    background: var(--acc);
+  }
 </style>

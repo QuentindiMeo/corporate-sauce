@@ -1,22 +1,22 @@
 ---
-import type { MonthRowViewModel } from '@/ui/view-model/post-view-model';
-import MonthRow from './MonthRow.astro';
+import type { MonthRowViewModel } from "@/ui/view-model/post-view-model";
+import MonthRow from "./MonthRow.astro";
 
 interface Props {
-	rows: readonly MonthRowViewModel[];
-	priority?: boolean;	// ? `true` quand ce flux est la vue par défaut de la page (porte le candidat LCP).
+  rows: readonly MonthRowViewModel[];
+  priority?: boolean; // ? `true` quand ce flux est la vue par défaut de la page (porte le candidat LCP).
 }
 
 const { rows, priority = false } = Astro.props;
 ---
 
 <div class="month-grid">
-	{rows.map((row: MonthRowViewModel, idx: number) => <MonthRow row={row} priority={priority && idx === 0} />)}
+  {rows.map((row: MonthRowViewModel, idx: number) => <MonthRow row={row} priority={priority && idx === 0} />)}
 </div>
 
 <style>
-	.month-grid {
-		display: flex;
-		flex-direction: column;
-	}
+  .month-grid {
+    display: flex;
+    flex-direction: column;
+  }
 </style>

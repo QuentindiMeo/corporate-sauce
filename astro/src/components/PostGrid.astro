@@ -1,22 +1,22 @@
 ---
-import type { ThemeRowViewModel } from '@/ui/view-model/post-view-model';
-import PostRow from './PostRow.astro';
+import type { ThemeRowViewModel } from "@/ui/view-model/post-view-model";
+import PostRow from "./PostRow.astro";
 
 interface Props {
-	rows: readonly ThemeRowViewModel[];
-	priority?: boolean; // ? `true` si la grille est la vue affichée au chargement. `false` pour un panneau masqué.
+  rows: readonly ThemeRowViewModel[];
+  priority?: boolean; // ? `true` si la grille est la vue affichée au chargement. `false` pour un panneau masqué.
 }
 
 const { rows, priority = true } = Astro.props;
 ---
 
 <div class="post-grid">
-	{rows.map((row: ThemeRowViewModel, idx: number) => <PostRow row={row} priority={priority && idx === 0} />)}
+  {rows.map((row: ThemeRowViewModel, idx: number) => <PostRow row={row} priority={priority && idx === 0} />)}
 </div>
 
 <style>
-	.post-grid {
-		display: flex;
-		flex-direction: column;
-	}
+  .post-grid {
+    display: flex;
+    flex-direction: column;
+  }
 </style>

@@ -1,24 +1,24 @@
 ---
 interface Props {
-	/** `fill` = fond plein (mot-clé n°1) ; `marker` = soulignement marqueur (secondaire). */
-	variant?: 'fill' | 'marker';
+  /** `fill` = fond plein (mot-clé n°1) ; `marker` = soulignement marqueur (secondaire). */
+  variant?: "fill" | "marker";
 }
 
-const { variant = 'fill' } = Astro.props;
+const { variant = "fill" } = Astro.props;
 ---
 
 <span class={`highlight highlight--${variant}`}><slot /></span>
 
 <style>
-	/* Charte §5 : mot-clé n°1 → aplat plein ; secondaire → marqueur sous la ligne de base. */
-	.highlight--fill {
-		background: var(--acc, var(--warm, currentColor));
-		color: var(--acc-ink, var(--ink, #120a07));
-		padding: 0 3px;
-	}
-	.highlight--marker {
-		/* Le dégradé démarre ~80 % : marqueur volontairement sous la ligne de base. */
-		background: linear-gradient(transparent 80%, var(--acc, var(--warm, currentColor)) 80%);
-		padding: 0 3px 2px;
-	}
+  /* Charte §5 : mot-clé n°1 → aplat plein ; secondaire → marqueur sous la ligne de base. */
+  .highlight--fill {
+    background: var(--acc, var(--warm, currentColor));
+    color: var(--acc-ink, var(--ink, #120a07));
+    padding: 0 3px;
+  }
+  .highlight--marker {
+    /* Le dégradé démarre ~80 % : marqueur volontairement sous la ligne de base. */
+    background: linear-gradient(transparent 80%, var(--acc, var(--warm, currentColor)) 80%);
+    padding: 0 3px 2px;
+  }
 </style>

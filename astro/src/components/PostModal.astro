@@ -1,77 +1,79 @@
 ---
-import type { PostViewModel } from '@/ui/view-model/post-view-model';
-import PostModalContent from './PostModalContent.astro';
+import type { PostViewModel } from "@/ui/view-model/post-view-model";
+import PostModalContent from "./PostModalContent.astro";
 
 interface Props {
-	posts: readonly PostViewModel[];
+  posts: readonly PostViewModel[];
 }
 
 const { posts } = Astro.props;
 ---
 
-{/*
+{
+  /*
 	? Contenu pré-rendu de chaque post, injecté dans le dialog au clic (amélioration progressive).
 	* `data-post-at` fait de cette liste la LISTE CANONIQUE des posts — un template par post. Le
 	* compteur « à paraître » de l'intro s'en sert, car les vignettes, elles, sont rendues DEUX
 	* fois (une par panneau de vue) et fausseraient le décompte.
-*/}
+*/
+}
 <div hidden data-modal-templates>
-	{
-		posts.map((post: PostViewModel) => (
-			<template data-post-template={post.id} data-post-at={post.publishedAtIso}>
-				<PostModalContent post={post} />
-			</template>
-		))
-	}
+  {
+    posts.map((post: PostViewModel) => (
+      <template data-post-template={post.id} data-post-at={post.publishedAtIso}>
+        <PostModalContent post={post} />
+      </template>
+    ))
+  }
 </div>
 
 <dialog class="post-modal" data-post-modal aria-modal="true" aria-label="Détail du post">
-	<button type="button" class="post-modal__fermer" data-modal-close aria-label="Fermer">
-		<span aria-hidden="true">✕</span>
-	</button>
-	<div class="post-modal__corps" data-modal-body></div>
+  <button type="button" class="post-modal__fermer" data-modal-close aria-label="Fermer">
+    <span aria-hidden="true">✕</span>
+  </button>
+  <div class="post-modal__corps" data-modal-body></div>
 </dialog>
 
 <script>
-	import { initModal } from '@/ui/modal/modal-controller';
-	initModal(document);
+  import { initModal } from "@/ui/modal/modal-controller";
+  initModal(document);
 </script>
 
 <style>
-	.post-modal {
-		margin: auto;
-		width: min(1360px, 80vw);
-		max-height: 90vh;
-		padding: 0;
-		border: 1px solid var(--border);
-		border-radius: 12px;
-		background: var(--bg);
-		color: var(--fg);
-		overflow: hidden;
-	}
-	.post-modal::backdrop {
-		background: rgba(0, 0, 0, 0.6);
-	}
-	.post-modal__corps {
-		max-height: 90vh;
-		overflow-y: auto;
-		padding: 2rem;
-	}
-	.post-modal__fermer {
-		position: absolute;
-		top: 0.75rem;
-		right: 0.75rem;
-		width: 44px;
-		height: 44px;
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		font-size: 1.1rem;
-		border: 1px solid var(--border);
-		border-radius: 50%;
-		background: var(--bg);
-		color: var(--fg);
-		cursor: pointer;
-		z-index: 1;
-	}
+  .post-modal {
+    margin: auto;
+    width: min(1360px, 80vw);
+    max-height: 90vh;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--bg);
+    color: var(--fg);
+    overflow: hidden;
+  }
+  .post-modal::backdrop {
+    background: rgba(0, 0, 0, 0.6);
+  }
+  .post-modal__corps {
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 2rem;
+  }
+  .post-modal__fermer {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    width: 44px;
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    background: var(--bg);
+    color: var(--fg);
+    cursor: pointer;
+    z-index: 1;
+  }
 </style>
